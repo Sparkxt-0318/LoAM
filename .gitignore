@@ -1,0 +1,36 @@
+# --- data policy -------------------------------------------------------
+# Literature PDFs are third-party copyrighted material and are never committed.
+# The bibliography in docs/sources.md is the shareable record of what we read.
+data/literature/*
+!data/literature/.gitkeep
+!data/literature/README.md
+
+# Raw and processed simulation data are reproducible outputs, not source.
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# The curated variance table IS source and IS committed:
+#   data/variance_components.yaml  (hand-curated)
+#   data/variance_table.csv        (generated, committed for machine use)
+
+# --- python ------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+.mypy_cache/
+
+# --- editors / os ------------------------------------------------------
+.DS_Store
+.vscode/
+.idea/
+*.swp
