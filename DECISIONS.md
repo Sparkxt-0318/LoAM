@@ -226,6 +226,45 @@ concentration–density covariance is not reported.
 *If wrong:* using 3.4% as a stock CV understates the within-plot term by roughly
 a factor of three relative to Poeplau's directly measured 9.3%.
 
+**D-021 — OPEN SCOPE QUESTION, UNRESOLVED: does Pacific Northwest dryland
+cropping fall inside "temperate"?** ⚠️ *Deliberately not decided. For the PI.*
+Wuest (2024) is the only temporal anchor in the table (`VC-TMP-001/002`). It is
+unambiguously **in scope on land use** — cropland — and unambiguously **in scope
+on depth**. The question is climate. The sites are PNW dryland small-grain
+systems: cool-season-wet, summer-dry, and moisture-limited in a way that
+temperate humid cropland is not. Depending on site they sit around Köppen
+Csb/BSk, which is "temperate" under some readings of the scope lock and not
+under others.
+
+Why it cannot be settled by fiat: temporal variance in measured SOC is
+plausibly driven by moisture cycling and biological activity, and those are
+precisely the axes on which dryland and humid systems differ. So the answer
+changes the parameterisation, not just the label.
+
+*Holding position until resolved:* rows stay `in_scope: false` and
+`use_as: sensitivity_high` — usable as a sensitivity bound, never as a baseline.
+That is conservative, not an answer, and component 4 stays a declared gap (G4)
+in the meantime.
+
+*Resolve by choosing one:* (a) admit PNW dryland to scope and promote the rows
+to baseline; (b) hold the narrower reading and keep component 4 open pending a
+humid-temperate source; (c) narrow the scope lock's wording so the question
+cannot recur. **Do not let this be resolved implicitly by someone flipping
+`in_scope` to close a gap.**
+
+**D-022 — CIRCULARITY GUARD: the noise model is calibrated on Poeplau and
+Wuest. NABO and Finland are HELD OUT ENTIRELY and reserved for Phase 4
+validation.** A testbed validated against the same data that parameterised it
+measures only its own self-consistency, and any reviewer will look for exactly
+this. Holding out two independent national monitoring networks is what makes a
+Phase 4 validation claim mean anything.
+*If wrong:* there is no recoverable position — once NABO or Finnish data has
+been looked at while building the noise model, it can never again serve as an
+independent test, and no later analysis undoes that. **This must not be relaxed
+later**, including for the tempting case where a held-out network would close an
+open gap. If a gap can only be closed with held-out data, the correct outcome is
+that the gap stays open.
+
 ---
 
 ## Open evidence gaps
@@ -247,3 +286,4 @@ a factor of three relative to Poeplau's directly measured 9.3%.
 | date | entries | note |
 |------|---------|------|
 | 2026-08-07 | D-001 … D-020, G1 … G7 | Phase 0 initial build. 24 rows, 6 components, 14 verified against full text. |
+| 2026-08-08 | D-021 (open), D-022 | CI + CSV staleness guard. Re-prioritised `docs/sources.md`: Poeplau to top for G1, Buchkowski re-filed by role. No variance-table rows changed. |

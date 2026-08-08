@@ -73,9 +73,27 @@ only**, not the manuscript.
 
 Supplies `VC-BPS-001…004`, all marked out-of-scope (Canadian **forest**).
 
-**Wanted from the PDF:** the within- vs between-plot standard deviations
-(script `02_within_between.R` computes them) — this would replace our interpreted
-50/50 encoding in `VC-BPS-003` with a real partition. See gap **G3**.
+This source has **two distinct roles**, and conflating them is how it gets
+mis-filed. Keep them separate:
+
+**Role 1 — variance baseline: RULED OUT, permanently.**
+A national **forest** inventory cannot supply a cropland variance baseline, no
+matter how good the PDF turns out to be. Fetching it will *not* close gap
+**G1**. If the build refuses these rows on scope grounds, **that is correct
+behaviour and must not be overridden** — rules R7/R10 exist for exactly this.
+The within/between SD partition it would give us (script `02_within_between.R`)
+is still worth having as a *structural analogue* for `VC-BPS-003`, replacing our
+interpreted 50/50 encoding — but as forest context, never as a cropland number.
+
+**Role 2 — regression to the mean: PRIMARY SOURCE, retained.**
+Buchkowski is our only source for the finding that an apparent gain of
+2.3 Mg C ha⁻¹ 10 yr⁻¹ over the first remeasurement interval is consistent with
+**regression to the mean** — i.e. a detected "change" that is a statistical
+artifact of the design rather than a signal. That is land-use-independent
+statistics, so the forest setting does **not** disqualify it.
+**This is a Phase 3 dependency**, not a Phase 0 one: the simulator must be able
+to reproduce the artifact, and `VC-BPS-004` is flagged as an external validation
+target for it.
 
 ### Wuest (2024)
 *Temporal variability is a major source of uncertainty in soil carbon
@@ -87,6 +105,13 @@ the only temporal anchor in the table.
 
 > ⚠️ Volume/issue/pages **unconfirmed**. Sampling depth **assumed** to be
 > 0–30 cm; the abstract does not state it.
+
+> 🔶 **OPEN SCOPE QUESTION — for the PI, not for me to resolve.** These are
+> Pacific Northwest **dryland** cropping systems. In scope on land use
+> (cropland); arguably marginal on climate ("temperate"). Logged as **D-021**
+> in [`DECISIONS.md`](../DECISIONS.md) and left open. The rows stay
+> `in_scope: false` / `sensitivity_high` until it is decided — that is the
+> conservative holding position, not an answer.
 
 ### Saby et al. (2008)
 *Will European soil monitoring networks be able to detect changes in topsoil
@@ -121,17 +146,41 @@ the relocation statistic is not in the material we could reach.** The
 
 ---
 
-## PDFs needed
+## What to chase next
 
-Listed in priority order. Drop them in `data/literature/` (gitignored).
+Priority is set by **what can actually close a gap under the scope lock**, not
+by how interesting the source is. An out-of-scope source cannot close an
+in-scope gap however good its data — that was the error in the previous
+ordering, which ranked a forest inventory first against a cropland gap.
 
-| # | source | why it matters | unblocks |
-|---|--------|----------------|----------|
-| 1 | **Buchkowski et al. 2026** (GCB, paywalled) | within/between-plot SD partition — the central design question | G3, `VC-BPS-003` |
-| 2 | **Wuest 2024** (SSSAJ, paywalled) | confirm depth, sites, and whether the variance shares transfer out of dryland | G4, `VC-TMP-001/002` |
-| 3 | **LUCAS 2015 report** (free, but the statistic wasn't locatable) | relocation-distance distribution | G6, `VC-REL-005/006` |
-| 4 | **Saby et al. 2008** (GCB, paywalled) | promote two secondary values to primary | `VC-ANA-002`, `VC-WPS-004` |
-| 5 | **Poeplau et al. 2022** version of record | confirm volume/pagination only — values already verified | citation hygiene |
+| # | source | why it matters | can it close a gap? |
+|---|--------|----------------|---------------------|
+| **1** | **Poeplau et al. 2022** — site-level data | **In scope** (NE Germany cropland, temperate, 0–30 cm fixed depth). 8 cropland sites, each a 20×20 m plot: the variation *between* those sites is between-plot spatial variance, measured on known support. **The strongest candidate baseline we have for component 3.** | ✅ **G1** — the only listed source that can |
+| 2 | **Wuest 2024** (SSSAJ, paywalled) | Confirm depth and sites; the only temporal anchor. Gated by the open scope question (D-021). | ⚠️ **G4**, conditionally — see D-021 |
+| 3 | **LUCAS 2015 report** (JRC105923 / EUR 30332 EN) | Relocation-distance distribution. | ✅ **G6** — unlocks `VC-REL-005/006` |
+| 4 | **Saby et al. 2008** (GCB, paywalled) | Promotes two `verified_secondary` values to primary. | ➖ hygiene, no gap |
+| 5 | **Buchkowski et al. 2026** (GCB, paywalled) | **Not a cropland variance baseline — see Role 1/Role 2 above.** Wanted for the regression-to-the-mean finding. | ❌ cannot close G1 · 📌 **Phase 3** dependency |
+| 6 | **Poeplau et al. 2022** version of record | Confirm volume/pagination only — values already verified. | ➖ citation hygiene |
 
-Nothing else is blocked on access. Components 1, 2, 5 and 6 have verified
-in-scope baselines and can proceed to Phase 1 as they stand.
+### On #1 — what is actually needed
+
+The Poeplau **text** is already held and fully verified; this is not a fetch
+request. What is missing is the **site-level SOC stock data for the 8 cropland
+sites** (the site characteristics table, ideally as supplementary data rather
+than read off a PDF table), from which a between-plot variance can be derived.
+
+Two caveats to settle before deriving anything, so they are recorded now rather
+than discovered later:
+
+- **n = 8.** A between-plot variance from 8 sites is imprecise, and the
+  resulting confidence interval must be carried, not dropped.
+- **The sites are not a random sample of temperate cropland.** They were chosen
+  near German Soil Inventory points and span a wide SOC range by design, which
+  probably *inflates* between-plot variance relative to a single region. That
+  makes it conservative for detectability — but it is an assumption, and it
+  needs a `D-NNN` entry when the derivation is done.
+
+**Not attempted in this PR** — closing G1 is explicitly out of scope here.
+
+Components 1, 2, 5 and 6 have verified in-scope baselines and can proceed to
+Phase 1 as they stand.
