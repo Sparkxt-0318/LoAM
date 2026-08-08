@@ -139,7 +139,7 @@ def test_component_baseline_coverage_is_declared(component, rows):
     that fact so that fixing it is a deliberate, visible change rather than
     something that drifts.
     """
-    known_gaps = {"temporal", "between_plot_spatial"}
+    known_gaps = {"temporal"}
     has_baseline = any(
         r["component"] == component and r.get("use_as") == "baseline" for r in rows
     )
@@ -150,6 +150,82 @@ def test_component_baseline_coverage_is_declared(component, rows):
         )
     else:
         assert has_baseline, f"{component} lost its baseline row"
+
+
+BASELINE_EVIDENCE = {"derived_primary_data", "verified_fulltext"}
+
+
+@pytest.mark.parametrize("component", COMPONENTS)
+def test_baselines_rest_on_primary_evidence(component, rows):
+    """A NO BASELINE flag must clear on evidence, not on someone relabelling.
+
+    The cheap way to "close" a gap is to promote a weak row - flip an abstract-only
+    or secondhand number to `baseline`. This forbids that: a baseline has to be
+    either data we hold and derived ourselves, or a number read in a full text.
+    """
+    for row in rows:
+        if row["component"] != component or row.get("use_as") != "baseline":
+            continue
+        assert row.get("verification") in BASELINE_EVIDENCE, (
+            f"{row['row_id']} is a {component} baseline on "
+            f"{row.get('verification')!r} evidence. Baselines require one of "
+            f"{sorted(BASELINE_EVIDENCE)}."
+        )
+
+
+def test_derived_rows_cite_their_derivation_script(rows):
+    """`derived_primary_data` shifts the burden onto our method, so show it."""
+    for row in rows:
+        if row.get("verification") != "derived_primary_data":
+            continue
+        locator = row.get("locator", "")
+        assert "scripts/" in locator and ".py" in locator, (
+            f"{row['row_id']} is derived_primary_data but its locator does not "
+            f"name the script that produced it: {locator!r}"
+        )
+        script = build_table.REPO_ROOT / "scripts" / (
+            locator.split("scripts/")[1].split(".py")[0] + ".py"
+        )
+        assert script.exists(), f"{row['row_id']} cites a missing script: {script}"
+
+
+# ---------------------------------------------------------------------------
+# direction of bias (D-023)
+# ---------------------------------------------------------------------------
+
+
+def test_every_row_declares_a_bias_direction(rows):
+    for row in rows:
+        assert row.get("bias_direction") in {"inflates", "deflates", "unknown"}, (
+            f"{row['row_id']} has bias_direction={row.get('bias_direction')!r}"
+        )
+
+
+def test_unknown_bias_direction_is_justified_not_dodged(rows):
+    """R12 in test form: 'unknown' must argue, not shrug."""
+    for row in rows:
+        if row.get("bias_direction") != "unknown":
+            continue
+        why = row.get("bias_direction_reasoning", "")
+        assert len(why.split()) >= 15, (
+            f"{row['row_id']} claims 'unknown' with only {len(why.split())} words "
+            "of justification"
+        )
+
+
+def test_rules_reject_a_missing_bias_reasoning(rows):
+    bad = dict(rows[0])
+    bad["bias_direction_reasoning"] = "  "
+    with pytest.raises(ValidationError, match="R11-bias-direction-reasoned"):
+        assert_valid([bad])
+
+
+def test_rules_reject_an_unargued_unknown(rows):
+    bad = dict(rows[0])
+    bad["bias_direction"] = "unknown"
+    bad["bias_direction_reasoning"] = "not sure"
+    with pytest.raises(ValidationError, match="R12-unknown-bias-must-say-why"):
+        assert_valid([bad])
 
 
 # ---------------------------------------------------------------------------

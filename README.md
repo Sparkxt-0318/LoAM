@@ -38,13 +38,19 @@ The simulator is not written yet.
 |---|-----------|------|-------------------|
 | 1 | analytical | 4 | ✅ |
 | 2 | within-plot spatial | 4 | ✅ |
-| 3 | between-plot spatial | 4 | ❌ forest only (G1) |
-| 4 | temporal | 2 | ❌ dryland only (G4) |
+| 3 | between-plot spatial | 6 | ✅ NAPESHM, derived — 0–15 cm, upper bound |
+| 4 | temporal | 2 | ❌ dryland only (G4) — the last gap |
 | 5 | relocation | 6 | ✅ |
 | 6 | depth / bulk density | 4 | ✅ |
 
-24 rows, 14 verified against full text, 2 locked out pending a PDF.
-Open evidence gaps are tracked as **G1–G7** in [`DECISIONS.md`](DECISIONS.md).
+26 rows, 14 verified against full text, 2 derived from primary data we hold,
+2 locked out pending a PDF.
+Open evidence gaps are tracked as **G1–G7** in [`DECISIONS.md`](DECISIONS.md);
+**G1 is closed**.
+
+Every row also records `bias_direction` — whether its number is likely too large
+or too small for our scope — because an inflated variance is conservative for a
+sampling calculator but anti-conservative for the Phase 5 audit (D-023).
 
 ## Layout
 
@@ -61,7 +67,9 @@ src/loam/
   schema.py                  columns, vocabularies, integrity rules
   validate.py                rule evaluation
   build_table.py             YAML -> CSV
-scripts/                     exploratory, outside the package build
+scripts/                     derivations, outside the package build
+  derive_g1_napeshm.py       between-plot baseline from NAPESHM (needs [derive])
+  neon_temporal_variance.py  exploratory temporal probe (NEON /data/ is 403 here)
 tests/
 DECISIONS.md                 every harmonization assumption, appendable
 ```
@@ -71,6 +79,9 @@ DECISIONS.md                 every harmonization assumption, appendable
 ```bash
 uv venv --python 3.11 .venv
 uv pip install --python .venv/bin/python -e ".[dev]"
+
+# only to re-run the derivations under scripts/ (heavy; not needed for tests)
+uv pip install --python .venv/bin/python -e ".[derive]"
 ```
 
 ## Use

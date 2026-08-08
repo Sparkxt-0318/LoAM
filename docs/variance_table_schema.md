@@ -30,7 +30,7 @@ Six components:
 
 ---
 
-## Three design choices that carry the weight
+## Four design choices that carry the weight
 
 ### 1. Random and systematic terms are separated (`error_kind`)
 
@@ -55,7 +55,37 @@ single-column filter, not a matter of trust. Note that the dependence is on mean
 **trajectory**, which is what the underlying carbon model is untrustworthy
 about.
 
-### 3. Evidence strength is graded (`verification`)
+### 3. Direction of error is tracked per row (`bias_direction`)
+
+Whether this row's number is likely **too large** (`inflates`), **too small**
+(`deflates`), or unsignable (`unknown`) as an estimate for our scope.
+
+**Not the same as `error_kind`.** `error_kind` describes the physical error the
+source measured — random scatter vs a systematic offset *in the soil
+measurement*. `bias_direction` describes *our estimate of that error* being too
+big or too small. Most rows are `error_kind: random` **and** `bias_direction:
+inflates` simultaneously; that is not a contradiction.
+
+It has to be per-row because the same row feeds two deliverables with opposite
+risk postures:
+
+| | inflated variance is… |
+|---|---|
+| **Sampling calculator** | **conservative** — tells someone to over-sample. Harmless. |
+| **Phase 5 audit** | **anti-conservative** — over-flags carbon projects as undetectable. |
+
+So a single table-level caveat would be wrong for one of them no matter which
+way it was written. See `DECISIONS.md` **D-023**, which also fixes the
+consequence: Phase 5 runs on the **low end** of the variance envelope, not the
+central estimate, so the headline reads *"even under the most generous noise
+assumptions, X% of claims fall below detection."*
+
+Rule **R12** stops `unknown` from becoming a dodge — it requires a substantive
+explanation of why no direction can be defended.
+
+Current distribution: 14 `inflates`, 7 `unknown`, 5 `deflates`.
+
+### 4. Evidence strength is graded (`verification`)
 
 `verified_fulltext` > `verified_abstract` > `verified_secondary` > `unverified`.
 
@@ -66,7 +96,7 @@ table with `use_as: placeholder_needs_pdf`, but it can never be a baseline.
 
 ## Columns
 
-44 columns in seven blocks. Required columns are marked ●.
+46 columns in seven blocks. Required columns are marked ●.
 
 ### Identity
 
@@ -100,6 +130,8 @@ Recorded exactly as printed, before any transformation.
 | `harmonization_note` | str | ● | **Required prose.** Every assumption made, and what breaks if it is wrong. |
 | `reference_stock_mg_c_ha` | float | | Mean stock used for any %↔absolute conversion. Required when `mean_dependent`. |
 | `mean_dependent` | bool | ● | Did this row need an assumed mean stock? |
+| `bias_direction` | enum | ● | `inflates` / `deflates` / `unknown` — see below. |
+| `bias_direction_reasoning` | str | ● | **Required prose** justifying the direction. `unknown` must say *why* it can't be signed. |
 
 ### Context
 
@@ -165,6 +197,8 @@ Enforced in `schema.py` and exercised by `tests/test_variance_table.py`.
 | R8 | Depth intervals are ordered and non-degenerate. |
 | R9 | A systematic row carries no harmonized SD. |
 | R10 | An out-of-scope reference row is not also marked in scope. |
+| R11 | Every row justifies its `bias_direction` in prose. |
+| R12 | `unknown` must explain why no direction can be defended — it cannot be a dodge. |
 
 Beyond the rules, the test suite pins current coverage: components with no
 in-scope baseline (`temporal`, `between_plot_spatial`) are asserted to *still*
@@ -182,5 +216,9 @@ have none, so closing a gap is a deliberate, visible change rather than drift.
    as printed" is fine when true; a blank note fails the build.
 4. Set `in_scope` against the scope lock, not against convenience.
 5. If a conversion needed a mean stock, set `mean_dependent: true` and record it.
-6. Log the assumption in [`DECISIONS.md`](../DECISIONS.md) with a new `D-NNN`.
-7. `python -m loam.build_table && pytest`
+6. Set `bias_direction` by asking: *is this number likely too big or too small
+   for **our** scope?* Transfers across land use, climate, depth or support
+   almost always have a signable direction — reach for `unknown` only when two
+   effects genuinely push opposite ways, and say so.
+7. Log the assumption in [`DECISIONS.md`](../DECISIONS.md) with a new `D-NNN`.
+8. `python -m loam.build_table && pytest`

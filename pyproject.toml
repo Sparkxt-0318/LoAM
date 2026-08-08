@@ -17,6 +17,15 @@ dependencies = [
 dev = [
     "pytest>=8.0",
 ]
+# Only needed to re-run the exploratory derivations under scripts/. Deliberately
+# NOT in `dev`: CI installs `dev` and runs the tests, and the tests must not
+# depend on a heavy scientific stack to validate a curated table.
+derive = [
+    "numpy>=1.26",
+    "pandas>=2.0",
+    "scipy>=1.11",
+    "statsmodels>=0.14",
+]
 
 [project.scripts]
 loam-build-table = "loam.build_table:main"
