@@ -10,6 +10,54 @@ Format: **D-NNN — decision.** Why. What breaks if wrong.
 
 ---
 
+## Decision status
+
+Machine-readable index. `src/loam/decisions.py` carries the same statuses, and
+`tests/test_decision_guard.py` fails if the two disagree or if a decision is
+written up below without appearing here — so this table cannot quietly fall
+behind the prose.
+
+An `open` decision may not govern a live constant or a verified baseline row.
+That is enforced, not requested: see D-032.
+
+| id | status | governs |
+|----|--------|---------|
+| D-001 | decided | YAML is the curated source, CSV is the artifact |
+| D-002 | decided | `schema.py` is the single source of truth for columns |
+| D-003 | decided | MAE → SD conversion assumes normality |
+| D-004 | decided | every row carries both absolute and relative dispersion |
+| D-005 | decided | paired-difference errors stay on the difference scale |
+| D-006 | decided | variance shares applied multiplicatively |
+| D-007 | decided | bulk-density coupling is the one genuine mean-exposure |
+| D-008 | decided | layer CVs are not combined into 0–30 cm |
+| D-009 | decided | Poeplau 5.1 and 7.6 Mg C/ha are not a range |
+| D-010 | decided | LUCAS revisit distance interpretation |
+| D-011 | decided | Buchkowski is out-of-scope forest, retained for contrast |
+| D-012 | decided | Buchkowski's within≈between is qualitative |
+| D-013 | decided | Fowler's 17% is illustrative, not measured |
+| D-014 | decided | Wuest retained as the only temporal anchor |
+| D-015 | decided | a bias never gets a harmonized SD |
+| D-016 | decided | out-of-scope rows are flagged, never deleted |
+| D-017 | decided | verification ladder |
+| D-018 | decided | relocation and between-plot terms overlap near 100 m |
+| D-019 | decided | relocation error is distance-independent within a plot |
+| D-020 | decided | concentration CV is never treated as stock CV |
+| **D-021** | **open** | whether PNW dryland is in-scope temperate → `VC-TMP-001/002` |
+| D-022 | decided | circularity guard on the noise model |
+| D-023 | decided | `bias_direction` recorded per row |
+| D-024 | decided | `HEADLINE_DESIGNS` — RCB / CR only |
+| D-025 | decided | `HEADLINE_EU_TYPE` — `Plots` only |
+| D-026 | decided | `DEPTH_CM` — rows scoped to 0–15 cm, never rescaled |
+| D-027 | decided | G1 is spatial + analytical combined, an upper bound |
+| **D-028** | **open** | `CLIMATE_ENVELOPES` → `VC-BPS-005/006` |
+| D-029 | decided | estimator: REML nested random effects, log scale |
+| D-030 | decided | NAPESHM primary for component 3, Poeplau cross-check |
+| D-031 | decided | Poeplau ↔ NAPESHM corroboration is logged, not merged |
+| D-032 | decided | open decisions may not govern live constants — enforced |
+| D-033 | decided | IPCC climate regions are not derivable from NAPESHM; no proxy |
+
+---
+
 ## The invariant these decisions protect
 
 The testbed quantifies **detectability**, not soil carbon. Minimum detectable
@@ -412,6 +460,210 @@ the estimate. *Resolve by choosing one:* (a) adopt the recommendation;
 `CLIMATE_ENVELOPES`; (c) formally widen the project scope beyond temperate, which
 would also reopen D-021.
 
+**2026-08-08 — the preferred resolution was attempted and is BLOCKED.** Replacing
+the private envelope with IPCC 2006 default climate regions (Vol 4 Ch 3, Figure
+3A.5.2, p. 3.39) was investigated and **cannot be implemented faithfully from
+NAPESHM**. Details in D-033. Neither the private envelope nor the IPCC scheme is
+therefore available as a defensible answer today, and the envelope stays open.
+
+---
+
+## Cross-checks and guards
+
+**D-031 — The Poeplau ↔ NAPESHM agreement is recorded as corroboration, and is
+NOT merged into either row.** Logging it now, while the derivation is fresh.
+
+*Figure correction, made before recording anything.* The comparison was proposed
+as "Poeplau 7.5–8.5% at 0–30 cm". Those are **not** Poeplau's within-plot spatial
+numbers — 7.5% and 8.5% are the **relocation** MAE figures from D-009 (5.1 Mg
+C/ha cropland and 7.6 Mg C/ha grassland, carried by `VC-REL-001/002`), which
+measure something else entirely: the error from not resampling the same point.
+Poeplau's actual within-plot spatial CVs are `VC-WPS-001` **9.3% (0–10 cm)** and
+`VC-WPS-002` **10.2% (10–30 cm)**, both cropland, both *n*=8. There is
+deliberately **no 0–30 cm within-plot value** to quote: D-008 forbids combining
+layer CVs without the inter-layer covariance, and that absence is logged as gap
+**G2**. The table below uses the verified numbers.
+
+| | NAPESHM (`VC-BPS-005/006`) | Poeplau 2022 (`VC-WPS-001/002`) |
+|---|---|---|
+| term | **between**-plot spatial | **within**-plot spatial |
+| CV | 11.1% stock, 12.1% concentration | 9.3% (0–10 cm), 10.2% (10–30 cm) |
+| depth | 0–15 cm | 0–10 and 10–30 cm, kept separate |
+| region | North America (14 US sites) | Germany |
+| n | 212 EUs / 61 treatments / 14 sites | 8 plots, 16 cores each |
+| analytical error | **included** (D-027, upper bound) | closer to spatial-only |
+
+NAPESHM is higher, and **should** be, for three independent reasons that all push
+the same way:
+
+1. **Shallower depth is more variable.** Poeplau's own layer CVs rise 9.3% at
+   0–10 cm → 10.2% at 10–30 cm → 25.8% at 30–50 cm, so CV is not constant with
+   depth. Our 0–15 cm window is not comparable to either layer directly — which
+   is precisely why D-026 scopes the row rather than rescaling it.
+2. **Ours includes analytical error.** D-027: NAPESHM has no lab duplicate or QC
+   columns, so the residual is spatial + analytical and is an upper bound.
+3. **Different continent, design and support.** Independent populations, not a
+   replication.
+
+**Direction and magnitude both behave.** Between-plot (11.1–12.1%) sits just
+above within-plot (9.3–10.2%) — the ordering theory demands, with a gap of a few
+percentage points rather than a factor. That is the strongest corroboration
+either estimate has: an *n*=8 German study and a North American dataset of 1,450
+SOC-bearing EUs across 93 sites (212 EUs / 14 sites after the D-024/D-025/D-028
+filters), built by different people for different purposes, landing a few points
+apart with the sign that was predicted before either number was computed.
+
+**What this does NOT license.** It does not close G3. A within/between **ratio**
+still cannot be read off two studies on two continents at two depths, and no row
+claims one — see D-030. The value here is that two independent estimates
+corroborate each other's *magnitude*; that is a sanity check on both, not a new
+quantity. Merging them, averaging them, or deriving a ratio from them would
+manufacture a number neither dataset supports.
+
+---
+
+**D-032 — An open decision may not govern a live constant or a verified baseline
+row. Enforced in `tests/test_decision_guard.py`, not requested in prose.**
+
+D-028 was written up as "OPEN — for the PI", and shipped as the active constant
+behind `VC-BPS-005/006` regardless. Nothing objected, because the status lived
+only in this document and the constant lived only in a script. **Prose does not
+fail CI.**
+
+The fix copies R6, which has worked: R6 states the condition in data (a row whose
+`verification` is `unverified` cannot be `use_as: baseline`) and a rule refuses
+to pass while it holds. The LUCAS rows have stayed locked out of use for exactly
+as long as they have been unverified, with no discipline required from anyone.
+
+Extended the same way:
+
+* `src/loam/decisions.py` gives every decision a machine-readable status and
+  every load-bearing constant a `governed_by` pointer to the decision behind it.
+* A constant's `proposed` / `decided` status is a **derived property**, never a
+  stored field. Storing it would let a constant assert `decided` beside an `open`
+  decision — precisely the state that shipped. Derived, that state cannot be
+  represented, and a test asserts the field stays derived.
+* `python -m loam.build_table` prints `<-- PROPOSED, NOT DECIDED` for any such
+  constant on every run, beside the existing `NO BASELINE` flags, and names the
+  baseline rows exposed to it.
+* Two tests fail while any open decision governs a live constant or is cited by a
+  verified baseline row.
+
+**Consequence, stated plainly: the suite is RED on merge of this change, and
+should be.** `CLIMATE_ENVELOPES` still rests on D-028, and `VC-BPS-005/006` still
+cite it. The guard is reporting a true condition that predates it. The two honest
+routes to green are to **settle D-028**, or to **demote `VC-BPS-005/006` out of
+`baseline`** until it is settled — which would reopen G1. Softening the test is
+not a third route; it would restore exactly the silence this decision exists to
+end.
+
+---
+
+**D-033 — The IPCC 2006 default climate regions CANNOT be derived from NAPESHM's
+published columns. No proxy is substituted; the classification is not
+implemented.** ⚠️ *This blocks the preferred resolution of D-028.*
+
+The scheme is IPCC 2006, Vol 4 Ch 3, **Figure 3A.5.2, p. 3.39** ("Classification
+scheme for default climate regions"), read directly from the PDF. Transcribed
+literally, the decision tree is:
+
+```
+MAT > 18 °C AND ≤ 7 days of frost/year ?
+├─ yes → Elevation > 1000 m ?      yes → Tropical Montane
+│        └─ no → MAP > 2000 mm ?   yes → Tropical Wet
+│                └─ no → MAP ≤ 2000 mm and > 1000 mm ?  yes → Tropical Moist
+│                        └─ no → Tropical Dry
+└─ no → MAT > 10 °C ?
+         ├─ yes → MAP:PET > 1 ?  yes → Warm Temperate Moist / no → Warm Temperate Dry
+         └─ no → MAT > 0 °C ?
+                  ├─ yes → MAP:PET > 1 ?  yes → Cool Temperate Moist / no → Cool Temperate Dry
+                  └─ no → each mean monthly temperature < 10 °C ?
+                           ├─ yes → MAP:PET > 1 ?  yes → Polar Moist / no → Polar Dry
+                           └─ no  → MAP:PET > 1 ?  yes → Boreal Moist / no → Boreal Dry
+```
+
+Against the 94 NAPESHM sites, two required inputs are **absent and not
+reconstructible**, and one branch is unreachable:
+
+**(1) MAP:PET — required, unavailable.** It decides *every* leaf the NAPESHM
+sites can reach (all four temperate outcomes). NAPESHM publishes no PET column
+and no monthly climate series. The two candidate proxies both fail, for
+different and checkable reasons:
+
+* `hargreave_cmd` is a **monthly-summed one-sided deficit** — Σ months of
+  max(0, Eref − P), per its dictionary entry and Wang et al. 2016. Months in
+  surplus contribute zero and their surplus is discarded, so annual PET is not
+  recoverable from it, even in principle. The data show the loss directly: a
+  Mexican highland site with MAP 1101 mm carries CMD 1446 mm, as large as a
+  desert site's, because its rain is monsoonal. CMD measures **seasonality**, not
+  the annual ratio.
+* `mi` is Thornthwaite's Moisture Index, and its 1948 form is
+  `Im = (100·S − 60·D)/PET`. It is **not** `100·(MAP/PET − 1)`, which we verified
+  rather than assumed: the naive form is falsified by the data. Observed `mi`
+  floors at **−53** and never goes below −60, which is the hard floor the
+  1948 formula implies as P/PET → 0 (`Im → 60·P/PET − 60`); the naive form allows
+  −100. And inverting the naive form at the driest site (MXSO02: MAT 25 °C,
+  MAP 167 mm) implies PET = 355 mm, which is physically impossible for a hot
+  desert whose own Hargreaves deficit is 1813 mm. The 1948 reading implies
+  ≈1430 mm, which is right.
+
+  The consequence is not that `mi` is a noisy proxy — it is that **no `mi`
+  threshold can reproduce the IPCC test at all.** From the water balance
+  (P = AE + S, PET = AE + D), MAP:PET = 1 ⟺ S = D, and at S = D the index is
+  `Im = 40·S/PET`, which **varies with S/PET** instead of taking one value. The
+  IPCC contour maps to a *moving* `mi` value, and S and PET are not published
+  separately. 23 of 94 sites sit in the band where that contour could fall.
+
+**(2) Frost days — required, unavailable, and reachable.** The first test needs
+"≤ 7 days of frost/year". NAPESHM has no frost column. `gdd0` is a *growing
+degree-day sum above 0 °C accumulated to the sampling date* — a heat total, not a
+count of frost days, and not convertible into one. This is not a hypothetical
+gap: **13 of 94 sites have MAT > 18 °C**, so the frost clause actually decides
+their branch, and 7 more sit exactly at MAT 18 (see the rounding note below).
+
+**(3) The Polar/Boreal branch is unreachable, so its missing input is harmless.**
+"Each mean monthly temperature < 10 °C" needs monthly temperatures, which NAPESHM
+also lacks — but that test is only reached when MAT ≤ 0 °C, and **no NAPESHM site
+is ≤ 0 °C** (minimum MAT is 4 °C). This is a genuine short-circuit, not an
+approximation.
+
+**Separately: the climate columns are integer-rounded**, which would blunt the
+scheme even with the missing inputs supplied. `site_mean_temp` takes only whole
+degrees, and the thresholds sit on integers: **13 sites are at exactly MAT 10**
+and **7 at exactly 18**, i.e. exactly on the ">10?" and ">18?" cut points, with
+true values anywhere in ±0.5 °C. A fifth of the dataset would be assigned by
+rounding artifact.
+
+**Why we stopped rather than approximated.** Substituting `mi > 0` for
+`MAP:PET > 1` would look faithful, would be cited as "IPCC climate regions", and
+would be wrong in a way no reader could detect from the output — the failure is
+in a threshold's *meaning*, not in its precision, so it would not show up as
+scatter or as a widened interval. The entire argument for adopting the IPCC
+scheme (D-028's rationale: that Vol 4 Ch 5 stock-change factors are stratified
+this way, so our G1 indexes to the framework a project's declared climate zone is
+written in) **evaporates if the labels are ours rather than IPCC's**. A
+mislabelled region is worse than an admittedly private envelope, because it
+invites exactly the cross-walk it cannot support.
+
+**How to unblock, in ascending cost.** Any of these makes the classification
+implementable; none can be done from the repository as it stands:
+
+1. **Join an external PET/frost climatology to the site coordinates.** All 94
+   sites have lat/long. TerraClimate or WorldClim v2 supply monthly PET, monthly
+   temperature and (via daily products, e.g. Daymet, which NAPESHM already used)
+   frost-day counts. This yields the real MAP:PET, real frost days and real
+   monthly temperatures — a faithful implementation, at the cost of a new
+   external dependency and its own provenance row.
+2. **Ask the Soil Health Institute for the intermediate climate products.** `mi`
+   was computed by SHI from Daymet, so S, D and PET existed at some point. If
+   PET is released, MAP:PET is immediate and no new dataset is needed.
+3. **Stratify by a scheme NAPESHM can actually support** — e.g. EPA Level I/II
+   ecoregions, already present as `na_l1code`/`na_l2code` — and state plainly
+   that it is *not* the IPCC classification and does not index to Vol 4 Ch 5.
+
+Option 1 is the one that delivers what D-028 wants. Recorded here so the next
+attempt starts from the blocker rather than rediscovering it.
+
 ---
 
 ## Open evidence gaps
@@ -435,3 +687,4 @@ would also reopen D-021.
 | 2026-08-07 | D-001 … D-020, G1 … G7 | Phase 0 initial build. 24 rows, 6 components, 14 verified against full text. |
 | 2026-08-08 | D-021 (open), D-022 | CI + CSV staleness guard. Re-prioritised `docs/sources.md`: Poeplau to top for G1, Buchkowski re-filed by role. No variance-table rows changed. |
 | 2026-08-08 | D-023 … D-027, D-029, D-030; **D-028 open** | `bias_direction` added to the schema and backfilled across all 24 existing rows. **G1 CLOSED** by `VC-BPS-005/006`, derived from NAPESHM: between-plot CV 12.1% (concentration) and 11.1% (stock) at 0-15 cm, n=212 EUs / 61 treatments / 14 sites. 26 rows. Climate envelope left open for the PI. |
+| 2026-08-08 | D-031, D-032, D-033; **D-028 still open** | Open-decision guard: decisions and the constants they govern are now machine-readable (`src/loam/decisions.py`), the build prints `<-- PROPOSED, NOT DECIDED`, and two tests refuse to pass while an open decision governs a live constant — **the suite is red on merge, by design** (D-032). Replacing the private climate envelope with IPCC 2006 climate regions was attempted and is **blocked**: MAP:PET and frost-day counts are not derivable from NAPESHM, and no proxy is substituted (D-033). Poeplau ↔ NAPESHM corroboration logged, with a figure correction (D-031). No variance-table values changed. |

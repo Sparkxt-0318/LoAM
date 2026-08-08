@@ -38,7 +38,14 @@ D-026  Depth is not in the dataset. Fixed by protocol at 0-15 cm and documented
 D-027  Analytical error is not separable - no lab duplicate or QC columns exist.
        The estimate is spatial + analytical COMBINED, i.e. an UPPER BOUND on
        between-plot spatial variance.
-D-028  OPEN: climate envelope. Site MAT spans 4-25 C. Not resolved here.
+D-028  OPEN: climate envelope. Site MAT spans 4-25 C. Not resolved here. The
+       envelope below is a PROPOSAL; every run says so, and the test suite
+       refuses to go green while it drives a baseline row (D-032).
+D-033  IPCC 2006 default climate regions (Vol 4 Ch 3, Figure 3A.5.2, p. 3.39)
+       were the intended replacement for the envelope and CANNOT be derived
+       from NAPESHM: no MAP:PET (neither `mi` nor `hargreave_cmd` reproduces
+       it) and no frost-day count, which 13 sites with MAT > 18 C need. No
+       proxy is substituted.
 
 ESTIMATOR
 ---------
@@ -77,28 +84,25 @@ import warnings
 import numpy as np
 import pandas as pd
 
+# The filter constants live in the package, not here, so that the build and the
+# test suite can see what governs them without importing pandas. See
+# loam/decisions.py: each one is tied to the D-NNN that settles it, and
+# CLIMATE_ENVELOPES is flagged `proposed` for as long as D-028 stays open.
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+from loam.decisions import (  # noqa: E402
+    ACTIVE_CLIMATE_ENVELOPE,
+    CLIMATE_ENVELOPES,
+    CONSTANTS_BY_NAME,
+    DEPTH_BOTTOM_CM,
+    DEPTH_TOP_CM,
+    HEADLINE_DESIGNS,
+    HEADLINE_EU_TYPE,
+    PROPOSED_FLAG,
+)
+
 warnings.filterwarnings("ignore")
 
 DATA = "data/raw/napeshm/"
-
-#: D-024. Designs in which replicate EUs are true randomized replicates.
-HEADLINE_DESIGNS = frozenset({"Randomized complete block", "Completely randomized"})
-
-#: D-025. Separation between replicates differs by an order of magnitude across
-#: these; only 'Plots' is a plot-scale measurement.
-HEADLINE_EU_TYPE = "Plots"
-
-#: D-026. Fixed by NAPESHM protocol, documented in Norris et al. 2020.
-DEPTH_TOP_CM, DEPTH_BOTTOM_CM = 0.0, 15.0
-
-#: D-028 OPEN. Candidate climate envelopes. `recommended` is a PROPOSAL awaiting
-#: a decision - it is not settled, and the headline row records that.
-CLIMATE_ENVELOPES = {
-    "recommended_temperate": dict(mat_max=15.0, abs_lat_min=30.0),
-    "strict_mat12": dict(mat_max=12.0, abs_lat_min=30.0),
-    "wide_mat18": dict(mat_max=18.0, abs_lat_min=0.0),
-    "all_sites": dict(mat_max=99.0, abs_lat_min=0.0),
-}
 
 
 # ---------------------------------------------------------------------------
@@ -289,8 +293,12 @@ def main() -> int:
                   "spatial variance (D-027)",
     }
 
-    # headline cascade under the recommended (proposed) envelope
-    dh, cascade = filter_cascade(df, CLIMATE_ENVELOPES["recommended_temperate"])
+    for const in CONSTANTS_BY_NAME.values():
+        if const.is_proposed:
+            print(f"{const.name} ({const.governed_by}){PROPOSED_FLAG}")
+
+    # headline cascade under the active envelope, which is a PROPOSAL (D-028)
+    dh, cascade = filter_cascade(df, CLIMATE_ENVELOPES[ACTIVE_CLIMATE_ENVELOPE])
     dh = add_targets(dh)
     result["filter_cascade_recommended_envelope"] = cascade
 
@@ -317,7 +325,7 @@ def main() -> int:
         block = {"envelope": env}
         for label, col in (("concentration", "log_soc"), ("stock", "log_stock")):
             block[label] = estimate(d, col, args.bootstrap if name ==
-                                   "recommended_temperate" else 0)
+                                   ACTIVE_CLIMATE_ENVELOPE else 0)
         block["countries"] = d.country.value_counts().to_dict()
         block["mat_range"] = [float(d.site_mean_temp.min()), float(d.site_mean_temp.max())]
         result["climate_envelopes"][name] = block
@@ -352,7 +360,7 @@ def main() -> int:
             print(f"  {k:<12} clay {v['clay_range_pct']}%  n={v['n_eus']:>3} EU  "
                   f"CV={v['cv_pct']}%  (mean SOC {v['mean_soc_pct']}%)")
 
-    head = result["climate_envelopes"]["recommended_temperate"]
+    head = result["climate_envelopes"][ACTIVE_CLIMATE_ENVELOPE]
     print("\n=== HEADLINE (recommended envelope, PROVISIONAL pending D-028) ===")
     for label in ("concentration", "stock"):
         e = head[label]
