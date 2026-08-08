@@ -121,6 +121,9 @@ def coverage_by_component(rows: list[dict[str, Any]]) -> dict[str, dict[str, int
             "verified_fulltext": sum(
                 1 for r in subset if r.get("verification") == "verified_fulltext"
             ),
+            "derived": sum(
+                1 for r in subset if r.get("verification") == "derived_primary_data"
+            ),
             "unverified": sum(
                 1 for r in subset if r.get("verification") == "unverified"
             ),

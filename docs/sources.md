@@ -1,10 +1,56 @@
 # Sources — bibliography and retrieval status
 
-Status of every source behind `data/variance_table.csv`, as of 2026-08-07.
+Status of every source behind `data/variance_table.csv`, as of 2026-08-08.
 
 **Legend**
-✅ full text read and values verified · 🟡 abstract or citing source only ·
-🔴 not reached — values cannot be used
+🟢 primary data held, derived by us · ✅ full text read and values verified ·
+🟡 abstract or citing source only · 🔴 not reached — values cannot be used
+
+---
+
+## 🟢 Primary data held — derived by us
+
+### Soil Health Institute (2024) — NAPESHM
+*North American Project to Evaluate Soil Health Measurements* [data set].
+DOI [10.15482/USDA.ADC/25632270](https://doi.org/10.15482/USDA.ADC/25632270)
+Design and the 0–15 cm sampling protocol: Norris, C. E., et al. (2020).
+*Introducing the North American project to evaluate soil health measurements.*
+Agronomy Journal 112(4), 3195–3215.
+
+**Open access.** Held at `data/raw/napeshm/` (gitignored — re-download below).
+Derivation: `scripts/derive_g1_napeshm.py` → `data/processed/g1_napeshm.json`.
+
+```bash
+curl -sSL -o napeshm.zip https://ndownloader.figshare.com/files/46794877
+# md5 b6a0a7cd8123c556c82a0d3384084a83
+unzip napeshm.zip && mv "CSV Files"/*.csv data/raw/napeshm/
+```
+
+**PRIMARY SOURCE for component 3 (between-plot spatial).** Supplies
+`VC-BPS-005` (concentration, CV 12.1%) and `VC-BPS-006` (stock, CV 11.1%),
+which together close gap **G1**.
+
+Why it takes primacy: 212 experimental units across 61 treatments and 14 sites,
+with an explicit randomized design, on the right continent for a North American
+audit. Replicate EUs under identical management at one site differ only by
+spatial heterogeneity plus analytical error.
+
+Three limits that travel with every number derived from it:
+
+- **0–15 cm**, fixed by protocol and **absent from the dataset entirely** — the
+  depth is cited to Norris et al., not to the data (D-026). Rows are *scoped* to
+  0–15 cm, never rescaled to our 0–30 cm project scope.
+- **Upper bound, not a point estimate.** No lab duplicate, split-sample or QC
+  columns exist, so analytical error cannot be separated from spatial error
+  (D-027). Both rows carry `bias_direction: inflates`.
+- **Climate envelope unresolved** (D-028). Site MAT spans 4–25 °C and includes
+  16 Mexican sites. The headline uses a *proposed* temperate envelope; the
+  estimate moves only 10.6–12.1% across every candidate, so the open question is
+  about defensibility of scope rather than about the number.
+
+Cover crops are nearly absent (58 of 61 treatments have none), so NAPESHM
+constrains the **tillage** half of our management scope and says little about
+the cover-crop half.
 
 ---
 
@@ -31,6 +77,24 @@ resampling MAE 5.1 (cropland) / 7.6 (grassland) Mg C ha⁻¹ at 0–30 cm;
 ~50% reduction for three-by-three resampling; MAE definition (Eq. 3);
 20 × 20 m plots, 16 cores, 6.7 cm corer; analytical error ≈1%; the
 "as great as … shifted by as much as 7 m" saturation statement.
+
+> **Role change (D-030).** Poeplau is **no longer the candidate baseline for
+> component 3** — NAPESHM is (above). Poeplau is now an **independent
+> cross-check**, and that is a promotion in usefulness, not a demotion in
+> quality: different continent, different design, different support, 8 sites
+> against 14. Its within-plot stock CV of **9.3–10.2%** sits just below the
+> NAPESHM between-plot estimate of **11.1–12.1%**, which is the ordering you
+> would expect if both are right, and is the strongest corroboration either
+> number has. It must never *be* the between-plot baseline: it does not measure
+> a between-plot term.
+>
+> This also narrows gap **G3** without closing it — see the gaps table in
+> `DECISIONS.md`. A within/between ratio near 1 in cropland would echo
+> Buchkowski's forest finding, but two different studies on two continents at
+> two depths cannot establish that, and no row claims it.
+>
+> Poeplau remains the sole source for `VC-ANA-001`, `VC-WPS-001/002/003` and
+> `VC-REL-001/002/003/004`, which are unaffected.
 
 ### Fowler, Basso, Millar & Brinton (2023)
 *A simple soil mass correction for a more accurate determination of soil carbon
@@ -153,34 +217,31 @@ by how interesting the source is. An out-of-scope source cannot close an
 in-scope gap however good its data — that was the error in the previous
 ordering, which ranked a forest inventory first against a cropland gap.
 
+**G1 is now closed** by the NAPESHM derivation, which changes this ordering: the
+remaining gaps are temporal (G4) and relocation (G5/G6).
+
 | # | source | why it matters | can it close a gap? |
 |---|--------|----------------|---------------------|
-| **1** | **Poeplau et al. 2022** — site-level data | **In scope** (NE Germany cropland, temperate, 0–30 cm fixed depth). 8 cropland sites, each a 20×20 m plot: the variation *between* those sites is between-plot spatial variance, measured on known support. **The strongest candidate baseline we have for component 3.** | ✅ **G1** — the only listed source that can |
-| 2 | **Wuest 2024** (SSSAJ, paywalled) | Confirm depth and sites; the only temporal anchor. Gated by the open scope question (D-021). | ⚠️ **G4**, conditionally — see D-021 |
-| 3 | **LUCAS 2015 report** (JRC105923 / EUR 30332 EN) | Relocation-distance distribution. | ✅ **G6** — unlocks `VC-REL-005/006` |
-| 4 | **Saby et al. 2008** (GCB, paywalled) | Promotes two `verified_secondary` values to primary. | ➖ hygiene, no gap |
-| 5 | **Buchkowski et al. 2026** (GCB, paywalled) | **Not a cropland variance baseline — see Role 1/Role 2 above.** Wanted for the regression-to-the-mean finding. | ❌ cannot close G1 · 📌 **Phase 3** dependency |
+| **1** | **Wuest 2024** (SSSAJ, paywalled) | Confirm depth and sites; still the only temporal anchor, and `temporal` is now the **only** component without a baseline. Gated by the open scope question D-021. | ⚠️ **G4**, conditionally — see D-021 |
+| 2 | **LUCAS 2015 report** (JRC105923 / EUR 30332 EN) | Relocation-distance distribution. | ✅ **G6** — unlocks `VC-REL-005/006` |
+| 3 | **Saby et al. 2008** (GCB, paywalled) | Promotes two `verified_secondary` values to primary. | ➖ hygiene, no gap |
+| 4 | **Buchkowski et al. 2026** (GCB, paywalled) | **Not a cropland variance baseline — see Role 1/Role 2 above.** Wanted for the regression-to-the-mean finding. | ❌ never could close G1 · 📌 **Phase 3** dependency |
+| 5 | **Poeplau et al. 2022** — site-level data | Would give a *second, independent* between-plot estimate (8 German sites) against NAPESHM's 14 North American ones. No longer needed to close G1, but the strongest available check on it. | ➖ corroboration, not a gap |
 | 6 | **Poeplau et al. 2022** version of record | Confirm volume/pagination only — values already verified. | ➖ citation hygiene |
 
-### On #1 — what is actually needed
+### On #5 — still worth doing, for a different reason
 
-The Poeplau **text** is already held and fully verified; this is not a fetch
-request. What is missing is the **site-level SOC stock data for the 8 cropland
-sites** (the site characteristics table, ideally as supplementary data rather
-than read off a PDF table), from which a between-plot variance can be derived.
+Now that NAPESHM closes G1, the Poeplau site-level data is no longer load-bearing
+— it is the best available **independent replication**. Two caveats stand
+whenever it is attempted:
 
-Two caveats to settle before deriving anything, so they are recorded now rather
-than discovered later:
-
-- **n = 8.** A between-plot variance from 8 sites is imprecise, and the
-  resulting confidence interval must be carried, not dropped.
+- **n = 8.** A between-plot variance from 8 sites is imprecise, and the resulting
+  confidence interval must be carried, not dropped.
 - **The sites are not a random sample of temperate cropland.** They were chosen
   near German Soil Inventory points and span a wide SOC range by design, which
   probably *inflates* between-plot variance relative to a single region. That
-  makes it conservative for detectability — but it is an assumption, and it
-  needs a `D-NNN` entry when the derivation is done.
+  makes it conservative for detectability — but it is an assumption needing its
+  own `D-NNN` when the derivation is done.
 
-**Not attempted in this PR** — closing G1 is explicitly out of scope here.
-
-Components 1, 2, 5 and 6 have verified in-scope baselines and can proceed to
+Components 1, 2, 3, 5 and 6 have verified in-scope baselines and can proceed to
 Phase 1 as they stand.

@@ -42,6 +42,15 @@ rows:
       because analytical error scales with SOC concentration, not with stock.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: deflates
+    bias_direction_reasoning: >-
+      Understates on two independent counts. (1) The MAE-to-SD conversion
+      assumes normality; replicate errors with heavier tails would give a
+      larger SD (D-003). (2) More importantly, the source quantified this from
+      two technical replicates of the SAME milled aliquot, which excludes
+      subsampling and sample-preparation error entirely. VC-ANA-004 shows
+      processing error can dwarf instrument error, so 1% is the narrowest
+      possible slice of 'analytical error'.
     land_use: cropland
     management: mixed
     climate: temperate maritime to continental
@@ -95,6 +104,14 @@ rows:
       the row mean-dependent for no analytical gain.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: unknown
+    bias_direction_reasoning: >-
+      No defensible direction. The value was read in a citing source rather
+      than the original, and that citing source quotes it inconsistently
+      ('2-3%' in one place, '2.5%' in another). Without the original we do not
+      know which error terms the figure comprises - instrument only, or
+      instrument plus subsampling - and those two readings sit on opposite
+      sides of the truth. Resolvable by reading Saby et al.
     land_use: cropland
     management: mixed
     climate: temperate
@@ -142,6 +159,14 @@ rows:
       applied only when the protocol specifies air-drying.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: unknown
+    bias_direction_reasoning: >-
+      No defensible direction for our scope. The 5% air-drying offset was
+      measured over 0-20 cm on a population pooling cropland with pasture,
+      rangeland and prairie; we need 0-30 cm cropland. Residual-moisture bias
+      depends on texture and clay content, which differ across that pooled
+      population in ways the source does not resolve, so the transfer error
+      cannot be signed either way.
     land_use: multiple
     management: mixed
     climate: temperate continental
@@ -190,6 +215,14 @@ rows:
       that mean were revised.
     reference_stock_mg_c_ha: 27.9
     mean_dependent: true
+    bias_direction: inflates
+    bias_direction_reasoning: >-
+      Explicitly a worst case, not a typical value: a high-rock-content soil
+      combined with an aggressive mechanical grinder. Both factors
+      independently raise the between-replicate SD, and neither is
+      representative of a well-run protocol on temperate cropland topsoil.
+      Retained to bound the component, and it will overstate analytical
+      variance wherever processing is held constant.
     land_use: multiple
     management: mixed
     climate: temperate continental
@@ -244,6 +277,14 @@ rows:
       and would make the row mean-dependent.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: inflates
+    bias_direction_reasoning: >-
+      Each of the 16 cores is a single measurement carrying its own analytical
+      and subsampling error, so the among-core CV is spatial variance PLUS
+      analytical variance, not pure spatial variance. It is therefore an upper
+      bound on the within-plot spatial term. The inflation is small here - VC-
+      ANA-001 puts analytical CV near 1.25% against a 9.3% total - but it is
+      one-directional.
     land_use: cropland
     management: mixed
     climate: temperate maritime to continental
@@ -298,6 +339,11 @@ rows:
       between layers, which the source does not report. See gap G2.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: inflates
+    bias_direction_reasoning: >-
+      Same mechanism as VC-WPS-001: among-core variance confounds spatial with
+      analytical error and so bounds the spatial term from above rather than
+      estimating it. Same small magnitude of inflation.
     land_use: cropland
     management: mixed
     climate: temperate maritime to continental
@@ -353,6 +399,13 @@ rows:
       within-plot term.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: inflates
+    bias_direction_reasoning: >-
+      Grassland within-plot CV exceeds cropland at every depth in the same
+      study (10.1 vs 9.3 at 0-10 cm; 14.5 vs 10.2 at 10-30 cm), because
+      tillage homogenises cropland topsoil and permanent swards do not.
+      Borrowing this for cropland would overstate the within-plot term.
+      Retained only as contrast.
     land_use: grassland
     management: pasture, meadow, green fallow
     climate: temperate maritime to continental
@@ -404,6 +457,14 @@ rows:
       concentration-density covariance, which is not reported.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: deflates
+    bias_direction_reasoning: >-
+      Understates on two counts. (1) It is a CV of SOC CONCENTRATION; stock CV
+      compounds concentration variance with bulk-density variance and is
+      larger (D-020 puts the gap near threefold against Poeplau's directly
+      measured stock CV). (2) The plots span 1-400 m2, many far smaller than
+      the 400 m2 plots of VC-WPS-001/002, and spatial variance grows with
+      support area.
     land_use: cropland
     management: mixed
     climate: temperate
@@ -459,6 +520,14 @@ rows:
       (see VC-BPS-003), so this figure is NOT a pure between-plot term.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: inflates
+    bias_direction_reasoning: >-
+      Severely overstates for cropland. Forest soils are unploughed and retain
+      fine-scale heterogeneity that annual tillage destroys; this is why the
+      verified in-scope cropland CVs in this table are 9-10% against this
+      row's 40%. Also pools within- and between-plot variation rather than
+      isolating between-plot. Direction is certain even though magnitude is
+      not transferable at all.
     land_use: forest
     management: unmanaged and managed forest
     climate: boreal to temperate
@@ -505,6 +574,12 @@ rows:
       harmonisation attempted because the quantity has no analogue in scope.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: inflates
+    bias_direction_reasoning: >-
+      Overstates for cropland even more than VC-BPS-001, and is structurally
+      inapplicable besides: tilled cropland topsoil has no organic (O)
+      horizon, and organic horizons are the most spatially variable
+      compartment measured.
     land_use: forest
     management: unmanaged and managed forest
     climate: boreal to temperate
@@ -552,6 +627,13 @@ rows:
       within/between SDs once the full text is obtained.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: unknown
+    bias_direction_reasoning: >-
+      The 50/50 split is our encoding of the source's qualitative word
+      'comparable', not a measured partition (D-012). 'Comparable' is equally
+      consistent with 40/60 and 60/40, so the encoding could err in either
+      direction and no argument distinguishes them. Resolvable only by reading
+      the paper's within/between SDs.
     land_use: forest
     management: unmanaged and managed forest
     climate: boreal to temperate
@@ -597,6 +679,13 @@ rows:
       alpha, power and design assumptions, which differ from ours.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: inflates
+    bias_direction_reasoning: >-
+      An MDC computed on forest variance will exceed one computed on cropland
+      variance, because MDC scales with the noise it must overcome and forest
+      spatial variance is roughly fourfold higher (VC-BPS-001). Used as an
+      external validation target rather than a parameter, so the direction
+      matters for interpreting a comparison, not for a variance budget.
     land_use: forest
     management: unmanaged and managed forest
     climate: boreal to temperate
@@ -625,6 +714,189 @@ rows:
       interval is consistent with regression to the mean - a detectability
       artifact the testbed should be able to reproduce.
 
+  - row_id: VC-BPS-005
+    component: between_plot_spatial
+    error_kind: random
+    quantity: >-
+      Between-plot spatial variability of SOC CONCENTRATION, as the
+      within-treatment within-site residual CV among replicate experimental
+      units under identical management.
+    statistic: cv_pct
+    value: 12.1
+    units: pct
+    value_low: 10.0
+    value_high: 14.3
+    uncertainty_type: ci95
+    n: 212
+    cv_pct: 12.1
+    harmonization_method: derived_see_note
+    harmonization_note: >-
+      DERIVED BY US from the primary dataset; see scripts/derive_g1_napeshm.py.
+      Replicate EUs under identical management at one site differ only by
+      spatial heterogeneity plus analytical error, so their residual variance is
+      between-plot spatial variance. Estimated as the residual of a REML nested
+      random-effects model, treatment nested within site, NOT by averaging
+      per-treatment variances (unstable at 3-5 replicates, and it would weight a
+      3-replicate treatment equally with a 5-replicate one). Fitted on the LOG
+      scale because within-treatment SD scales with treatment mean (log-log
+      slope about 1.2, far from the 0 a constant-SD model assumes), so the
+      natural parameter is a constant CV; CV = 100*sqrt(exp(sigma^2)-1). The
+      interval is a 95% cluster bootstrap over SITES, the top-level independent
+      unit - bootstrapping rows or treatments would ignore the nesting and give
+      far too narrow an interval. 600/600 resamples converged and the bootstrap
+      median (11.9%) sits essentially on the point estimate, so the estimator
+      shows no material bias.
+    reference_stock_mg_c_ha:
+    mean_dependent: false
+    bias_direction: inflates
+    bias_direction_reasoning: >-
+      UPPER BOUND, not a point estimate. NAPESHM has no lab duplicate,
+      split-sample or QC columns, so analytical error cannot be separated from
+      spatial error and the residual necessarily contains both (D-027). Since
+      variances add, the true between-plot SPATIAL term is strictly smaller than
+      12.1%. Using VC-ANA-001's 1.25% analytical CV as a rough guide, the purely
+      spatial part would be near sqrt(12.1^2 - 1.25^2) = 12.0% - so the
+      inflation is small, but it is one-directional and must not be forgotten
+      when this row feeds the Phase 5 audit (D-023).
+    land_use: cropland
+    management: tillage gradient - 34 minimum, 20 moderate, 5 intense, 2 none
+    climate: temperate continental to maritime
+    koppen: Dfa/Dfb/Csb/Cfa
+    soil_texture: clay 0.9-31.2%, sand 17.0-86.7%
+    country_region: United States - DE, KS, MT, NE, NC, ND, OR, SD, VA, WA
+    depth_top_cm: 0
+    depth_bottom_cm: 15
+    depth_basis: fixed_depth
+    site_soc_pct: 1.436
+    analytical_method: dry_combustion
+    bd_method: core
+    support_note: >-
+      212 experimental units in 61 treatments across 14 sites; 3-5 replicate EUs
+      per treatment (34 treatments with 3, 25 with 4, 2 with 5). Randomized
+      complete block or completely randomized designs only; eu_type 'Plots' only.
+    citation: >-
+      Soil Health Institute (2024). North American Project to Evaluate Soil
+      Health Measurements [data set]. doi:10.15482/USDA.ADC/25632270. Design and
+      the 0-15 cm sampling protocol documented in Norris, C. E., et al. (2020).
+      Introducing the North American project to evaluate soil health
+      measurements. Agronomy Journal, 112(4), 3195-3215.
+    doi_or_url: https://doi.org/10.15482/USDA.ADC/25632270
+    locator: >-
+      soildata.csv (b_soc), sites.csv (exper_design, eu_type, site_mean_temp,
+      site_latitude); derivation in scripts/derive_g1_napeshm.py, output in
+      data/processed/g1_napeshm.json. Depth from Norris et al. 2020, not the data.
+    access: open_access
+    verification: derived_primary_data
+    extracted_on: "2026-08-08"
+    in_scope: true
+    use_as: baseline
+    osse_distribution: lognormal(0, 0.1207)
+    notes: >-
+      CLOSES GAP G1. Primary source for component 3; Poeplau 2022 is retained as
+      an independent cross-check, never as the baseline.
+      DEPTH IS 0-15 cm, NOT 0-30 cm (D-026). Fixed by NAPESHM protocol and absent
+      from the dataset entirely. This row is SCOPED to 0-15 cm rather than
+      rescaled - converting a 0-15 cm concentration CV to a 0-30 cm stock CV
+      needs a depth-distribution assumption carrying its own error, and Phase 1
+      must not do it silently.
+      Robust to the open climate question (D-028): the estimate moves only
+      between 10.6% and 12.1% across every candidate envelope from MAT<=12 C to
+      all 30 sites, well inside this row's own confidence interval.
+      Cover crops are nearly absent (58 of 61 treatments have none), so this
+      constrains the tillage half of our management scope and says little about
+      the cover-crop half.
+
+  - row_id: VC-BPS-006
+    component: between_plot_spatial
+    error_kind: random
+    quantity: >-
+      Between-plot spatial variability of SOC STOCK at 0-15 cm, as the
+      within-treatment within-site residual CV among replicate experimental
+      units under identical management.
+    statistic: cv_pct
+    value: 11.1
+    units: pct
+    value_low: 9.4
+    value_high: 13.0
+    uncertainty_type: ci95
+    n: 212
+    sd_mg_c_ha: 2.93
+    cv_pct: 11.1
+    harmonization_method: derived_see_note
+    harmonization_note: >-
+      Same estimator, dataset and filters as VC-BPS-005; see
+      scripts/derive_g1_napeshm.py. Stock computed per EU as
+      b_soc/100 * bd_2mm * 15 * 100 = b_soc * bd_2mm * 15 Mg C/ha, so bulk
+      density measurement error is propagated into this row and VC-BPS-005 is
+      the cleaner of the two. sd_mg_c_ha = 11.1% * 26.39 = 2.93 Mg C/ha using
+      the mean 0-15 cm stock of the SAME 212 EUs, so the reference stock is
+      internal to the data rather than assumed by us - but the row is still
+      flagged mean_dependent because the absolute figure moves if that mean is
+      revised.
+      COUNTER-INTUITIVE RESULT, DELIBERATELY NOT SUPPRESSED: stock CV (11.1%) is
+      LOWER than concentration CV (12.1%) even though stock carries the extra
+      bulk-density error. The cause is a within-treatment correlation between
+      log SOC and log bulk density of -0.396: plots richer in organic matter are
+      less dense, and at FIXED DEPTH the two partly cancel in the stock product.
+      The negative covariance term (2*cov = -0.0028) outweighs the added density
+      variance (+0.0012). This is a property of the fixed-depth convention, not
+      a property of the soil.
+    reference_stock_mg_c_ha: 26.39
+    mean_dependent: true
+    bias_direction: inflates
+    bias_direction_reasoning: >-
+      Upper bound for the same reason as VC-BPS-005 - analytical error is not
+      separable from spatial error in this dataset (D-027) - and here bulk
+      density measurement error is folded in as well, so the residual contains
+      three sources where we want one. Partly offset in the opposite direction
+      by the SOC-density cancellation described in the harmonization note, which
+      makes fixed-depth stock variance smaller than it would otherwise be; but
+      that offset is an artefact of the depth convention rather than a reason to
+      call the row unbiased, so the net direction remains inflating.
+    land_use: cropland
+    management: tillage gradient - 34 minimum, 20 moderate, 5 intense, 2 none
+    climate: temperate continental to maritime
+    koppen: Dfa/Dfb/Csb/Cfa
+    soil_texture: clay 0.9-31.2%, sand 17.0-86.7%
+    country_region: United States - DE, KS, MT, NE, NC, ND, OR, SD, VA, WA
+    depth_top_cm: 0
+    depth_bottom_cm: 15
+    depth_basis: fixed_depth
+    site_stock_mg_c_ha: 26.39
+    site_soc_pct: 1.436
+    analytical_method: dry_combustion
+    bd_method: core
+    support_note: >-
+      Same 212 EUs / 61 treatments / 14 sites as VC-BPS-005; bd_2mm present for
+      all 212, so no additional attrition.
+    citation: >-
+      Soil Health Institute (2024). North American Project to Evaluate Soil
+      Health Measurements [data set]. doi:10.15482/USDA.ADC/25632270. Design and
+      the 0-15 cm sampling protocol documented in Norris, C. E., et al. (2020).
+      Introducing the North American project to evaluate soil health
+      measurements. Agronomy Journal, 112(4), 3195-3215.
+    doi_or_url: https://doi.org/10.15482/USDA.ADC/25632270
+    locator: >-
+      soildata.csv (b_soc, bd_2mm), sites.csv (exper_design, eu_type,
+      site_mean_temp, site_latitude); derivation in
+      scripts/derive_g1_napeshm.py, output in data/processed/g1_napeshm.json.
+      Depth from Norris et al. 2020, not the data.
+    access: open_access
+    verification: derived_primary_data
+    extracted_on: "2026-08-08"
+    in_scope: true
+    use_as: baseline
+    osse_distribution: lognormal(0, 0.1108)
+    notes: >-
+      The stock form is what carbon protocols actually account in, so it is the
+      operationally relevant one; VC-BPS-005 is the cleaner estimate. Carry both.
+      SCOPED TO 0-15 cm (D-026) - do not rescale to 0-30 cm.
+      The SOC-density cancellation documented above is the same mechanism that
+      makes fixed-depth stock CHANGE biased (VC-BDC-001/002): the depth
+      convention that hides variance also hides bias. Phase 1 should expect
+      equivalent-soil-mass accounting to show a LARGER between-plot variance
+      than this row, not a smaller one.
+
   # =====================================================================
   # 4. TEMPORAL (MONTH-TO-MONTH) VARIANCE
   # =====================================================================
@@ -652,6 +924,14 @@ rows:
       latter would double-count.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: unknown
+    bias_direction_reasoning: >-
+      Direction genuinely unsignable, as recorded in D-014. Temporal variance
+      in measured SOC is driven by moisture cycling and biological activity.
+      Pacific Northwest dryland has larger moisture swings but lower
+      biological turnover than humid temperate cropland; those two differences
+      push the transfer error in OPPOSITE directions and we have no basis for
+      ranking them.
     land_use: cropland
     management: dryland small-grain rotations
     climate: semi-arid to sub-humid dryland
@@ -707,6 +987,12 @@ rows:
       individual shares are design-specific.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: unknown
+    bias_direction_reasoning: >-
+      Same unsignable transfer as VC-TMP-001, and additionally the reported
+      between-replicate share spans 2-42%, a range so wide that it brackets
+      almost any plausible value for our scope. Nothing in the abstract
+      constrains where a humid temperate cropland would fall within it.
     land_use: cropland
     management: dryland small-grain rotations
     climate: semi-arid to sub-humid dryland
@@ -769,6 +1055,16 @@ rows:
       mean stock was needed.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: deflates
+    bias_direction_reasoning: >-
+      Understates realistic resampling error. The reported offset is only
+      about 40 cm - the smallest displacement physically possible when
+      reopening a pit - whereas operational revisits incur far larger offsets
+      (VC-REL-005/006 put most LUCAS revisits under 10 m but permit up to 100
+      m, and VC-REL-004 demonstrates flatness only out to ~7 m). The MAE-to-SD
+      normality assumption of D-003 pushes the same way. Partially offset by
+      the inclusion of analytical error, which inflates, but that term is far
+      smaller.
     land_use: cropland
     management: mixed arable, incl. grubbed and harvested sites
     climate: temperate maritime to continental
@@ -826,6 +1122,12 @@ rows:
       Same difference-scale caveat applies.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: inflates
+    bias_direction_reasoning: >-
+      Grassland resampling error exceeds cropland in the same study (7.6 vs
+      5.1 Mg C/ha), for the same tillage-homogenisation reason as VC-WPS-003,
+      so borrowing it for cropland would overstate relocation error. Retained
+      only as an out-of-scope contrast.
     land_use: grassland
     management: pasture, meadow, green fallow
     climate: temperate maritime to continental
@@ -878,6 +1180,14 @@ rows:
       not a magnitude.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: deflates
+    bias_direction_reasoning: >-
+      Applying this reduction understates residual error. The source's
+      'approximately 50%' reduction is LARGER than the 42% (1 - 1/sqrt(3))
+      that independent replication predicts, so taking it at face value
+      credits triple sampling with more noise cancellation than independence
+      can justify. Any rounding of an approximate figure in the favourable
+      direction compounds this.
     land_use: cropland
     management: mixed arable
     climate: temperate maritime to continental
@@ -932,6 +1242,14 @@ rows:
       most useful simplification available to Phase 1.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: deflates
+    bias_direction_reasoning: >-
+      Modelling relocation error as distance-independent understates it
+      wherever the true variogram is still rising. Saturation was demonstrated
+      only out to about 7 m inside a 20 x 20 m plot; if error continues to
+      grow beyond that, treating it as flat removes variance that is really
+      there. The row is scoped to within-plot use precisely to bound this, but
+      the direction is one-way.
     land_use: cropland
     management: mixed arable
     climate: temperate maritime to continental
@@ -983,6 +1301,13 @@ rows:
       sampled to 20 cm, not 30 cm.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: unknown
+    bias_direction_reasoning: >-
+      Not a variance at all - it is a distribution of offset DISTANCES, and it
+      cannot be signed as an over- or under-estimate of a variance without the
+      variance-versus-distance function that gap G5 records as missing. The
+      value is also unverified against the primary report, so its accuracy is
+      unknown independently of its direction.
     land_use: cropland
     management: mixed
     climate: temperate
@@ -1031,6 +1356,12 @@ rows:
       percentages do not close - which is itself something to check in the PDF.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: unknown
+    bias_direction_reasoning: >-
+      As VC-REL-005: a distance distribution rather than a variance,
+      unsignable without the missing variance-versus-distance function, and
+      unverified against the primary source. The 100 m protocol maximum is a
+      hard bound on offset, not a bound on error.
     land_use: cropland
     management: mixed
     climate: temperate
@@ -1083,6 +1414,14 @@ rows:
       own output - see DECISIONS.md D-007.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: inflates
+    bias_direction_reasoning: >-
+      The prescribed bulk-density change of 1.5 to 1.1 g/cm3 is a 27%
+      decrease, which sits at or just above the top of the 20-25% range of
+      observed decreases the authors themselves cite as evidence of realism.
+      Bias from the fixed-depth convention grows with the magnitude of the
+      density change, so a scenario at the top of the observed range yields a
+      bias at the top of the plausible range.
     land_use: cropland
     management: reduced_till / disturbance gradient
     climate: temperate
@@ -1133,6 +1472,12 @@ rows:
       unjustified.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: inflates
+    bias_direction_reasoning: >-
+      Same prescribed scenario as VC-BDC-001, so it inherits the same top-of-
+      observed-range bulk-density change and the same upward bias. Note the
+      sign reversal it documents does not depend on the magnitude being right
+      - only on the convention error exceeding the true change.
     land_use: cropland
     management: reduced_till / disturbance gradient
     climate: temperate
@@ -1178,6 +1523,11 @@ rows:
       that row's 17% and to VC-BDC-004, but not to any empirical bias.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: inflates
+    bias_direction_reasoning: >-
+      Same prescribed scenario as VC-BDC-001. The residual bias after 15 cm
+      splitting scales with the same density change, so it too sits at the top
+      of the plausible range rather than the middle of it.
     land_use: cropland
     management: reduced_till / disturbance gradient
     climate: temperate
@@ -1222,6 +1572,10 @@ rows:
       varying between these rows.
     reference_stock_mg_c_ha:
     mean_dependent: false
+    bias_direction: inflates
+    bias_direction_reasoning: >-
+      Same prescribed scenario as VC-BDC-001, with the same top-of-range
+      density change driving the residual bias after 10 cm splitting.
     land_use: cropland
     management: reduced_till / disturbance gradient
     climate: temperate

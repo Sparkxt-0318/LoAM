@@ -86,7 +86,7 @@ def main(argv: list[str] | None = None) -> int:
         print(
             f"  {comp:<22} total={stats['total']:<3} baseline={stats['baseline']:<3} "
             f"in_scope={stats['in_scope']:<3} fulltext={stats['verified_fulltext']:<3} "
-            f"unverified={stats['unverified']}{flag}"
+            f"derived={stats['derived']:<3} unverified={stats['unverified']}{flag}"
         )
     return 0
 

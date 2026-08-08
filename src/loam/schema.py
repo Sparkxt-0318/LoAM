@@ -83,6 +83,26 @@ HARMONIZATION_METHODS = (
     "derived_see_note",
 )
 
+#: Direction in which a row's number is likely to be WRONG as an estimate of the
+#: quantity it stands in for, within our locked scope.
+#:
+#: NOT to be confused with ``error_kind``. ``error_kind`` describes the physical
+#: error the source measured (random scatter vs systematic offset in the soil
+#: measurement). ``bias_direction`` describes our *estimate of that error* being
+#: too big or too small. A row can be ``error_kind: random`` and
+#: ``bias_direction: inflates`` at the same time, and most of them are.
+#:
+#: Why it has to be tracked per row: an inflated variance is CONSERVATIVE for
+#: the sampling calculator (it tells someone to over-sample, which is harmless)
+#: but ANTI-CONSERVATIVE for the Phase 5 audit (it over-flags carbon projects as
+#: undetectable). The same row feeds both deliverables, so the direction cannot
+#: be tracked once at the table level - see DECISIONS.md D-023.
+BIAS_DIRECTIONS = (
+    "inflates",  # our number is likely LARGER than the truth for our scope
+    "deflates",  # our number is likely SMALLER than the truth for our scope
+    "unknown",   # no defensible directional argument; must say why
+)
+
 LAND_USES = ("cropland", "grassland", "forest", "mixed", "multiple", "not_applicable")
 
 DEPTH_BASES = (
@@ -115,6 +135,12 @@ BD_METHODS = (
 ACCESS_STATES = ("open_access", "paywalled", "preprint", "public_report")
 
 VERIFICATION_STATES = (
+    # Strongest: we hold the primary observations and computed the number
+    # ourselves with a committed, re-runnable script. Stronger than reading a
+    # published figure, because the derivation is inspectable rather than taken
+    # on trust - but it shifts the burden onto OUR method, so such a row must
+    # cite the script in `locator` alongside the dataset DOI.
+    "derived_primary_data",
     "verified_fulltext",   # number read in the full text / table / figure
     "verified_abstract",   # number read in the abstract only
     "verified_secondary",  # number read in a citing source, not the original
@@ -208,6 +234,15 @@ COLUMNS: tuple[Column, ...] = (
     _c("mean_dependent", "bool", True,
        "True if the harmonised value required assuming a mean SOC stock. These "
        "rows are the only route by which a wrong mean can affect an MDC result.",
+       block="harmonised"),
+    _c("bias_direction", "str", True,
+       "Whether this row's number is likely too large (`inflates`), too small "
+       "(`deflates`), or unsignable (`unknown`) as an estimate for our scope. "
+       "Distinct from `error_kind` - see BIAS_DIRECTIONS.",
+       BIAS_DIRECTIONS, "harmonised"),
+    _c("bias_direction_reasoning", "str", True,
+       "REQUIRED prose justifying `bias_direction`. For `unknown`, must state "
+       "why no direction can be defended rather than being left vague.",
        block="harmonised"),
 
     # ---- context ---------------------------------------------------------
@@ -380,6 +415,18 @@ RULES: tuple[Rule, ...] = (
         "would let a bias be summed into a variance budget.",
         lambda r: r.get("error_kind") != "systematic"
         or _blank(r.get("sd_mg_c_ha")),
+    ),
+    Rule(
+        "R11-bias-direction-reasoned",
+        "Every row justifies its bias_direction in prose.",
+        lambda r: not _blank(r.get("bias_direction_reasoning")),
+    ),
+    Rule(
+        "R12-unknown-bias-must-say-why",
+        "A bias_direction of 'unknown' must explain why no direction can be "
+        "defended, so that 'unknown' cannot be used to dodge the question.",
+        lambda r: r.get("bias_direction") != "unknown"
+        or len(str(r.get("bias_direction_reasoning", "")).split()) >= 10,
     ),
     Rule(
         "R10-out-of-scope-not-baseline",

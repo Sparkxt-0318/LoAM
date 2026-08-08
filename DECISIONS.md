@@ -267,13 +267,160 @@ that the gap stays open.
 
 ---
 
+## Direction-of-bias tracking
+
+**D-023 — Every row records `bias_direction` (`inflates` / `deflates` /
+`unknown`) with required reasoning.**
+An inflated variance is **conservative for the sampling calculator** — it tells
+someone to over-sample, which is harmless — but **anti-conservative for the
+Phase 5 audit**, where it over-flags carbon projects as undetectable. The same
+row feeds both deliverables, so a single table-level caveat would be wrong for
+one of them no matter how it was written. Tracking direction per row is the only
+way both can be served from one table.
+
+*Consequence, fixed now so it is not relitigated later:* **Phase 5 runs the audit
+on the LOW end of the variance envelope, not the central estimate.** The headline
+must read *"even under the most generous noise assumptions, X% of claims fall
+below detection."* An audit run on central or high estimates is not defensible,
+because the critic's first move is to point at the inflating rows.
+
+Not to be confused with `error_kind`: that describes the physical error the
+source measured; `bias_direction` describes *our estimate of it* being too big or
+too small. Rule R12 stops `unknown` being used to dodge the question.
+
+Current: 14 `inflates`, 7 `unknown`, 5 `deflates`.
+
+*The NEON temporal work carries the same property.* The between-bout variance
+that `scripts/neon_temporal_variance.py` would produce absorbs relocation
+variance as well as temporal variance, because NEON randomises core position
+within a plot rather than revisiting a point. It is therefore an **upper bound on
+temporal variance, not an estimate of it**, and if it ever becomes a row it must
+be `bias_direction: inflates`.
+
+---
+
+## NAPESHM derivation of the between-plot baseline (G1)
+
+Data: Soil Health Institute (2024), NAPESHM, doi:10.15482/USDA.ADC/25632270.
+Derivation: `scripts/derive_g1_napeshm.py`. Rows: `VC-BPS-005` (concentration),
+`VC-BPS-006` (stock).
+
+**D-024 — Headline uses only `Randomized complete block` and `Completely
+randomized` sites. The 40 sites with design `'0'` (unknown) are EXCLUDED.**
+The 94 sites span 14 design types and these are not equivalent. In an RCB,
+replicate EUs are true randomized replicates and their residual variance is
+clean between-plot spatial variance. In split-plot and management-zone designs,
+replicates may be structurally non-equivalent, and pooling them inflates the
+estimate. Including the unknown-design sites would require positive evidence
+that they are randomized; absence of a recorded design is not such evidence.
+*Measured cost of getting this wrong:* admitting all designs moves the estimate
+from 12.0% to 14.2% — the filter is worth 2.2 percentage points, so this is not
+a cosmetic decision.
+*Reported as sensitivity:* all-designs-pooled is in the script output.
+*String-match audit (the obvious reviewer question).* The filter is an exact
+string match, so every distinct `exper_design` value was checked by hand for a
+near-miss. Four dropped values contain "randomiz" and none should be kept:
+`'Completely randomized split splot'` (4 sites — split plot, and note the typo in
+the source data), `'Randomized complete block split plot'` (1 — split plot),
+`'Incomplete randomized block'` (1 — incomplete blocks are not full replicates),
+and `'Randomized'` (1 — too ambiguous to classify). Nothing legitimate is lost to
+a spelling accident; every exclusion is on design grounds.
+
+**D-025 — Headline filters to `eu_type == 'Plots'`.**
+Spatial variance scales with the separation between replicates, and a "field"
+replicate is not the same measurement as a "plot" replicate. Other eu_types
+(Fields, Strip plots, Pasture paddocks, Open range) are reported stratified,
+never pooled into the headline.
+*Measured effect:* small here — 11.97% vs 11.93% — because RCB/CR sites are
+almost all plot-based already. The filter is retained anyway: it costs almost
+nothing and removes a real confound rather than an observed one.
+
+**D-026 — The row is SCOPED to 0-15 cm. It is NOT converted to our 0-30 cm
+project scope.**
+There is no depth column anywhere in NAPESHM. Sampling depth is fixed by
+protocol and documented only in Norris et al. (2020), which is what the rows
+cite for it. A concentration CV at 0-15 cm is not transferable to 0-30 cm stocks
+without a depth-distribution assumption that carries its own error — and
+Poeplau's Table 4 shows within-plot CV is not even constant with depth (9.3% at
+0-10 cm, 10.2% at 10-30 cm, 25.8% at 30-50 cm). **The mismatch is resolved by
+rescoping the row, not by rescaling the number.** Left open: whether Phase 1
+needs a 0-30 cm between-plot term at all, or can work natively at 0-15 cm.
+
+**D-027 — G1 is spatial + analytical error COMBINED, and is therefore an UPPER
+BOUND on between-plot spatial variance.**
+NAPESHM has no lab duplicate, split-sample or QC columns, so the two cannot be
+separated. Both rows carry `bias_direction: inflates` and say so in the row text.
+*Magnitude:* using VC-ANA-001's 1.25% analytical CV, the purely spatial part
+would be about sqrt(12.1² − 1.25²) = 12.0%. The inflation is small — but it is
+one-directional, and under D-023 it matters for Phase 5.
+
+**D-029 — Estimator: REML nested random effects, treatment within site,
+on the log scale, with a cluster bootstrap over sites.**
+Three separate choices, each with a reason:
+- *Nested random effects, not averaged per-treatment variances.* With 3-5
+  replicates per treatment, individual treatment variances are wildly unstable,
+  and averaging them weights a 3-replicate treatment equally with a 5-replicate
+  one. The REML residual pools correctly.
+- *Log scale.* Within-treatment SD scales with treatment mean — the log-log
+  slope is about 1.2, far from the 0 that a constant-SD model assumes and close
+  to the 1 that a constant-CV model assumes. So the natural parameter is a CV,
+  and `CV = 100·sqrt(exp(σ²) − 1)`.
+- *Cluster bootstrap over sites.* Sites are the top-level independent unit.
+  Bootstrapping rows or treatments would ignore the nesting and produce
+  intervals far too narrow. 600/600 resamples converged and the bootstrap median
+  (11.9%) sits on the point estimate, so the estimator shows no material bias.
+
+**D-030 — NAPESHM is the PRIMARY source for component 3; Poeplau 2022 is demoted
+to an independent cross-check.**
+NAPESHM is 212 EUs across 14 sites on the right continent for a North American
+audit, with an explicit randomized design. Poeplau is 8 cropland sites in one
+German region. Poeplau remains valuable precisely *because* it is independent —
+different continent, different design, different support — and its within-plot
+stock CV of 9.3-10.2% sits just below our between-plot estimate of 11.1-12.1%,
+which is a coherent ordering and a genuine corroboration. It must never be the
+baseline for a between-plot term: it does not measure one.
+
+**D-028 — OPEN SCOPE QUESTION, UNRESOLVED: what climate envelope defines
+"temperate" for NAPESHM?** ⚠️ *Deliberately not decided. For the PI.*
+NAPESHM site climate spans MAT 4.0-25.0 °C and MAP 167-1543 mm, with 78 US and
+16 Mexican sites. That reaches past temperate into subtropical highland and hot
+desert. Letting a 25 °C, 167 mm Sonoran site into a "temperate" baseline by
+default would be indefensible, so the headline currently uses a **proposed**
+envelope, and the rows say it is provisional.
+
+*Recommended envelope: MAT ≤ 15 °C AND |latitude| ≥ 30°.* Justification: the MAT
+cap excludes hot climates, and the latitude floor is what excludes the Mexican
+highland sites, which is the part a MAT cap alone gets wrong. Sites 19-21 at
+19°N sit at MAT 15-16 °C only because of elevation; they are Köppen **Cwb**,
+summer-rain and winter-dry. Köppen would call that "temperate", but the moisture
+seasonality driving SOC dynamics is tropical, not temperate. The result is 14 US
+sites, 212 EUs, MAT 4-15 °C, MAP 330-1282 mm, latitude 36.4-48.3°N.
+
+*The decision barely moves the number, which should make it easier:*
+
+| envelope | sites | EUs | conc CV | stock CV |
+|---|---|---|---|---|
+| MAT ≤ 12, lat ≥ 30 | 11 | 178 | 10.6% | 9.8% |
+| **MAT ≤ 15, lat ≥ 30 (recommended)** | **14** | **212** | **12.1%** | **11.1%** |
+| MAT ≤ 18, any lat | 26 | 386 | 11.9% | 11.5% |
+| all sites | 30 | 472 | 12.0% | 11.7% |
+
+Every candidate falls inside the recommended envelope's own 95% CI of
+[10.0, 14.3]. The choice is therefore about **defensibility of scope**, not about
+the estimate. *Resolve by choosing one:* (a) adopt the recommendation;
+(b) a different envelope, changing one constant in
+`CLIMATE_ENVELOPES`; (c) formally widen the project scope beyond temperate, which
+would also reopen D-021.
+
+---
+
 ## Open evidence gaps
 
 | id | gap | consequence | status |
 |----|-----|-------------|--------|
-| **G1** | No in-scope **between-plot** cropland variance. Only forest (Buchkowski). | Component 3 has no baseline. | open — highest priority |
+| ~~**G1**~~ | ~~No in-scope **between-plot** cropland variance. Only forest (Buchkowski).~~ | — | ✅ **CLOSED** 2026-08-08 by `VC-BPS-005/006`, derived from NAPESHM (D-024…D-030). Scoped to 0-15 cm; upper bound. |
 | **G2** | No 0–30 cm within-plot CV; only 0–10 and 10–30 separately, without inter-layer covariance. | Component 2 baseline is per-layer only. | open — needs Poeplau supplementary data |
-| **G3** | The within-plot ÷ between-plot **ratio** is unknown for cropland. | Determines whether to add plots or add cores — the central design question. | open — highest value |
+| **G3** | The within-plot ÷ between-plot **ratio** is unknown for cropland. | Determines whether to add plots or add cores — the central design question. | open — **narrowed**: Poeplau's within-plot stock CV (9.3–10.2%, 0-10/10-30 cm) now sits just below the NAPESHM between-plot stock CV (11.1%, 0-15 cm), implying a ratio near 1 and echoing Buchkowski's forest finding. NOT closed — different studies, continents and depths, so this is suggestive only and no row claims it. |
 | **G4** | Only temporal source is dryland Pacific Northwest, paywalled, depth unconfirmed. | Component 4 has no in-scope baseline. | open — needs Wuest PDF |
 | **G5** | No variance-versus-distance function for offsets of 10–100 m. | Relocation error at LUCAS scale is unquantified; components 3 and 5 not orthogonal there. | open |
 | **G6** | The two LUCAS rows are unverified against the primary report. | Locked out of use by rule R6. | open — needs LUCAS PDF |
@@ -287,3 +434,4 @@ that the gap stays open.
 |------|---------|------|
 | 2026-08-07 | D-001 … D-020, G1 … G7 | Phase 0 initial build. 24 rows, 6 components, 14 verified against full text. |
 | 2026-08-08 | D-021 (open), D-022 | CI + CSV staleness guard. Re-prioritised `docs/sources.md`: Poeplau to top for G1, Buchkowski re-filed by role. No variance-table rows changed. |
+| 2026-08-08 | D-023 … D-027, D-029, D-030; **D-028 open** | `bias_direction` added to the schema and backfilled across all 24 existing rows. **G1 CLOSED** by `VC-BPS-005/006`, derived from NAPESHM: between-plot CV 12.1% (concentration) and 11.1% (stock) at 0-15 cm, n=212 EUs / 61 treatments / 14 sites. 26 rows. Climate envelope left open for the PI. |
