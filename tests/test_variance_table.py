@@ -199,7 +199,13 @@ def test_every_rule_has_a_description():
 
 
 def test_csv_is_in_sync_with_yaml(rows, tmp_path):
-    """Guards against a hand-edited CSV drifting away from the curated YAML."""
+    """The staleness guard.
+
+    Regenerates the CSV from the YAML and fails if the committed copy differs.
+    Catches drift in both directions: a YAML edit that was never rebuilt, and a
+    hand-edit to the CSV that would otherwise be silently overwritten on the
+    next build.
+    """
     committed = build_table.OUTPUT_CSV
     assert committed.exists(), "run `python -m loam.build_table` and commit the CSV"
 
@@ -208,7 +214,26 @@ def test_csv_is_in_sync_with_yaml(rows, tmp_path):
 
     assert regenerated.read_text(encoding="utf-8") == committed.read_text(
         encoding="utf-8"
-    ), "data/variance_table.csv is stale - regenerate it with `python -m loam.build_table`"
+    ), (
+        "data/variance_table.csv does not match data/variance_components.yaml.\n"
+        "  If you edited the YAML: run `python -m loam.build_table` and commit "
+        "the CSV.\n"
+        "  If you edited the CSV: that change is about to be lost - move it into "
+        "the YAML instead, then rebuild."
+    )
+
+
+def test_csv_carries_the_generated_banner():
+    """Anyone who opens the CSV to edit it is warned in the file itself."""
+    first_line = build_table.OUTPUT_CSV.read_text(encoding="utf-8").splitlines()[0]
+    assert first_line == build_table.GENERATED_BANNER
+    assert "edit the YAML" in first_line
+
+
+def test_read_csv_skips_the_banner_and_returns_every_row(rows):
+    parsed = build_table.read_csv()
+    assert len(parsed) == len(rows)
+    assert [r["row_id"] for r in parsed] == [r["row_id"] for r in rows]
 
 
 def test_schema_doc_documents_every_column():
@@ -224,5 +249,6 @@ def test_schema_doc_documents_every_column():
 
 def test_csv_has_exactly_the_schema_columns():
     with build_table.OUTPUT_CSV.open(encoding="utf-8", newline="") as fh:
-        header = next(csv.reader(fh))
+        uncommented = (line for line in fh if not line.startswith("#"))
+        header = next(csv.reader(uncommented))
     assert header == list(COLUMN_NAMES)

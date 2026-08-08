@@ -21,6 +21,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 SOURCE_YAML = REPO_ROOT / "data" / "variance_components.yaml"
 OUTPUT_CSV = REPO_ROOT / "data" / "variance_table.csv"
 
+#: First line of the emitted CSV. Present so that anyone who opens the CSV to
+#: edit it is told, in the file itself, that their edit will be overwritten.
+GENERATED_BANNER = "# GENERATED - edit the YAML, not this file"
+
 
 def load_rows(path: Path = SOURCE_YAML) -> list[dict[str, Any]]:
     with path.open(encoding="utf-8") as fh:
@@ -48,6 +52,7 @@ def _render(value: Any) -> str:
 def write_csv(rows: list[dict[str, Any]], path: Path = OUTPUT_CSV) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as fh:
+        fh.write(GENERATED_BANNER + "\r\n")
         writer = csv.DictWriter(
             fh, fieldnames=list(COLUMN_NAMES), quoting=csv.QUOTE_MINIMAL,
             extrasaction="raise",
@@ -55,6 +60,17 @@ def write_csv(rows: list[dict[str, Any]], path: Path = OUTPUT_CSV) -> None:
         writer.writeheader()
         for row in rows:
             writer.writerow({k: _render(row.get(k)) for k in COLUMN_NAMES})
+
+
+def read_csv(path: Path = OUTPUT_CSV) -> list[dict[str, str]]:
+    """Read the emitted CSV, skipping the generated-file banner.
+
+    Any consumer of variance_table.csv must go through something like this, or
+    else drop banner lines itself - the first line is a comment, not the header.
+    """
+    with path.open(encoding="utf-8", newline="") as fh:
+        body = (line for line in fh if not line.startswith("#"))
+        return list(csv.DictReader(body))
 
 
 def main(argv: list[str] | None = None) -> int:

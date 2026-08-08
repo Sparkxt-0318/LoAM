@@ -61,6 +61,7 @@ src/loam/
   schema.py                  columns, vocabularies, integrity rules
   validate.py                rule evaluation
   build_table.py             YAML -> CSV
+scripts/                     exploratory, outside the package build
 tests/
 DECISIONS.md                 every harmonization assumption, appendable
 ```
