@@ -245,3 +245,24 @@ whenever it is attempted:
 
 Components 1, 2, 3, 5 and 6 have verified in-scope baselines and can proceed to
 Phase 1 as they stand.
+
+---
+
+## 📥 To obtain
+
+Not yet held. Logged so the next literature pass starts from a list rather than
+from memory. None of these is currently cited by any row.
+
+| source | why | priority |
+|---|---|---|
+| **Potash, Bradford, Oldfield & Guan 2025**, *Environ. Res. Lett.* **20** 024025, doi:10.1088/1748-9326/ada16c (**open access**; data doi:10.6084/m9.figshare.28083182; R source `asc.illinois.edu/soc-econ`) | **Nearest prior art.** Their error model splits interval-scaling from measurement error, which our schema cannot currently represent — see D-035. Parameters and positioning logged in D-036/D-037/D-038. | **1 — highest** |
+| **Smith 2004**, *Global Change Biology*, "How long before a change in soil organic carbon can be detected?" | **Foundational detectability paper — we cite nothing from it.** This is the question the whole testbed asks, asked twenty years earlier. Not citing it is a real hole in the writeup, not a nicety. | **2** |
+| **Saby et al. 2008**, *Global Change Biology*, European soil-monitoring networks | The other foundational detectability paper, and the primary source behind two rows currently held at `verified_secondary`. Closes both a citation gap and a verification gap. | **3** |
+| **von Haden et al. 2020**, *Global Change Biology* **26** 3759 | Equivalent soil mass vs fixed depth. Directly bears on D-007 and D-026, and on the `VC-BDC-*` rows — the mechanism behind our depth-convention component. | 4 |
+| **Bradford et al. 2023**, *Geoderma* **440** 116719 | Same group as Potash et al.; likely the source of several of their parameter choices. | 5 |
+| **de Gruijter et al. 2016**, *Geoderma* **265** 120 | Sampling design for soil monitoring — the design-side counterpart to our variance-side question. | 6 |
+
+**Smith 2004 and Saby et al. 2008 are the two foundational detectability papers
+and we currently cite neither.** That is the most conspicuous omission in the
+bibliography as it stands; everything else on this list is an improvement,
+those two are a gap.

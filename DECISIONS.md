@@ -55,6 +55,11 @@ That is enforced, not requested: see D-032.
 | D-031 | decided | Poeplau ↔ NAPESHM corroboration is logged, not merged |
 | D-032 | decided | open decisions may not govern live constants — enforced |
 | D-033 | decided | IPCC climate regions are not derivable from NAPESHM; no proxy |
+| D-034 | decided | `ipcc_climate.py` — classifier committed, deliberately unfed |
+| D-035 | decided | schema gains `scales_with_interval` — next PR |
+| **D-036** | **open** | our analytical error vs Potash's differ 4× → `VC-ANA-001` |
+| D-037 | decided | Potash parameters are candidate cross-checks, never merged |
+| D-038 | decided | positioning vs Potash et al. 2025 in any writeup |
 
 ---
 
@@ -666,6 +671,217 @@ attempt starts from the blocker rather than rediscovering it.
 
 ---
 
+**D-034 — The IPCC classifier is implemented and committed, but deliberately
+NOT fed.** `src/loam/ipcc_climate.py`, tested at every leaf.
+
+D-033 established that NAPESHM cannot supply MAP:PET or frost days. That is a
+statement about the *data*, not about the *scheme* — the decision tree itself
+transcribes exactly, so it is written down exactly, and the next attempt starts
+from a tested classifier instead of re-reading a PDF.
+
+Two properties make an unfed classifier worth committing rather than a liability:
+
+* **It refuses rather than defaults.** `classify()` raises `MissingClimateInput`
+  naming the variable it lacks. There is no fallback path, so the proxy
+  substitution D-033 rules out cannot creep back in through a default argument.
+* **Inputs are demanded lazily, per branch.** This makes D-033's short-circuits
+  executable rather than prose: frost days are required only when MAT > 18 °C
+  (so NAPESHM's missing frost column bites on 13 of 94 sites, not all 94), and
+  monthly temperatures only when MAT ≤ 0 °C (so NAPESHM's missing monthly series
+  costs nothing at all, its coldest site being 4 °C). Tests pin both.
+
+It is wired to nothing. `CLIMATE_ENVELOPES` is untouched and D-028 stays open,
+so **the guard from D-032 is still red, and correctly so.** Committing a
+classifier is not the same as classifying anything.
+
+---
+
+**D-021 UPDATE — Wuest's PNW dryland sites classify as TEMPERATE under IPCC,
+which is the answer D-021 asks for. NOT closed here, because the inputs were
+supplied rather than sourced.** ⚠️ *Still for the PI.*
+
+Running the stated site climate (Pendleton OR region, MAT ≈ 10 °C, MAP
+300–400 mm) through `loam.ipcc_climate.classify`:
+
+| MAT | MAP:PET | region | temperate? |
+|---|---|---|---|
+| 9–10 °C | 0.5–0.7 | **Cool Temperate Dry** | ✅ |
+| 10.5–11 °C | 0.5–0.7 | **Warm Temperate Dry** | ✅ |
+
+**The moist/dry half is robust.** MAP:PET > 1 would need MAP above roughly
+600 mm at this MAT (Thornthwaite PET at 10 °C, mid-latitude, is ~550–650 mm);
+observed MAP is 300–400 mm, giving a ratio near 0.5–0.7. "Dryland" is in any
+case definitionally moisture-limited, i.e. MAP < PET. **Dry** either way.
+
+**The cool/warm half sits exactly on a threshold** — the figure's test is
+`MAT > 10?`, and the site is quoted at "approximately 10". Both branches land
+in a temperate class, so *the D-021 question is answered regardless*, but the
+specific region is not determined by the numbers we have.
+
+**Why this does not close D-021 by itself.** MAT and MAP here came from the task
+brief, not from Wuest (2024), whose full text is paywalled and whose depth is
+already recorded as assumed rather than confirmed (D-014). Classifying a study
+on second-hand climate figures would repeat, in a new place, exactly the
+substitution D-033 refuses. To close D-021 properly: take the site coordinates
+from the paper and join the same external climatology that unblocks D-033
+(option 1 there) — **one dependency serves both**. Until then this is a strong
+indication, not a classification.
+
+`VC-TMP-001/002` are **not** promoted in this change, as instructed. Note that
+promoting them would also require D-014's separate depth concern to be resolved;
+climate is necessary, not sufficient.
+
+---
+
+## Prior art: Potash et al. 2025 — logged, not yet implemented
+
+**Recorded in this change; to be implemented in the NEXT one.** Nothing below
+touches a variance-table row, the schema, or a constant. The paper itself is
+**not yet in `data/literature/`** — it needs downloading (open access,
+doi:10.1088/1748-9326/ada16c; data doi:10.6084/m9.figshare.28083182; R source
+`asc.illinois.edu/soc-econ`).
+
+Potash, E., Bradford, M. A., Oldfield, E. E., & Guan, K. (2025). Measure-and-
+remeasure as an economically feasible approach to crediting soil organic carbon
+at scale. *Environmental Research Letters*, **20**, 024025.
+
+---
+
+**D-035 — The schema needs `scales_with_interval` (true/false) per row. Our six
+components are NOT all the same kind of quantity, and the table currently
+pretends they are.** *To implement next PR.*
+
+Their equation 1:
+
+```
+SE^2 =  Y*sig_b^2 / (N*p1)
+      + (Y*sig_w^2 + 2*sig_n^2) / (N*p1*A*d2)
+      + 2*sig_l^2 / (N*p1*A*d2/n3)
+```
+
+Read the multipliers, because they are the whole point:
+
+* **`Y` multiplies variance in the RATE of change** — between-field (`sig_b`)
+  and within-field (`sig_w`). These accumulate with the monitoring interval:
+  a longer interval means more time for fields to diverge.
+* **`2` multiplies measurement error** — relocation (`sig_n`) and lab
+  (`sig_l`). Incurred exactly **twice**, at baseline and at remeasurement, and
+  **does not grow with the interval** at all.
+
+Our table records all six components as one undifferentiated `cv_pct`. Under
+that representation, any MDC computed over a multi-year interval scales *every*
+term the same way, which is wrong for at least three of the six and increasingly
+wrong the longer the interval.
+
+**And the error is not incidental — it is the exact quantity Potash et al. set
+out to document.** The economy of temporal scale in their paper *is* the gap
+between the `Y` terms and the `2` terms. A table that cannot represent the
+distinction cannot reproduce their central result, let alone check it.
+
+Which of our components take which value is itself a judgement to be made row by
+row next PR, not asserted here. First approximation: `analytical`,
+`relocation` and `depth_bd_convention` are measurement-side (`false`);
+`temporal` is interval-side (`true`); the two spatial components need thought,
+because our rows measure variance in the **stock** rather than in the **rate**
+(see D-037).
+
+---
+
+**D-036 — OPEN: our analytical error and theirs differ by 4×. Resolve by
+tracing both to primary sources; do not average.** ⚠️ *Unresolved.*
+
+Their `sig_l` = **2 Mg C/ha**, which at 0–30 cm is roughly **4%** relative error
+in SOC concentration. Our `VC-ANA-001` is **1%** (Poeplau et al., verified full
+text, `use_as: baseline`).
+
+A factor of four in the analytical term is not a rounding difference, and
+analytical error enters twice per the D-035 multipliers, so it is not negligible
+in an MDC either. **Splitting the difference or averaging would manufacture a
+number neither source supports** — the same error D-031 refuses for the
+within/between comparison.
+
+Resolve by finding out what each number actually measures. Plausible and
+checkable reasons for the gap, in rough order of likelihood: theirs may bundle
+sampling-and-handling error with instrument error where ours isolates the
+instrument; theirs is on a **stock** basis (Mg C/ha, so it inherits bulk-density
+error) where ours is a **concentration** CV; and the two may assume different
+numbers of composited cores.
+
+**Guard note, stated plainly because it is a real hole:** this decision is
+`open` and it bears on `VC-ANA-001`, which is a live verified baseline row — yet
+the D-032 guard will **not** fire on it, because the row does not cite D-036 in
+its prose and is not script-derived, the two routes the guard checks. Wiring
+this exposure in means editing a row, which is out of scope for a log-only
+entry. **Do it in the same PR that implements D-035**, and treat it as evidence
+that the guard's two routes do not cover every way a row can depend on an open
+question.
+
+---
+
+**D-037 — Potash et al.'s parameters are recorded as CANDIDATE cross-check
+rows, not merged.** *To implement next PR.* US Midwest no-till defaults, all on
+a Mg C/ha basis, 0–30 cm:
+
+| symbol | value | quantity |
+|---|---|---|
+| `sig_b` | 0.5 /y | between-field variance in SOC **rate of change** |
+| `sig_w` | 1 /y | within-field variance in SOC **rate of change** |
+| `sig_n` | 5 | relocation error |
+| `sig_l` | 2 | lab / analytical error |
+| `tau` | 0.3 /y | treatment effect |
+| `A` | 25 ha | field area |
+
+**Two things must be carried with these numbers or they will be misused.**
+
+*First, the evidence asymmetry runs in our favour, and should be recorded rather
+than smoothed over.* Their `sig_b` traces to a **single Iowa study**
+(Al-Kaisi & Kwaw-Mensah 2020). Ours (`VC-BPS-005/006`) traces to **1,450
+SOC-bearing EUs across 93 sites**, of which 212 EUs across 14 sites survive the
+D-024/D-025/D-028 filters. Where the two disagree, ours is the better-supported
+estimate, and a writeup should say so plainly rather than presenting them as
+peers.
+
+*Second, and more important: `sig_b` and `sig_w` are variance in the RATE OF
+CHANGE (units per year). Our between-plot rows are variance in the STOCK.* These
+are different quantities with different units, and **must not be written into
+the same rows or compared numerically without an explicit, logged conversion
+decision.** Merging them silently would be D-020's error (concentration CV
+treated as stock CV) in a new dimension, and harder to spot because the units
+differ by a factor of "per year" rather than by a factor of anything visible.
+
+This also feeds back into D-035: because their spatial terms are rate variances,
+they carry `Y`; ours, being stock variances, do not obviously carry anything
+until the conversion question is settled.
+
+---
+
+**D-038 — Potash et al. 2025 is the nearest prior art. Cite it in any writeup,
+and state four differences plainly.** *To implement next PR.*
+
+1. **Different question, and ours is upstream.** They ask *"is this project
+   economically feasible?"*; we ask *"is this claim resolvable?"* Theirs
+   **presupposes** ours — a feasibility calculation assumes the underlying
+   change is detectable at all. Positioning us as downstream of them would
+   invert the dependency.
+2. **Their `sig_b` is fixed and geography-independent, and they say why:**
+   explicitly "for lack of information". **Our covariate-conditioned variance
+   surface is that missing information.** This is the sharpest statement of our
+   contribution available, and it is in their own words.
+3. **Their model has NO within-year temporal variance term at all.** Check each
+   term: `sig_n` is spatial relocation, `sig_l` is lab, `sig_w` is heterogeneity
+   in the *rate* of change between points in a field. **Nothing represents
+   seasonal or short-term fluctuation at a fixed point** — which Wuest (2024)
+   measured at 15–32% of random error. Our `temporal` gap (G4) **is also their
+   gap.** That reframes our weakest component: closing it is a contribution to
+   the literature, not a deficiency in our table.
+4. **Phase 5 audit hook: `z_deduct` = 0.43 standard errors, following Verra
+   VM0042 v2.0.** Published, auditable, and thin — a single constant standing in
+   for the entire uncertainty deduction. This is the specific number a Phase 5
+   audit can test against, and the obvious place where a better variance model
+   changes a real crediting outcome.
+
+---
+
 ## Open evidence gaps
 
 | id | gap | consequence | status |
@@ -687,4 +903,5 @@ attempt starts from the blocker rather than rediscovering it.
 | 2026-08-07 | D-001 … D-020, G1 … G7 | Phase 0 initial build. 24 rows, 6 components, 14 verified against full text. |
 | 2026-08-08 | D-021 (open), D-022 | CI + CSV staleness guard. Re-prioritised `docs/sources.md`: Poeplau to top for G1, Buchkowski re-filed by role. No variance-table rows changed. |
 | 2026-08-08 | D-023 … D-027, D-029, D-030; **D-028 open** | `bias_direction` added to the schema and backfilled across all 24 existing rows. **G1 CLOSED** by `VC-BPS-005/006`, derived from NAPESHM: between-plot CV 12.1% (concentration) and 11.1% (stock) at 0-15 cm, n=212 EUs / 61 treatments / 14 sites. 26 rows. Climate envelope left open for the PI. |
+| 2026-08-09 | D-034, D-035, D-037, D-038; **D-036 open**; D-021 updated | IPCC classifier committed and tested but deliberately unfed (D-034) — D-028 still blocked, guard still red. Wuest's PNW sites classify **Cool Temperate Dry** (Warm Temperate Dry if MAT > 10), i.e. **temperate either way**, but D-021 stays open because the climate inputs were supplied rather than sourced. Potash et al. 2025 logged as prior art: schema needs `scales_with_interval` (D-035), a 4× analytical-error discrepancy is **open** (D-036), their parameters are candidate cross-checks never to be merged (D-037), positioning recorded (D-038). Six sources added to `docs/sources.md` as **to obtain**, including Smith 2004 and Saby et al. 2008 — the two foundational detectability papers, neither currently cited. No variance-table row, schema field or constant changed. |
 | 2026-08-08 | D-031, D-032, D-033; **D-028 still open** | Open-decision guard: decisions and the constants they govern are now machine-readable (`src/loam/decisions.py`), the build prints `<-- PROPOSED, NOT DECIDED`, and two tests refuse to pass while an open decision governs a live constant — **the suite is red on merge, by design** (D-032). Replacing the private climate envelope with IPCC 2006 climate regions was attempted and is **blocked**: MAP:PET and frost-day counts are not derivable from NAPESHM, and no proxy is substituted (D-033). Poeplau ↔ NAPESHM corroboration logged, with a figure correction (D-031). No variance-table values changed. |

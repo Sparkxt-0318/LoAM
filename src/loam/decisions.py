@@ -63,6 +63,11 @@ OPEN_DECISIONS: dict[str, str] = {
         "What climate envelope defines 'temperate' for NAPESHM? "
         "Governs CLIMATE_ENVELOPES and therefore VC-BPS-005/006."
     ),
+    "D-036": (
+        "Our analytical error (VC-ANA-001, 1%) and Potash et al. 2025's "
+        "(sig_l = 2 Mg C/ha, about 4%) differ fourfold. Which is right, and "
+        "what does each actually measure?"
+    ),
 }
 
 #: Decisions that have been made. Listed by id only; the reasoning is in
@@ -71,7 +76,8 @@ DECIDED_DECISIONS: tuple[str, ...] = (
     "D-001", "D-002", "D-003", "D-004", "D-005", "D-006", "D-007", "D-008",
     "D-009", "D-010", "D-011", "D-012", "D-013", "D-014", "D-015", "D-016",
     "D-017", "D-018", "D-019", "D-020", "D-022", "D-023", "D-024", "D-025",
-    "D-026", "D-027", "D-029", "D-030", "D-031", "D-032", "D-033",
+    "D-026", "D-027", "D-029", "D-030", "D-031", "D-032", "D-033", "D-034",
+    "D-035", "D-037", "D-038",
 )
 
 ALL_DECISIONS: tuple[str, ...] = tuple(
