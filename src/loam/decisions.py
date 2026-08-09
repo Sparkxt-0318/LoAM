@@ -59,10 +59,6 @@ OPEN_DECISIONS: dict[str, str] = {
         "Does Pacific Northwest dryland cropping fall inside 'temperate'? "
         "Governs whether VC-TMP-001/002 could ever be in-scope."
     ),
-    "D-028": (
-        "What climate envelope defines 'temperate' for NAPESHM? "
-        "Governs CLIMATE_ENVELOPES and therefore VC-BPS-005/006."
-    ),
     "D-036": (
         "Our analytical error (VC-ANA-001, 1%) and Potash et al. 2025's "
         "(sig_l = 2 Mg C/ha, about 4%) differ fourfold. Which is right, and "
@@ -76,8 +72,8 @@ DECIDED_DECISIONS: tuple[str, ...] = (
     "D-001", "D-002", "D-003", "D-004", "D-005", "D-006", "D-007", "D-008",
     "D-009", "D-010", "D-011", "D-012", "D-013", "D-014", "D-015", "D-016",
     "D-017", "D-018", "D-019", "D-020", "D-022", "D-023", "D-024", "D-025",
-    "D-026", "D-027", "D-029", "D-030", "D-031", "D-032", "D-033", "D-034",
-    "D-035", "D-037", "D-038",
+    "D-026", "D-027", "D-028", "D-029", "D-030", "D-031", "D-032", "D-033",
+    "D-034", "D-035", "D-037", "D-038", "D-039",
 )
 
 ALL_DECISIONS: tuple[str, ...] = tuple(
@@ -159,28 +155,47 @@ HEADLINE_EU_TYPE = "Plots"
 # --- D-026: fixed by NAPESHM protocol, documented in Norris et al. 2020 -----
 DEPTH_TOP_CM, DEPTH_BOTTOM_CM = 0.0, 15.0
 
-# --- D-028 (OPEN): candidate climate envelopes ------------------------------
-# `recommended_temperate` is a PROPOSAL. It is the active envelope only because
-# something has to be, and every build announces that it is unratified.
-CLIMATE_ENVELOPES: dict[str, dict[str, float]] = {
-    "recommended_temperate": dict(mat_max=15.0, abs_lat_min=30.0),
-    "strict_mat12": dict(mat_max=12.0, abs_lat_min=30.0),
-    "wide_mat18": dict(mat_max=18.0, abs_lat_min=0.0),
-    "all_sites": dict(mat_max=99.0, abs_lat_min=0.0),
-}
+# --- D-028 (DECIDED 2026-08-09): IPCC temperature regime --------------------
+# The private envelope (MAT <= 15 AND |lat| >= 30) is RETIRED. It had no answer
+# to "why that threshold". Scope is now set by the IPCC 2006 default climate
+# regions, Vol 4 Ch 3 Figure 3A.5.2 p. 3.39, classified per site in
+# IPCC_SITE_REGIONS_FILE by scripts/derive_ipcc_regions.py.
+#
+# Only the TEMPERATURE regime is used, because only it is determinable: every
+# non-tropical leaf of the figure is moisture-qualified and NAPESHM publishes no
+# PET. That is sufficient rather than a compromise - Vol 4 Ch 5 Table 5.5
+# indexes on `Temperate/Boreal`, which pools warm and cool, so this is exactly
+# the axis Ch 5 needs. The moisture axis is missing and is never invented.
+#
+# Why "not Tropical" is enough to mean "Temperate/Boreal" here: NAPESHM's
+# coldest site is 4 C, so under +/-0.5 C rounding no site can reach MAT <= 0 and
+# the Boreal/Polar subtree is unreachable for this dataset. See D-028, D-039.
+IPCC_SITE_REGIONS_FILE = "data/processed/ipcc_site_regions.json"
 
-ACTIVE_CLIMATE_ENVELOPE = "recommended_temperate"
+#: Regions outside the project's scope lock. A site classified into one of these
+#: is excluded; a site the tree could not resolve is retained, because for this
+#: dataset "unresolved" still implies Temperate/Boreal on the temperature axis.
+IPCC_OUT_OF_SCOPE_REGIONS = frozenset(
+    {"Tropical Montane", "Tropical Wet", "Tropical Moist", "Tropical Dry"}
+)
+
+#: Human-readable statement of what the G1 rows are now scoped to. Quoted into
+#: the rows themselves so the scope travels with the number.
+IPCC_SCOPE_LABEL = (
+    "IPCC 2006 temperature regime Temperate/Boreal (not Tropical); "
+    "moisture regime undetermined"
+)
 
 
 G1_SCRIPT = "scripts/derive_g1_napeshm.py"
 
 CONSTANTS: tuple[Constant, ...] = (
     Constant(
-        "CLIMATE_ENVELOPES",
+        "IPCC_OUT_OF_SCOPE_REGIONS",
         "D-028",
-        CLIMATE_ENVELOPES,
-        f"climate envelope for the G1 headline; active = {ACTIVE_CLIMATE_ENVELOPE!r}",
-        (G1_SCRIPT,),
+        IPCC_OUT_OF_SCOPE_REGIONS,
+        f"climate scope for the G1 headline: {IPCC_SCOPE_LABEL}",
+        (G1_SCRIPT, "scripts/derive_ipcc_regions.py"),
     ),
     Constant(
         "HEADLINE_DESIGNS",

@@ -49,7 +49,7 @@ That is enforced, not requested: see D-032.
 | D-025 | decided | `HEADLINE_EU_TYPE` — `Plots` only |
 | D-026 | decided | `DEPTH_CM` — rows scoped to 0–15 cm, never rescaled |
 | D-027 | decided | G1 is spatial + analytical combined, an upper bound |
-| **D-028** | **open** | `CLIMATE_ENVELOPES` → `VC-BPS-005/006` |
+| D-028 | decided | `IPCC_OUT_OF_SCOPE_REGIONS` — IPCC temperature regime → `VC-BPS-005/006` |
 | D-029 | decided | estimator: REML nested random effects, log scale |
 | D-030 | decided | NAPESHM primary for component 3, Poeplau cross-check |
 | D-031 | decided | Poeplau ↔ NAPESHM corroboration is logged, not merged |
@@ -60,6 +60,7 @@ That is enforced, not requested: see D-032.
 | **D-036** | **open** | our analytical error vs Potash's differ 4× → `VC-ANA-001` |
 | D-037 | decided | Potash parameters are candidate cross-checks, never merged |
 | D-038 | decided | positioning vs Potash et al. 2025 in any writeup |
+| D-039 | decided | **FINDING**: NAPESHM is not fully IPCC-classifiable — for the paper |
 
 ---
 
@@ -433,8 +434,60 @@ stock CV of 9.3-10.2% sits just below our between-plot estimate of 11.1-12.1%,
 which is a coherent ordering and a genuine corroboration. It must never be the
 baseline for a between-plot term: it does not measure one.
 
-**D-028 — OPEN SCOPE QUESTION, UNRESOLVED: what climate envelope defines
-"temperate" for NAPESHM?** ⚠️ *Deliberately not decided. For the PI.*
+**D-028 — DECIDED 2026-08-09: scope by IPCC 2006 climate region, classified as
+far as the data allow and no further.** ✅
+
+> **The decision.** Retire the private envelope. Classify every site the tree in
+> **Figure 3A.5.2 (Vol 4 Ch 3, p. 3.39)** can resolve, using MAT, MAP, elevation
+> and Daymet-derived frost days. Any site reaching a node that needs MAP:PET
+> returns **`unclassified`** — explicitly, never imputed, never
+> nearest-neighbour filled. Scope the G1 rows by the **temperature regime**:
+> Tropical is out, everything else is `Temperate/Boreal`.
+>
+> **Why, and this is the whole argument.** The alternative was an
+> internally-invented threshold applied to all 94 sites. That classifies
+> everything and is wrong in ways no reviewer can audit — the failure is in a
+> threshold's *meaning*, so it shows up as neither scatter nor a widened
+> interval. Partial IPCC classifies fewer sites and **names exactly which ones it
+> could not**. For a project whose entire claim is knowing what cannot be
+> detected, an ad hoc envelope would be **self-refuting**: it would assert a
+> precision about climate that the project's own thesis says to distrust about
+> carbon.
+>
+> **Why the temperature regime alone is sufficient rather than a compromise.**
+> Vol 4 Ch 5 **Table 5.5** indexes stock-change factors on `Temperate/Boreal` —
+> it does not distinguish warm from cool. So the axis we can resolve is exactly
+> the axis Ch 5 needs. Only the moisture axis is missing, and it is left missing.
+>
+> **Why "not Tropical" means "Temperate/Boreal" here.** NAPESHM's coldest site is
+> 4 °C, so under ±0.5 °C rounding no site can reach MAT ≤ 0 and the Boreal/Polar
+> subtree is unreachable for this dataset. Pinned by a test.
+>
+> **The split: 7 classified (6 Tropical Dry, 1 Tropical Montane), 87
+> unclassified**, every one of them blocked on `map_pet_ratio`. Zero sites
+> classify as IPCC-temperate, which is why the rows are scoped by temperature
+> regime rather than by region label. See **D-039** — the unclassified bucket is
+> a finding about NAPESHM, not a footnote about us.
+>
+> **Frost days.** Recovered from the **Daymet** single-pixel API at each site's
+> published coordinates — the source NAPESHM's own dictionary cites for every one
+> of its climate columns — over 2010–2019. Validated rather than assumed:
+> `floor(mean(daily series))` reproduces the published `site_meanmin_temp`,
+> `site_meanmax_temp` and `site_mean_temp` integers **60/60 exact** across all 20
+> sites at MAT ≥ 18, truncation convention included. That is what licenses using
+> the live V4 R1 endpoint against a dictionary citing doi:10.3334/ORNLDAAC/1328.
+>
+> **Known fragility, recorded not buried.** `site_mean_temp` is published as a
+> whole number. **20 of 94 sites sit exactly on a MAT cut point** (13 at 10, 7 at
+> 18). Four of those — MXAG01, MXPU01, MXQT02, MXSL01, all with 0.2–4.2 frost
+> days/yr — would become **Tropical** if their true MAT were above 18. For those
+> four, integer rounding decides scope membership, not climate.
+
+*The original open question is preserved below, because it records why the
+envelope was never defensible.*
+
+**D-028 (as originally written) — OPEN SCOPE QUESTION: what climate envelope
+defines "temperate" for NAPESHM?**
 NAPESHM site climate spans MAT 4.0-25.0 °C and MAP 167-1543 mm, with 78 US and
 16 Mexican sites. That reaches past temperate into subtropical highland and hot
 desert. Letting a 25 °C, 167 mm Sonoran site into a "temperate" baseline by
@@ -1026,6 +1079,54 @@ and state four differences plainly.** *To implement next PR.*
 
 ---
 
+**D-039 — FINDING, for the paper rather than a caveat footnote: NAPESHM cannot
+be fully classified under the IPCC 2006 scheme, and the reason is a
+reusability gap in the field's flagship soil-health dataset.**
+
+**87 of 94 sites are unclassifiable**, every one of them blocked on the same
+variable. Not because the sites are unusual — because NAPESHM publishes:
+
+* **no PET**, and
+* **no documented Hargreaves formulation or averaging window** — `hargreave_cmd`
+  is described only as "Hargreave Climate Moisture Deficit based on 1981–2010
+  normals … extracted from a GIS layer", which names neither the Hargreaves
+  variant, the reference-ET convention, nor how months were aggregated.
+
+The second point is the load-bearing one. **PET's absence alone would be
+recoverable** — the coordinates are published, and external climatologies exist.
+What makes it irrecoverable *as NAPESHM's own number* is that there is no
+specification to reproduce. Any PET we compute would be **ours wearing an IPCC
+label**, and the resulting region would be unfalsifiable against the dataset that
+supposedly produced it. Frost days were recoverable precisely because the
+dictionary **does** name its upstream source, which let us prove identity to
+60/60 published integers. The contrast is the finding: *the same dataset is
+reusable exactly where it documents provenance and unreusable where it does
+not.*
+
+**Why this belongs in the paper.** NAPESHM is the North American reference
+dataset for soil health measurement — 94 sites, six years, a designed
+inter-comparison. If it cannot be indexed to the IPCC climate regions that
+national inventories and every Verra/CDM-lineage crediting methodology are
+written in, then **its numbers cannot be carried into an inventory or a
+crediting context without an undocumented translation step** — the exact step
+D-028 was created to avoid. That is a structural limitation on the reuse of the
+field's flagship dataset, and it is invisible until someone actually tries the
+join, which is what we did.
+
+**Stated precisely, so it cannot be read as a complaint about data quality:** the
+measurements are fine. The *metadata* is incomplete in one specific,
+consequential way — a derived climate column published without its formula. The
+fix is small and entirely within SHI's power: publish the PET series, or the
+Hargreaves specification and averaging window. One paragraph in a data
+dictionary would make 87 sites classifiable.
+
+**Recommended framing:** a short subsection in the methods or discussion,
+carrying (a) the 7/87 split, (b) the frost-day recovery as the positive control
+that proves the point is about documentation rather than difficulty, and (c) the
+one-paragraph fix. Not a limitations bullet.
+
+---
+
 ## Open evidence gaps
 
 | id | gap | consequence | status |
@@ -1047,6 +1148,7 @@ and state four differences plainly.** *To implement next PR.*
 | 2026-08-07 | D-001 … D-020, G1 … G7 | Phase 0 initial build. 24 rows, 6 components, 14 verified against full text. |
 | 2026-08-08 | D-021 (open), D-022 | CI + CSV staleness guard. Re-prioritised `docs/sources.md`: Poeplau to top for G1, Buchkowski re-filed by role. No variance-table rows changed. |
 | 2026-08-08 | D-023 … D-027, D-029, D-030; **D-028 open** | `bias_direction` added to the schema and backfilled across all 24 existing rows. **G1 CLOSED** by `VC-BPS-005/006`, derived from NAPESHM: between-plot CV 12.1% (concentration) and 11.1% (stock) at 0-15 cm, n=212 EUs / 61 treatments / 14 sites. 26 rows. Climate envelope left open for the PI. |
+| 2026-08-09 | **D-028 CLOSED**; D-039 | **D-028 decided: partial IPCC classification.** Private envelope retired. 94 sites classified against Figure 3A.5.2 with frost days recovered from Daymet (validated 60/60 against NAPESHM's own published temperature integers): **7 classified** (6 Tropical Dry, 1 Tropical Montane), **87 unclassified**, all blocked on `map_pet_ratio`, never imputed. G1 re-scoped to the IPCC **temperature** regime (Temperate/Boreal), which is what Table 5.5 indexes on. **`VC-BPS-005/006` RE-DERIVED, not re-labelled**: concentration 12.1% → **11.9%** [9.9, 14.0], stock 11.1% → **11.5%** [9.6, 13.5]; n rises 212 → 386 EUs and 14 → 26 sites. The scope change re-admits 10 Mexican highland sites the latitude floor was built to exclude — recorded as a caveat on the rows, because the IPCC axis that might have separated them is the undetermined one. The D-032 guard now passes. D-039 logs the unclassified bucket as a finding about NAPESHM's reusability, for the paper. |
 | 2026-08-09 | **corrections** to D-031 and D-033 | Adversarial re-audit of the committed work. **D-031 reason 1 withdrawn**: "shallower depth is more variable" is refuted by the very layer CVs it cited (9.3 → 10.2 → 25.8% *rise* with depth), so the corroboration rests on two reasons, not three. **D-033 frost half withdrawn**: frost-day counts *are* faithfully obtainable from Daymet — the source NAPESHM itself cites — verified by reproducing the published temperature integers 39/39; the 13 warm sites split 7 Tropical / 6 not, so the variable decides scope membership and is not harmless. **MAP:PET remains the sole blocker**, now bounded exactly: 35 sites Dry, 40 Moist, **19 undecidable** from `mi` (replacing an unfounded "23"). Added the decisive Table 5.5 argument — Ch 5 pools warm/cool and stratifies on moist/dry, so a partial classification is worthless. Fixed a NaN hole that let `ipcc_climate.classify` fabricate three leaves. Registered both IPCC chapters in `docs/sources.md`. No variance-table row changed. |
 | 2026-08-09 | D-034, D-035, D-037, D-038; **D-036 open**; D-021 updated | IPCC classifier committed and tested but deliberately unfed (D-034) — D-028 still blocked, guard still red. Wuest's PNW sites classify **Cool Temperate Dry** (Warm Temperate Dry if MAT > 10), i.e. **temperate either way**, but D-021 stays open because the climate inputs were supplied rather than sourced. Potash et al. 2025 logged as prior art: schema needs `scales_with_interval` (D-035), a 4× analytical-error discrepancy is **open** (D-036), their parameters are candidate cross-checks never to be merged (D-037), positioning recorded (D-038). Six sources added to `docs/sources.md` as **to obtain**, including Smith 2004 and Saby et al. 2008 — the two foundational detectability papers, neither currently cited. No variance-table row, schema field or constant changed. |
 | 2026-08-08 | D-031, D-032, D-033; **D-028 still open** | Open-decision guard: decisions and the constants they govern are now machine-readable (`src/loam/decisions.py`), the build prints `<-- PROPOSED, NOT DECIDED`, and two tests refuse to pass while an open decision governs a live constant — **the suite is red on merge, by design** (D-032). Replacing the private climate envelope with IPCC 2006 climate regions was attempted and is **blocked**: MAP:PET and frost-day counts are not derivable from NAPESHM, and no proxy is substituted (D-033). Poeplau ↔ NAPESHM corroboration logged, with a figure correction (D-031). No variance-table values changed. |

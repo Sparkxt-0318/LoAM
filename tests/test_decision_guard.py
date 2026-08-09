@@ -96,28 +96,37 @@ def test_no_verified_baseline_row_rests_on_an_open_decision(rows):
     )
 
 
-def test_exposure_is_detected_without_the_row_admitting_it(rows):
+def test_exposure_is_detected_without_the_row_admitting_it(rows, monkeypatch):
     """The guard must not reward a row for staying quiet.
 
-    ``VC-BPS-006`` never mentions D-028, yet it comes off the same filter
-    cascade as ``VC-BPS-005`` under the same unratified envelope. It is caught
-    through its derivation script, not its prose. If that second route ever
-    breaks, this notices before the silent row slips through.
+    ``VC-BPS-006`` has never mentioned D-028 in its prose, yet it comes off the
+    same filter cascade as ``VC-BPS-005`` under the same climate constant. It is
+    caught through its derivation script, not its confession.
+
+    D-028 is now decided, so nothing is exposed to it in normal operation and
+    the live table can no longer demonstrate the route. Rather than delete the
+    test with the condition that motivated it, it reopens D-028 under
+    monkeypatch: the mechanism is what needs pinning, not the status of any one
+    decision. If the script route ever breaks, a future quiet row would slip
+    through, and this is what notices.
     """
-    quiet = next(
-        (r for r in rows if r["row_id"] == "VC-BPS-006"), None
-    )
+    quiet = next((r for r in rows if r["row_id"] == "VC-BPS-006"), None)
     if quiet is None:  # row retired; the invariant it pinned went with it
         pytest.skip("VC-BPS-006 is no longer in the table")
 
     assert "D-028" not in open_decisions_referenced(quiet), (
-        "VC-BPS-006 now cites D-028 in prose. Good - but this test was pinning "
-        "the case where it does NOT, so find another silent row or drop it."
+        "VC-BPS-006 now cites D-028 in prose. Good - but this test pins the "
+        "case where it does NOT, so find another silent row or drop it."
     )
-    assert "D-028" in rows_exposed_to_open_decisions(rows).get("VC-BPS-006", set()), (
-        "VC-BPS-006 is derived by a script that consumes the proposed "
-        "CLIMATE_ENVELOPES constant, but the guard did not flag it. The "
-        "script-based exposure route is broken, and a quiet row would now pass."
+    # Sanity: with D-028 decided, the row is clean.
+    assert "VC-BPS-006" not in rows_exposed_to_open_decisions(rows)
+
+    monkeypatch.setitem(OPEN_DECISIONS, "D-028", "reopened for this test only")
+    exposed = rows_exposed_to_open_decisions(rows)
+    assert "D-028" in exposed.get("VC-BPS-006", set()), (
+        "VC-BPS-006 is derived by a script that consumes a constant governed by "
+        "D-028, but with D-028 open the guard did not flag it. The script-based "
+        "exposure route is broken, and a quiet row would now pass."
     )
 
 

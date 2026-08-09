@@ -722,13 +722,13 @@ rows:
       within-treatment within-site residual CV among replicate experimental
       units under identical management.
     statistic: cv_pct
-    value: 12.1
+    value: 11.9
     units: pct
-    value_low: 10.0
-    value_high: 14.3
+    value_low: 9.9
+    value_high: 14.0
     uncertainty_type: ci95
-    n: 212
-    cv_pct: 12.1
+    n: 386
+    cv_pct: 11.9
     harmonization_method: derived_see_note
     harmonization_note: >-
       DERIVED BY US from the primary dataset; see scripts/derive_g1_napeshm.py.
@@ -736,15 +736,15 @@ rows:
       spatial heterogeneity plus analytical error, so their residual variance is
       between-plot spatial variance. Estimated as the residual of a REML nested
       random-effects model, treatment nested within site, NOT by averaging
-      per-treatment variances (unstable at 3-5 replicates, and it would weight a
-      3-replicate treatment equally with a 5-replicate one). Fitted on the LOG
+      per-treatment variances (unstable at 2-6 replicates, and it would weight a
+      2-replicate treatment equally with a 6-replicate one). Fitted on the LOG
       scale because within-treatment SD scales with treatment mean (log-log
       slope about 1.2, far from the 0 a constant-SD model assumes), so the
       natural parameter is a constant CV; CV = 100*sqrt(exp(sigma^2)-1). The
       interval is a 95% cluster bootstrap over SITES, the top-level independent
       unit - bootstrapping rows or treatments would ignore the nesting and give
       far too narrow an interval. 600/600 resamples converged and the bootstrap
-      median (11.9%) sits essentially on the point estimate, so the estimator
+      median (11.8%) sits essentially on the point estimate, so the estimator
       shows no material bias.
     reference_stock_mg_c_ha:
     mean_dependent: false
@@ -754,26 +754,37 @@ rows:
       split-sample or QC columns, so analytical error cannot be separated from
       spatial error and the residual necessarily contains both (D-027). Since
       variances add, the true between-plot SPATIAL term is strictly smaller than
-      12.1%. Using VC-ANA-001's 1.25% analytical CV as a rough guide, the purely
-      spatial part would be near sqrt(12.1^2 - 1.25^2) = 12.0% - so the
+      11.9%. Using VC-ANA-001's 1.25% analytical CV as a rough guide, the purely
+      spatial part would be near sqrt(11.9^2 - 1.25^2) = 11.8% - so the
       inflation is small, but it is one-directional and must not be forgotten
       when this row feeds the Phase 5 audit (D-023).
     land_use: cropland
     management: tillage gradient - 34 minimum, 20 moderate, 5 intense, 2 none
-    climate: temperate continental to maritime
-    koppen: Dfa/Dfb/Csb/Cfa
-    soil_texture: clay 0.9-31.2%, sand 17.0-86.7%
-    country_region: United States - DE, KS, MT, NE, NC, ND, OR, SD, VA, WA
+    climate: >-
+      IPCC 2006 temperature regime Temperate/Boreal (not Tropical); moisture
+      regime UNDETERMINED - NAPESHM publishes no PET (D-028, D-039). MAT 4-18 C,
+      MAP 190-1282 mm.
+    koppen: Dfa/Dfb/Csb/Cfa/Cwb - mixed; not the scoping criterion, see D-028
+    soil_texture: clay 0.9-47.0%, sand 10.7-86.7%
+    country_region: >-
+      United States - CA, DE, KS, MT, NE, NC, ND, OR, SD, TX, VA, WA; Mexico -
+      Estado de Mexico, Hidalgo, Oaxaca, Puebla, Queretaro, San Luis Potosi
     depth_top_cm: 0
     depth_bottom_cm: 15
     depth_basis: fixed_depth
-    site_soc_pct: 1.436
+    site_soc_pct: 1.486
     analytical_method: dry_combustion
     bd_method: core
     support_note: >-
-      212 experimental units in 61 treatments across 14 sites; 3-5 replicate EUs
-      per treatment (34 treatments with 3, 25 with 4, 2 with 5). Randomized
-      complete block or completely randomized designs only; eu_type 'Plots' only.
+      386 experimental units in 135 treatments across 26 sites; 2-6 replicate
+      EUs per treatment (55 treatments with 2, 48 with 3, 29 with 4, 2 with 5,
+      1 with 6). Randomized complete block or completely randomized designs
+      only; eu_type 'Plots' only. NOTE the 55 two-replicate treatments: the
+      retired envelope happened to contain none, so this scope rests on weaker
+      per-treatment support even though total n is larger. The REML residual
+      weights them by information rather than equally, which is why the
+      estimator was chosen, but it is a real change and not an improvement in
+      every respect.
     citation: >-
       Soil Health Institute (2024). North American Project to Evaluate Soil
       Health Measurements [data set]. doi:10.15482/USDA.ADC/25632270. Design and
@@ -783,14 +794,17 @@ rows:
     doi_or_url: https://doi.org/10.15482/USDA.ADC/25632270
     locator: >-
       soildata.csv (b_soc), sites.csv (exper_design, eu_type, site_mean_temp,
-      site_latitude); derivation in scripts/derive_g1_napeshm.py, output in
-      data/processed/g1_napeshm.json. Depth from Norris et al. 2020, not the data.
+      site_precip, site_elevation, lat/long); IPCC classification in
+      scripts/derive_ipcc_regions.py -> data/processed/ipcc_site_regions.json,
+      with frost days from Daymet; derivation in scripts/derive_g1_napeshm.py,
+      output in data/processed/g1_napeshm.json. Depth from Norris et al. 2020,
+      not the data.
     access: open_access
     verification: derived_primary_data
-    extracted_on: "2026-08-08"
+    extracted_on: "2026-08-09"
     in_scope: true
     use_as: baseline
-    osse_distribution: lognormal(0, 0.1207)
+    osse_distribution: lognormal(0, 0.1191)
     notes: >-
       CLOSES GAP G1. Primary source for component 3; Poeplau 2022 is retained as
       an independent cross-check, never as the baseline.
@@ -799,12 +813,22 @@ rows:
       rescaled - converting a 0-15 cm concentration CV to a 0-30 cm stock CV
       needs a depth-distribution assumption carrying its own error, and Phase 1
       must not do it silently.
-      Robust to the open climate question (D-028): the estimate moves only
-      between 10.6% and 12.1% across every candidate envelope from MAT<=12 C to
-      all 30 sites, well inside this row's own confidence interval.
-      Cover crops are nearly absent (58 of 61 treatments have none), so this
-      constrains the tillage half of our management scope and says little about
-      the cover-crop half.
+      SCOPED BY IPCC CLIMATE REGION (D-028, decided): sites classified Tropical
+      are excluded; every remaining NAPESHM site is Temperate/Boreal on the IPCC
+      temperature axis. The MOISTURE axis is undetermined and is NOT invented -
+      87 of 94 sites are `unclassified` for want of PET (D-039).
+      SUPERSEDES the retired MAT<=15 AND |lat|>=30 envelope, which had no answer
+      to "why that threshold". The change is not cosmetic: n rises 212 -> 386 EUs
+      and 14 -> 26 sites, and 10 Mexican highland sites that the latitude floor
+      excluded are now IN scope, because IPCC classifies them as not-Tropical.
+      READ THAT CAVEAT DIRECTLY: the retired envelope's stated purpose was to
+      exclude exactly those Cwb summer-rain sites on moisture-seasonality
+      grounds. IPCC's temperature axis does not encode moisture seasonality, and
+      the axis that might have separated them is precisely the one we cannot
+      resolve. If the moisture regime ever becomes available, this row must be
+      re-derived, and it could move.
+      Cover crops remain nearly absent, so this constrains the tillage half of
+      our management scope and says little about the cover-crop half.
 
   - row_id: VC-BPS-006
     component: between_plot_spatial
@@ -814,34 +838,40 @@ rows:
       within-treatment within-site residual CV among replicate experimental
       units under identical management.
     statistic: cv_pct
-    value: 11.1
+    value: 11.5
     units: pct
-    value_low: 9.4
-    value_high: 13.0
+    value_low: 9.6
+    value_high: 13.5
     uncertainty_type: ci95
-    n: 212
-    sd_mg_c_ha: 2.93
-    cv_pct: 11.1
+    n: 372
+    sd_mg_c_ha: 2.86
+    cv_pct: 11.5
     harmonization_method: derived_see_note
     harmonization_note: >-
       Same estimator, dataset and filters as VC-BPS-005; see
       scripts/derive_g1_napeshm.py. Stock computed per EU as
       b_soc/100 * bd_2mm * 15 * 100 = b_soc * bd_2mm * 15 Mg C/ha, so bulk
       density measurement error is propagated into this row and VC-BPS-005 is
-      the cleaner of the two. sd_mg_c_ha = 11.1% * 26.39 = 2.93 Mg C/ha using
-      the mean 0-15 cm stock of the SAME 212 EUs, so the reference stock is
+      the cleaner of the two. sd_mg_c_ha = 11.5% * 24.99 = 2.86 Mg C/ha using
+      the mean 0-15 cm stock of the SAME 372 EUs, so the reference stock is
       internal to the data rather than assumed by us - but the row is still
       flagged mean_dependent because the absolute figure moves if that mean is
       revised.
-      COUNTER-INTUITIVE RESULT, DELIBERATELY NOT SUPPRESSED: stock CV (11.1%) is
-      LOWER than concentration CV (12.1%) even though stock carries the extra
+      COUNTER-INTUITIVE RESULT, DELIBERATELY NOT SUPPRESSED: stock CV (11.5%) is
+      LOWER than concentration CV (11.9%) even though stock carries the extra
       bulk-density error. The cause is a within-treatment correlation between
-      log SOC and log bulk density of -0.396: plots richer in organic matter are
+      log SOC and log bulk density of -0.280: plots richer in organic matter are
       less dense, and at FIXED DEPTH the two partly cancel in the stock product.
-      The negative covariance term (2*cov = -0.0028) outweighs the added density
-      variance (+0.0012). This is a property of the fixed-depth convention, not
-      a property of the soil.
-    reference_stock_mg_c_ha: 26.39
+      The negative covariance term (2*cov = -0.00179) outweighs the added
+      density variance (+0.00109). This is a property of the fixed-depth
+      convention, not a property of the soil.
+      RE-DERIVED under D-028's IPCC scope. The effect SURVIVES the scope change
+      but WEAKENS: the correlation moves -0.396 -> -0.280 and the gap between
+      the two rows narrows from 1.0 to 0.5 percentage points. Worth watching -
+      it is the same mechanism that biases fixed-depth stock CHANGE
+      (VC-BDC-001/002), and its magnitude is evidently scope-dependent rather
+      than a constant of the soil.
+    reference_stock_mg_c_ha: 24.99
     mean_dependent: true
     bias_direction: inflates
     bias_direction_reasoning: >-
@@ -855,20 +885,28 @@ rows:
       call the row unbiased, so the net direction remains inflating.
     land_use: cropland
     management: tillage gradient - 34 minimum, 20 moderate, 5 intense, 2 none
-    climate: temperate continental to maritime
-    koppen: Dfa/Dfb/Csb/Cfa
-    soil_texture: clay 0.9-31.2%, sand 17.0-86.7%
-    country_region: United States - DE, KS, MT, NE, NC, ND, OR, SD, VA, WA
+    climate: >-
+      IPCC 2006 temperature regime Temperate/Boreal (not Tropical); moisture
+      regime UNDETERMINED - NAPESHM publishes no PET (D-028, D-039). MAT 4-18 C,
+      MAP 190-1282 mm.
+    koppen: Dfa/Dfb/Csb/Cfa/Cwb - mixed; not the scoping criterion, see D-028
+    soil_texture: clay 0.9-47.0%, sand 10.7-86.7%
+    country_region: >-
+      United States - CA, DE, KS, MT, NE, NC, ND, OR, SD, TX, VA, WA; Mexico -
+      Estado de Mexico, Hidalgo, Oaxaca, Puebla, San Luis Potosi
     depth_top_cm: 0
     depth_bottom_cm: 15
     depth_basis: fixed_depth
-    site_stock_mg_c_ha: 26.39
-    site_soc_pct: 1.436
+    site_stock_mg_c_ha: 24.99
+    site_soc_pct: 1.472
     analytical_method: dry_combustion
     bd_method: core
     support_note: >-
-      Same 212 EUs / 61 treatments / 14 sites as VC-BPS-005; bd_2mm present for
-      all 212, so no additional attrition.
+      372 EUs / 128 treatments / 25 sites - a subset of VC-BPS-005's 386 / 135 /
+      26, because bd_2mm is missing for 14 EUs. That attrition is NEW under this
+      scope: the retired envelope happened to have bulk density on every EU, so
+      the two rows shared an identical sample and no longer do. The one dropped
+      site is in Mexico (Queretaro).
     citation: >-
       Soil Health Institute (2024). North American Project to Evaluate Soil
       Health Measurements [data set]. doi:10.15482/USDA.ADC/25632270. Design and
@@ -878,15 +916,16 @@ rows:
     doi_or_url: https://doi.org/10.15482/USDA.ADC/25632270
     locator: >-
       soildata.csv (b_soc, bd_2mm), sites.csv (exper_design, eu_type,
-      site_mean_temp, site_latitude); derivation in
+      site_mean_temp, site_precip, site_elevation, lat/long); IPCC
+      classification in scripts/derive_ipcc_regions.py; derivation in
       scripts/derive_g1_napeshm.py, output in data/processed/g1_napeshm.json.
       Depth from Norris et al. 2020, not the data.
     access: open_access
     verification: derived_primary_data
-    extracted_on: "2026-08-08"
+    extracted_on: "2026-08-09"
     in_scope: true
     use_as: baseline
-    osse_distribution: lognormal(0, 0.1108)
+    osse_distribution: lognormal(0, 0.1143)
     notes: >-
       The stock form is what carbon protocols actually account in, so it is the
       operationally relevant one; VC-BPS-005 is the cleaner estimate. Carry both.
@@ -896,6 +935,9 @@ rows:
       convention that hides variance also hides bias. Phase 1 should expect
       equivalent-soil-mass accounting to show a LARGER between-plot variance
       than this row, not a smaller one.
+      SCOPED BY IPCC CLIMATE REGION (D-028, decided), same as VC-BPS-005 - see
+      that row's notes for the scope change, the 10 newly-included Mexican
+      highland sites, and the undetermined moisture axis (D-039).
 
   # =====================================================================
   # 4. TEMPORAL (MONTH-TO-MONTH) VARIANCE
