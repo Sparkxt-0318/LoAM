@@ -13,8 +13,10 @@ import pytest
 from loam.ipcc_climate import (
     CLIMATE_REGIONS,
     TEMPERATE_REGIONS,
+    UNCLASSIFIED,
     MissingClimateInput,
     classify,
+    classify_partial,
     is_temperate,
 )
 
@@ -293,3 +295,74 @@ def test_wuest_pnw_above_the_ten_degree_cut_is_warm_temperate_dry(mat, ratio):
 def test_wuest_is_temperate_either_side_of_the_boundary(mat):
     """The load-bearing claim in the D-021 update: temperate whichever way it falls."""
     assert is_temperate(classify(mat, 350, map_pet_ratio=0.6))
+
+
+# ---------------------------------------------------------------------------
+# partial classification (D-028, decided)
+# ---------------------------------------------------------------------------
+
+
+def test_partial_returns_the_region_when_the_tree_resolves():
+    assert classify_partial(
+        25, 900, elevation_m=200, frost_days_per_year=0
+    ) == ("Tropical Dry", None)
+
+
+def test_partial_names_the_blocking_variable_instead_of_guessing():
+    region, blocked = classify_partial(15, 800)
+    assert region == UNCLASSIFIED
+    assert blocked == "map_pet_ratio"
+
+
+def test_unclassified_is_not_a_region():
+    """It is a value, not a twelfth-and-a-half class."""
+    assert UNCLASSIFIED not in CLIMATE_REGIONS
+    assert UNCLASSIFIED not in TEMPERATE_REGIONS
+    with pytest.raises(ValueError):
+        is_temperate(UNCLASSIFIED)
+
+
+def test_partial_never_imputes_the_missing_axis():
+    """The same site must not resolve just because it was asked twice."""
+    for _ in range(3):
+        assert classify_partial(5, 800)[0] == UNCLASSIFIED
+
+
+@pytest.mark.parametrize(
+    "mat, frost, expected",
+    [
+        (25, 0, "Tropical Dry"),      # tropical branch needs no MAP:PET
+        (25, 8, UNCLASSIFIED),        # fails frost -> falls into the MAP:PET half
+        (18, 0, UNCLASSIFIED),        # 18 is not > 18, so not tropical
+        (10, None, UNCLASSIFIED),
+        (4, None, UNCLASSIFIED),
+    ],
+)
+def test_only_the_tropical_branch_survives_without_map_pet(mat, frost, expected):
+    """The structural reason 87 of 94 NAPESHM sites are unclassified.
+
+    Every non-tropical leaf of Figure 3A.5.2 is moisture-qualified, so MAP:PET
+    gates all eight of them. Only the tropical branch can be reached on MAT,
+    frost days, elevation and MAP alone.
+    """
+    region, _ = classify_partial(
+        mat, 900, elevation_m=200, frost_days_per_year=frost
+    )
+    assert region == expected
+
+
+def test_no_napeshm_site_can_reach_boreal_or_polar():
+    """Load-bearing for the scope claim: NAPESHM's coldest site is 4 °C.
+
+    With MAT > 0 guaranteed, the Boreal/Polar subtree is unreachable, so any
+    NAPESHM site that is not Tropical is necessarily Warm or Cool Temperate -
+    i.e. its IPCC *temperature regime* is determinable even when its full
+    region label is not.
+    """
+    for mat in (3.5, 4, 10, 17, 18):
+        region, blocked = classify_partial(mat, 800)
+        assert region == UNCLASSIFIED
+        assert blocked == "map_pet_ratio", (
+            f"MAT {mat} blocked on {blocked}, not moisture - the Boreal/Polar "
+            "branch is supposed to be unreachable for this dataset"
+        )

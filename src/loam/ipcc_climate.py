@@ -207,6 +207,52 @@ def _moist(map_pet_ratio: float | None, branch: str) -> bool:
     return ratio > 1
 
 
+#: Returned by :func:`classify_partial` when the tree reaches a test whose input
+#: we do not have. It is a value, not a region: it never appears in
+#: CLIMATE_REGIONS and `is_temperate` rejects it.
+UNCLASSIFIED = "unclassified"
+
+
+def classify_partial(
+    mat_c: float,
+    map_mm: float,
+    *,
+    elevation_m: float | None = None,
+    frost_days_per_year: float | None = None,
+    map_pet_ratio: float | None = None,
+    monthly_mean_temps_c: list[float] | None = None,
+) -> tuple[str, str | None]:
+    """Classify if the tree can be resolved; otherwise say so and name the reason.
+
+    Returns ``(region, None)`` or ``(UNCLASSIFIED, blocking_variable)``.
+
+    This is D-028's decided position: classify what the data support and mark
+    the rest **unclassified, explicitly** — never imputed, never
+    nearest-neighbour filled, never resolved by an invented threshold. The
+    alternative considered and rejected was a private cut-off applied to every
+    site, which classifies everything and is wrong in a way no reviewer can
+    audit.
+
+    It is a thin wrapper on :func:`classify` on purpose: the strict function
+    stays the single implementation of the figure, so the partial one cannot
+    drift from it or quietly acquire a fallback of its own.
+    """
+    try:
+        return (
+            classify(
+                mat_c,
+                map_mm,
+                elevation_m=elevation_m,
+                frost_days_per_year=frost_days_per_year,
+                map_pet_ratio=map_pet_ratio,
+                monthly_mean_temps_c=monthly_mean_temps_c,
+            ),
+            None,
+        )
+    except MissingClimateInput as exc:
+        return UNCLASSIFIED, exc.variable
+
+
 def is_temperate(region: str) -> bool:
     """Whether a region sits inside the project's temperate scope lock."""
     if region not in CLIMATE_REGIONS:
