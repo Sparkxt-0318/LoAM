@@ -498,17 +498,33 @@ layer CVs without the inter-layer covariance, and that absence is logged as gap
 | n | 212 EUs / 61 treatments / 14 sites | 8 plots, 16 cores each |
 | analytical error | **included** (D-027, upper bound) | closer to spatial-only |
 
-NAPESHM is higher, and **should** be, for three independent reasons that all push
-the same way:
+NAPESHM is higher, and **should** be — but for **two** reasons, not three.
 
-1. **Shallower depth is more variable.** Poeplau's own layer CVs rise 9.3% at
-   0–10 cm → 10.2% at 10–30 cm → 25.8% at 30–50 cm, so CV is not constant with
-   depth. Our 0–15 cm window is not comparable to either layer directly — which
-   is precisely why D-026 scopes the row rather than rescaling it.
-2. **Ours includes analytical error.** D-027: NAPESHM has no lab duplicate or QC
+1. **Ours includes analytical error.** D-027: NAPESHM has no lab duplicate or QC
    columns, so the residual is spatial + analytical and is an upper bound.
-3. **Different continent, design and support.** Independent populations, not a
+2. **Different continent, design and support.** Independent populations, not a
    replication.
+
+**Depth is NOT a third reason, and the earlier claim that it was is withdrawn.**
+This entry originally read *"shallower depth is more variable"*, taken from the
+task brief. **The numbers cited in its own support refute it:** Poeplau's layer
+CVs *rise* with depth — 9.3% at 0–10 cm → 10.2% at 10–30 cm → 25.8% at
+30–50 cm. Since our 0–15 cm window is *shallower* than Poeplau's 10–30 cm layer,
+that trend predicts NAPESHM should come out **lower**, which is the opposite of
+what this entry is explaining. The same data is read the correct way elsewhere in
+this file (D-026) and in `VC-WPS-002`'s note ("essentially flat with depth over
+0–30 cm, then jumps to 25.8% at 30–50 cm").
+
+So depth is, at best, neutral here and mildly *against* the observed ordering.
+Two reasons still push the right way, and the observed gap is small, so the
+conclusion stands — but it stands on a narrower base than first written, and
+saying "three independent reasons that all push the same way" overstated it.
+
+*Recorded rather than quietly edited, because the failure mode is the point:* the
+brief's other bad figure (7.5–8.5%) was caught and corrected two paragraphs
+above, while this one was passed straight through in the same pass. Checking a
+supplied *number* against the table and not checking a supplied *causal claim*
+against the same table is an inconsistency in the review, not bad luck.
 
 **Direction and magnitude both behave.** Between-plot (11.1–12.1%) sits just
 above within-plot (9.3–10.2%) — the ordering theory demands, with a gap of a few
@@ -517,6 +533,16 @@ either estimate has: an *n*=8 German study and a North American dataset of 1,450
 SOC-bearing EUs across 93 sites (212 EUs / 14 sites after the D-024/D-025/D-028
 filters), built by different people for different purposes, landing a few points
 apart with the sign that was predicted before either number was computed.
+
+*Second figure correction, recorded here so it survives into the permanent
+record.* The comparison was proposed against "a 1,385-EU dataset". **1,385 is a
+real number from our own output but it is not the dataset size** — it is
+`design_sensitivity.all_designs_all_eu_types` in
+`data/processed/g1_napeshm.json` (1,385 EUs / 443 treatments / 86 sites), i.e.
+the *widest fitted cohort* after the ≥2-replicate filter with the D-024 and
+D-025 filters removed. The dataset holds **1,450** SOC-bearing EUs across **93**
+sites (`filter_cascade` stage 1); the headline uses **212** across 14. Using
+1,385 as "the dataset" understates it by 65 EUs and 7 sites.
 
 **What this does NOT license.** It does not close G3. A within/between **ratio**
 still cannot be read off two studies on two continents at two depths, and no row
@@ -617,14 +643,86 @@ different and checkable reasons:
   (P = AE + S, PET = AE + D), MAP:PET = 1 ⟺ S = D, and at S = D the index is
   `Im = 40·S/PET`, which **varies with S/PET** instead of taking one value. The
   IPCC contour maps to a *moving* `mi` value, and S and PET are not published
-  separately. 23 of 94 sites sit in the band where that contour could fall.
+  separately.
 
-**(2) Frost days — required, unavailable, and reachable.** The first test needs
-"≤ 7 days of frost/year". NAPESHM has no frost column. `gdd0` is a *growing
-degree-day sum above 0 °C accumulated to the sampling date* — a heat total, not a
-count of frost days, and not convertible into one. This is not a hypothetical
-gap: **13 of 94 sites have MAT > 18 °C**, so the frost clause actually decides
-their branch, and 7 more sit exactly at MAT 18 (see the rounding note below).
+  **How far `mi` alone *can* be pushed — a bound, replacing an earlier vague
+  one.** This entry first said "23 of 94 sites sit in the band where that
+  contour could fall", with no stated criterion; that number is withdrawn. The
+  defensible version is a closed bracket. Substituting `S = P − PET + D` into
+  `Im = (100S − 60D)/PET` gives `D = [PET·(mi+100) − 100P]/40`, and the physical
+  constraints `S ≥ 0`, `D ≥ 0`, `D ≤ PET` then bound PET:
+
+  ```
+  max( 100P/(mi+100), 60P/(mi+60) )  ≤  PET  ≤  100P/(mi+60)
+  ```
+
+  Testing `PET < P` against that bracket decides the IPCC moisture split
+  **exactly** at the extremes and not at all in the middle:
+
+  | condition | conclusion | sites |
+  |---|---|---|
+  | `mi < 0` | lower bound > MAP → **Dry** | 35 |
+  | `mi > 40` | upper bound < MAP → **Moist** | 40 |
+  | `0 ≤ mi ≤ 40` | bracket straddles MAP → **undecidable** | **19** |
+
+  So **75 of 94 sites are decidable from `mi` alone, and 19 are not.** The
+  bracket also *proves* the −60 floor observed above rather than inferring it:
+  `S ≥ 0` forces `mi > −60`. This is a genuinely better statement of the blocker
+  — it is smaller than first claimed, exactly located, and derived rather than
+  asserted. It is still fatal to the deliverable, because the scheme has to
+  classify every site, not 80% of them.
+
+**(2) Frost days — absent from NAPESHM, but OBTAINABLE. This half of the blocker
+is withdrawn.** The first test needs "≤ 7 days of frost/year". NAPESHM has no
+frost column anywhere (checked across all 9 SQLite tables, all 464 rows of
+`dbcolumns.csv`, the XLSX dictionary and the DOCX overview), and `gdd0` cannot
+substitute — it is a *growing degree-day sum above 0 °C accumulated to the
+sampling date*, which censors cold entirely (a −1 °C day and a −30 °C day both
+contribute 0) and is dominated by sampling date rather than climate
+(r = 0.84 with day-of-year vs 0.51 with MAT; sites sharing MAT = 10 °C span
+`gdd0` 0–2271).
+
+**But "absent from the distributed CSVs" is not "not obtainable", and that
+conflation was an error.** Every climate column in `sites.csv` is documented as
+*"calculated by SHI from Daymet daily surface weather data set
+(doi:10.3334/ORNLDAAC/1328)"* over 2010–2019, and Daymet exposes a public
+single-pixel API. Querying it at each site's own published lat/long for daily
+`tmin` and counting days ≤ 0 °C is **the same series NAPESHM already used,
+reduced with a different operator** — not a proxy.
+
+That identity is verifiable rather than assumed: `floor(mean(daily series))`
+reproduces the published integers **39/39 exactly** across all three temperature
+columns on all 13 warm sites, including the truncation convention. A different
+pixel, version or window would not do that.
+
+The resulting counts settle the clause, and they do **not** fall on one side:
+
+| | sites | mean frost days/yr | tropical test |
+|---|---|---|---|
+| MXMO01/02, MXSO01/02/03, MXGT01, USTX03 | 7 | 0.0 – 2.8 | ≤ 7 → **Tropical** |
+| USFL01/02, USTX05, USAL03/04, USGA01 | 6 | 20.7 – 24.4 | > 7 → **not Tropical** |
+
+Nothing sits near the boundary — the gap is 2.8 to 20.7. Under the committed
+classifier the 6 become Warm Temperate Moist (**inside** our temperate scope
+lock) and the 7 become Tropical Dry/Montane (**outside** it), so this variable
+decides scope membership for 13 of 94 sites. NAPESHM's own EPA/CEC ecoregion
+labels split the same 13 the same way (6 Eastern Temperate Forests vs 5 Tropical
+Dry Forests), which is independent corroboration.
+
+**Two bounding arguments were tested and are dead**, recorded so they are not
+retried: (a) *a mean cannot bound a count* — certifying ≤ 7 frost days from
+`site_meanmin_temp` would require the annual mean daily-minimum to sit within
+~0.5 °C of the annual *hottest* daily-minimum; empirically 6 sites have
+`site_meanmin_temp` of 12–13 °C and still record 20.7–24.4 frost days.
+(b) *`min_annualtemp_sd` cannot help* — it is the SD across ten **annual
+averages** (interannual), not within-year daily variability, it is rounded to
+integers taking only {0, 1}, and 8 of the 13 warm sites have it equal to 0, which
+under a Normal would "certify" zero frost days as a pure rounding artifact. True
+within-year daily `tmin` SD is 2.9–8.4 °C. The assumption picks the answer rather
+than supporting it.
+
+**Net: frost days require one external call to the source NAPESHM itself cites.
+MAP:PET remains the blocker.**
 
 **(3) The Polar/Boreal branch is unreachable, so its missing input is harmless.**
 "Each mean monthly temperature < 10 °C" needs monthly temperatures, which NAPESHM
@@ -639,6 +737,42 @@ and **7 at exactly 18**, i.e. exactly on the ">10?" and ">18?" cut points, with
 true values anywhere in ±0.5 °C. A fifth of the dataset would be assigned by
 rounding artifact.
 
+**Why a PARTIAL classification does not rescue this — the decisive argument, and
+it comes from Ch 5 itself.** The obvious salvage is to publish the half we can
+get: classify sites Warm vs Cool Temperate from MAT alone and leave moist/dry
+undetermined. **That inverts the brief's own rationale**, which was that Vol 4
+Ch 5 stratifies cropland stock-change factors this way. Read against **Table
+5.5, pp. 5.17–5.18** (checked verbatim), its two columns are:
+
+* **Temperature regime** takes only `Temperate/Boreal`, `Tropical`,
+  `Tropical montane`, `All`, `Temperate/Boreal and Tropical`.
+  **"Warm Temperate" and "Cool Temperate" never appear.**
+* **Moisture regime** splits *every* Temperate/Boreal row: F<sub>LU</sub>
+  long-term cultivated **Dry 0.80 / Moist 0.69** (a 14% relative difference);
+  F<sub>MG</sub> reduced till 1.02 / 1.08; no-till 1.10 / 1.15; F<sub>I</sub> low
+  0.95 / 0.92.
+
+Footnote 1 states it outright: *"Where data were sufficient, separate values were
+determined for temperate and tropical temperature regimes; and dry, moist, and
+wet moisture regimes."*
+
+**So the axis we can deliver is exactly the axis Ch 5 pools, and the axis we
+cannot deliver is exactly the axis it stratifies on.** A partial classification
+buys nothing for the stated purpose. Worse, "Cool Temperate (moisture
+undetermined)" is not an incomplete IPCC label but a **category error**: it names
+an *interior node* of Figure 3A.5.2, not one of the twelve regions, and it
+indexes no row of Table 5.5, whose interior node is `Temperate/Boreal` anyway.
+The same holds one chapter over — Vol 4 Ch 2 Table 2.3's reference stocks are
+`Cold temperate, dry / Cold temperate, moist / Warm temperate, dry / Warm
+temperate, moist`, so a bare temperature label selects a *pair* of rows, never a
+row.
+
+*(One thing the temperature axis alone does settle honestly: 74 of 94 sites have
+`site_mean_temp` ≤ 17, so their true MAT is below 18 even under ±0.5 °C rounding
+and they are unambiguously **not Tropical** — which is a defensible scope claim
+for D-028, and a real improvement on an arbitrary private envelope. It is not a
+stratification and assigns none of the twelve regions.)*
+
 **Why we stopped rather than approximated.** Substituting `mi > 0` for
 `MAP:PET > 1` would look faithful, would be cited as "IPCC climate regions", and
 would be wrong in a way no reader could detect from the output — the failure is
@@ -650,15 +784,25 @@ written in) **evaporates if the labels are ours rather than IPCC's**. A
 mislabelled region is worse than an admittedly private envelope, because it
 invites exactly the cross-walk it cannot support.
 
+**Upstream documentation bug, found while checking the above and worth
+recording:** `data/raw/napeshm/dbcolumns.csv` **swaps the descriptions of
+`site_meanmax_temp` and `site_meanmin_temp`** — the former is described as
+"10 year average of daily *minimum* temperatures" and the latter as "daily
+*maximum* temperatures". The data are fine (max > min throughout); the
+dictionary is wrong. Anyone trusting the description rather than the column name
+would invert them.
+
 **How to unblock, in ascending cost.** Any of these makes the classification
 implementable; none can be done from the repository as it stands:
 
 1. **Join an external PET/frost climatology to the site coordinates.** All 94
-   sites have lat/long. TerraClimate or WorldClim v2 supply monthly PET, monthly
-   temperature and (via daily products, e.g. Daymet, which NAPESHM already used)
-   frost-day counts. This yields the real MAP:PET, real frost days and real
-   monthly temperatures — a faithful implementation, at the cost of a new
-   external dependency and its own provenance row.
+   sites have lat/long. TerraClimate or WorldClim v2 supply monthly PET and
+   monthly temperature; Daymet — the source NAPESHM itself used — supplies the
+   frost-day counts, and **this half is already demonstrated above**, verified
+   against the published columns 39/39. This yields the real MAP:PET, real frost
+   days and real monthly temperatures — a faithful implementation, at the cost of
+   a new external dependency and its own provenance row. **Only MAP:PET is
+   actually outstanding.**
 2. **Ask the Soil Health Institute for the intermediate climate products.** `mi`
    was computed by SHI from Daymet, so S, D and PET existed at some point. If
    PET is released, MAP:PET is immediate and no new dataset is needed.
@@ -903,5 +1047,6 @@ and state four differences plainly.** *To implement next PR.*
 | 2026-08-07 | D-001 … D-020, G1 … G7 | Phase 0 initial build. 24 rows, 6 components, 14 verified against full text. |
 | 2026-08-08 | D-021 (open), D-022 | CI + CSV staleness guard. Re-prioritised `docs/sources.md`: Poeplau to top for G1, Buchkowski re-filed by role. No variance-table rows changed. |
 | 2026-08-08 | D-023 … D-027, D-029, D-030; **D-028 open** | `bias_direction` added to the schema and backfilled across all 24 existing rows. **G1 CLOSED** by `VC-BPS-005/006`, derived from NAPESHM: between-plot CV 12.1% (concentration) and 11.1% (stock) at 0-15 cm, n=212 EUs / 61 treatments / 14 sites. 26 rows. Climate envelope left open for the PI. |
+| 2026-08-09 | **corrections** to D-031 and D-033 | Adversarial re-audit of the committed work. **D-031 reason 1 withdrawn**: "shallower depth is more variable" is refuted by the very layer CVs it cited (9.3 → 10.2 → 25.8% *rise* with depth), so the corroboration rests on two reasons, not three. **D-033 frost half withdrawn**: frost-day counts *are* faithfully obtainable from Daymet — the source NAPESHM itself cites — verified by reproducing the published temperature integers 39/39; the 13 warm sites split 7 Tropical / 6 not, so the variable decides scope membership and is not harmless. **MAP:PET remains the sole blocker**, now bounded exactly: 35 sites Dry, 40 Moist, **19 undecidable** from `mi` (replacing an unfounded "23"). Added the decisive Table 5.5 argument — Ch 5 pools warm/cool and stratifies on moist/dry, so a partial classification is worthless. Fixed a NaN hole that let `ipcc_climate.classify` fabricate three leaves. Registered both IPCC chapters in `docs/sources.md`. No variance-table row changed. |
 | 2026-08-09 | D-034, D-035, D-037, D-038; **D-036 open**; D-021 updated | IPCC classifier committed and tested but deliberately unfed (D-034) — D-028 still blocked, guard still red. Wuest's PNW sites classify **Cool Temperate Dry** (Warm Temperate Dry if MAT > 10), i.e. **temperate either way**, but D-021 stays open because the climate inputs were supplied rather than sourced. Potash et al. 2025 logged as prior art: schema needs `scales_with_interval` (D-035), a 4× analytical-error discrepancy is **open** (D-036), their parameters are candidate cross-checks never to be merged (D-037), positioning recorded (D-038). Six sources added to `docs/sources.md` as **to obtain**, including Smith 2004 and Saby et al. 2008 — the two foundational detectability papers, neither currently cited. No variance-table row, schema field or constant changed. |
 | 2026-08-08 | D-031, D-032, D-033; **D-028 still open** | Open-decision guard: decisions and the constants they govern are now machine-readable (`src/loam/decisions.py`), the build prints `<-- PROPOSED, NOT DECIDED`, and two tests refuse to pass while an open decision governs a live constant — **the suite is red on merge, by design** (D-032). Replacing the private climate envelope with IPCC 2006 climate regions was attempted and is **blocked**: MAP:PET and frost-day counts are not derivable from NAPESHM, and no proxy is substituted (D-033). Poeplau ↔ NAPESHM corroboration logged, with a figure correction (D-031). No variance-table values changed. |

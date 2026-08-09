@@ -213,3 +213,83 @@ def test_temperate_set_is_the_four_temperate_regions():
 def test_is_temperate_rejects_a_non_region():
     with pytest.raises(ValueError, match="not an IPCC default climate region"):
         is_temperate("Cool Temperate")  # missing the moist/dry half
+
+
+# ---------------------------------------------------------------------------
+# NaN: the refusal guarantee's blind spot
+# ---------------------------------------------------------------------------
+
+NAN = float("nan")
+
+
+@pytest.mark.parametrize(
+    "kwargs, expected_variable, was_fabricating",
+    [
+        # Every one of these silently returned a plausible-looking region before
+        # NaN was gated, because each comparison against NaN is False and the
+        # value therefore takes the 'No' branch at every test.
+        (dict(mat_c=25, map_mm=800, frost_days_per_year=NAN, map_pet_ratio=1.5),
+         "frost_days_per_year", "Warm Temperate Moist"),
+        (dict(mat_c=25, map_mm=NAN, frost_days_per_year=0, elevation_m=100),
+         "map_mm", "Tropical Dry"),
+        (dict(mat_c=15, map_mm=800, map_pet_ratio=NAN),
+         "map_pet_ratio", "Warm Temperate Dry"),
+        (dict(mat_c=NAN, map_mm=800, map_pet_ratio=1.5),
+         "mat_c", None),
+        (dict(mat_c=25, map_mm=800, frost_days_per_year=0, elevation_m=NAN),
+         "elevation_m", None),
+    ],
+)
+def test_nan_is_refused_not_silently_branched(kwargs, expected_variable, was_fabricating):
+    """A NaN must raise, naming the variable - never fall through to a leaf."""
+    with pytest.raises(MissingClimateInput) as exc:
+        classify(**kwargs)
+    assert exc.value.variable == expected_variable
+
+
+def test_nan_inside_monthly_temps_is_refused():
+    """A sequence is only as good as its worst element."""
+    with pytest.raises(MissingClimateInput) as exc:
+        classify(-5, 400, map_pet_ratio=0.5, monthly_mean_temps_c=[-20] * 11 + [NAN])
+    assert exc.value.variable == "monthly_mean_temps_c"
+
+
+def test_empty_monthly_temps_is_refused():
+    """all([]) is True, which would have made an empty series 'Polar'."""
+    with pytest.raises(MissingClimateInput) as exc:
+        classify(-5, 400, map_pet_ratio=0.5, monthly_mean_temps_c=[])
+    assert exc.value.variable == "monthly_mean_temps_c"
+
+
+def test_required_arguments_are_gated_too():
+    """The two positional arguments are not reached by the per-branch checks."""
+    for kwargs in (
+        dict(mat_c=None, map_mm=800, map_pet_ratio=1.0),
+        dict(mat_c=15, map_mm=None, map_pet_ratio=1.0),
+    ):
+        with pytest.raises(MissingClimateInput):
+            classify(**kwargs)
+
+
+# ---------------------------------------------------------------------------
+# item 3: the Wuest result, pinned so a threshold edit cannot silently stale it
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("mat", [9.0, 9.5, 10.0])
+@pytest.mark.parametrize("ratio", [0.5, 0.7])
+def test_wuest_pnw_below_the_ten_degree_cut_is_cool_temperate_dry(mat, ratio):
+    """D-021: Wuest's PNW dryland sites, MAT at or below the `>10?` cut."""
+    assert classify(mat, 350, map_pet_ratio=ratio) == "Cool Temperate Dry"
+
+
+@pytest.mark.parametrize("mat", [10.5, 11.0])
+@pytest.mark.parametrize("ratio", [0.5, 0.7])
+def test_wuest_pnw_above_the_ten_degree_cut_is_warm_temperate_dry(mat, ratio):
+    assert classify(mat, 350, map_pet_ratio=ratio) == "Warm Temperate Dry"
+
+
+@pytest.mark.parametrize("mat", [9.0, 9.5, 10.0, 10.5, 11.0])
+def test_wuest_is_temperate_either_side_of_the_boundary(mat):
+    """The load-bearing claim in the D-021 update: temperate whichever way it falls."""
+    assert is_temperate(classify(mat, 350, map_pet_ratio=0.6))

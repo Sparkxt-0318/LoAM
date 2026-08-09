@@ -1,6 +1,6 @@
 # Sources — bibliography and retrieval status
 
-Status of every source behind `data/variance_table.csv`, as of 2026-08-08.
+Status of every source behind `data/variance_table.csv`, as of 2026-08-09.
 
 **Legend**
 🟢 primary data held, derived by us · ✅ full text read and values verified ·
@@ -245,6 +245,26 @@ whenever it is attempted:
 
 Components 1, 2, 3, 5 and 6 have verified in-scope baselines and can proceed to
 Phase 1 as they stand.
+
+---
+
+## 📗 Standards and frameworks — read, not held
+
+These are not evidence rows; they are the frameworks our scope and our Phase 5
+targets are written against. They had no entry here until now, which was a real
+omission: the IPCC chapters underpin the D-033 STOP, D-034's classifier and the
+whole item-2 argument, and a reviewer could not previously check the
+transcription against anything in the repository.
+
+| document | used for | status |
+|---|---|---|
+| **IPCC 2006 Guidelines Vol 4 Ch 3**, *Consistent Representation of Lands*, Annex 3A.5, **Figure 3A.5.2 p. 3.39** — [PDF](https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/4_Volume4/V4_03_Ch3_Representation.pdf) | The default climate-region decision tree. Transcribed literally into `src/loam/ipcc_climate.py`; the blocker is D-033. | ✅ read from the PDF, figure verified at the image level (text extraction scrambles the flowchart topology — do **not** re-derive it from `pdftotext`) |
+| **IPCC 2006 Guidelines Vol 4 Ch 5**, *Cropland*, **Table 5.5 pp. 5.17–5.18** — [PDF](https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/4_Volume4/V4_05_Ch5_Cropland.pdf) | Relative stock-change factors, stratified by temperature **and moisture** regime. This is the table D-028's rationale points at, and the one that shows why a partial classification is worthless (D-033). | ✅ read verbatim |
+| **IPCC 2006 Guidelines Vol 4 Ch 2**, Table 2.3 (reference SOC stocks) | Cross-check on D-033's category-error argument: rows are `Cold/Warm temperate × dry/moist`, so a bare temperature label selects a pair of rows, never one. | 🟡 cited from Ch 5 context, not yet read directly |
+| **Verra VM0042 v2.0** — `z_deduct` = 0.43 standard errors | The Phase 5 audit hook identified in D-038. | 🔴 not obtained |
+
+Neither IPCC PDF is committed to `data/literature/` (they are large and stably
+hosted); the links above plus the page numbers are the citation of record.
 
 ---
 

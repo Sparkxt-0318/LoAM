@@ -30,7 +30,7 @@ Stdlib only: CI installs the `dev` extra and nothing heavier.
 
 from __future__ import annotations
 
-#: The eleven default climate regions, exactly as named in Figure 3A.5.2.
+#: The twelve default climate regions, exactly as named in Figure 3A.5.2.
 CLIMATE_REGIONS = (
     "Tropical Montane",
     "Tropical Wet",
@@ -67,15 +67,44 @@ class MissingClimateInput(ValueError):
     into a published label.
     """
 
-    def __init__(self, variable: str, why: str) -> None:
-        super().__init__(f"{variable} is required {why}, and was not supplied")
+    def __init__(self, variable: str, why: str, problem: str = "was not supplied") -> None:
+        super().__init__(f"{variable} is required {why}, and {problem}")
         self.variable = variable
 
 
-def _need(value, variable: str, why: str):
+def _finite(value, variable: str, why: str) -> float:
+    """Reject None and NaN alike.
+
+    NaN has to be caught explicitly, and the reason is nasty: every comparison
+    against NaN is False, so an unguarded NaN does not error - it silently takes
+    the 'No' branch at each test and falls out at a leaf. A NaN frost count made
+    a 25 °C site 'Warm Temperate Moist'; a NaN precipitation fabricated
+    'Tropical Dry' whole. Both look like ordinary answers.
+
+    This is exactly the failure the module exists to prevent, arriving through
+    the value rather than through a default, so it is checked at the same gate.
+    """
     if value is None:
         raise MissingClimateInput(variable, why)
+    if isinstance(value, float) and value != value:  # NaN
+        raise MissingClimateInput(
+            variable, why,
+            "was NaN - which would otherwise take the 'No' branch at every test "
+            "and fall out at a leaf, since all comparisons against NaN are False",
+        )
     return value
+
+
+def _need(value, variable: str, why: str):
+    """Demand a per-branch optional input. Sequences are checked element-wise."""
+    if isinstance(value, (list, tuple)):
+        if not value:
+            # all([]) is True, which would have made an empty series 'Polar'.
+            raise MissingClimateInput(variable, why, "was an empty sequence")
+        for element in value:
+            _finite(element, variable, why)
+        return value
+    return _finite(value, variable, why)
 
 
 def classify(
@@ -108,8 +137,15 @@ def classify(
         Polar from Boreal.
 
     Raises :class:`MissingClimateInput` naming the variable if a needed one is
-    absent.
+    absent or NaN.
     """
+    # The two REQUIRED arguments are gated here, because `_need` only ever sees
+    # the per-branch optional ones. Until this existed, the module's central
+    # "refuses rather than defaults" guarantee did not cover its own required
+    # inputs - a NaN MAP fabricated a whole leaf.
+    mat_c = _finite(mat_c, "mat_c", "for every branch of the classification")
+    map_mm = _finite(map_mm, "map_mm", "for every branch of the classification")
+
     # --- Is it tropical? MAT > 18 °C AND <= 7 days of frost/year -------------
     # Short-circuit on temperature first: when MAT <= 18 the conjunction is
     # False whatever the frost count, so a dataset with no frost column can
