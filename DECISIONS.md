@@ -57,7 +57,7 @@ That is enforced, not requested: see D-032.
 | D-033 | decided | IPCC climate regions are not derivable from NAPESHM; no proxy |
 | D-034 | decided | `ipcc_climate.py` — classifier committed, deliberately unfed |
 | D-035 | decided | schema gains `scales_with_interval` — next PR |
-| **D-036** | **open** | our analytical error vs Potash's differ 4× → `VC-ANA-001` |
+| **D-036** | **open** | analytical error vs Potash's — traced to source, 4× → **1.2×**; residual is internal to Potash |
 | D-037 | decided | Potash parameters are candidate cross-checks, never merged |
 | D-038 | decided | positioning vs Potash et al. 2025 in any writeup |
 | D-039 | decided | **FINDING**: NAPESHM is not fully IPCC-classifiable — for the paper |
@@ -73,6 +73,7 @@ That is enforced, not requested: see D-032.
 | D-049 | decided | superseded rows are kept, not deleted; schema gains `superseded_by` |
 | D-050 | decided | **PIPELINE VALIDATION**: our derivation reproduces the published temporal statistic |
 | D-051 | decided | **FINDING**: components are conflated by adjacency in sources — `quantity_definition` + guard |
+| D-052 | decided | every row declares a `basis`; D-020 gets mechanical teeth |
 
 ---
 
@@ -1901,6 +1902,159 @@ a short window after each trigger rather than anywhere in the sentence — the
 first draft flagged "between sampling points within one plot, for plots of
 1–400 m²" as spanning two components, when "plots" there was describing plot
 size.
+
+---
+
+**D-036 UPDATE — TRACED TO BOTH PRIMARY SOURCES. The 4x discrepancy is
+LARGELY RESOLVED: it collapses to ~1.2x once like is compared with like. The
+residual is not between the two studies at all — it is INTERNAL to Potash et al.
+D-036 STAYS OPEN, because closing it requires a judgement that is the PI's.**
+
+Both sources are now held. Potash et al. 2025 is **Environmental Research
+Letters**, doi:10.1088/1748-9326/ada16c, **open access** — it was never
+paywalled, only unlocated. Poeplau et al. 2022 was already in
+`data/literature/`.
+
+**What Potash actually says, verbatim:** *"The SOC changes are not observed
+directly but with error due to relocation (σ_r) since we cannot sample the same
+core twice (Poeplau et al 2022, Lark 2009), as well as lab error (σ_l). Note
+that our choice of σ_l = 2 Mg ha⁻¹ corresponds to a relative error of 4% in SOC
+concentration and 2% in bulk density for 0–30 cm samples with average SOC
+concentration 2% and bulk density 1.5 g cm⁻³."* Table 1 lists it as **"Lab
+measurement SD (Mg ha⁻¹) 2"**, alongside **"Relocation SD (Mg ha⁻¹) 5"**.
+
+**THE FINDING THAT DOES THE WORK — Poeplau reports TWO laboratory errors, and
+we put the narrower one in the table.** From their Results, verbatim: *"The
+average laboratory errors of SOC content caused by subsampling the same sieved
+sample and the analytical MAPE were 2.5 and 1.2% across all sites, depth
+increments and land uses."*
+
+* **analytical error** — *"averaging the deviations between the two technical
+  replicates of each original milled sample"*. The innermost step only: one
+  milled sample, measured twice.
+* **subsampling error** — *"a second aliquot was taken from each of the sieved
+  P1 samples before milling, milled again and analysed"*. This re-mills and
+  re-analyses, so it **contains** the analytical step and adds within-sample
+  heterogeneity.
+
+`VC-ANA-001` carries the analytical error alone. Potash's `σ_l` is a whole-lab
+pathway error — their parameter table notes that compositing more cores per
+assay *increases* lab error in the estimate, which only makes sense if `σ_l` is
+a per-assay error covering everything from composite to reported stock,
+**including bulk density**, which they say explicitly.
+
+**Like for like:**
+
+| comparison | ours | Potash | ratio |
+|---|---|---|---|
+| as the table stands (analytical only, no BD) vs their concentration term | 1.25% | 4% | **3.2x** |
+| Poeplau's *subsampling-inclusive* lab error vs their concentration term | 3.13% | 4% | **1.28x** |
+| the same, plus their 2% bulk-density term, on a stock basis | 3.72% | 4.47% | **1.20x** |
+
+MAPE→SD uses the same normality conversion as D-003 (×1.2533).
+
+**So: units, depth and bulk density explain very little; the WHOLE of the gap is
+explained by which of Poeplau's two lab errors we picked.** That is a result
+about our own table, not about a disagreement in the literature.
+
+**The residual is inside Potash, not between the papers.** At their own stated
+reference soil — 0–30 cm, 2% SOC, BD 1.5 g cm⁻³ — the stock is **90 Mg C/ha**.
+Their stated 4% concentration and 2% bulk-density errors combine in quadrature
+to 4.47%, which is **4.02 Mg C/ha** — not the 2 Mg C/ha they adopt. Their
+`σ_l = 2` is **2.22%** of that stock. Their own sentence therefore does not
+reconcile with their own parameter, by a factor of two, in the conservative
+direction (they use the smaller value).
+
+Two readings, and we cannot choose between them from the text: either `σ_l = 2`
+is right and the "4% and 2%" sentence is loose, or the sentence is right and
+`σ_l` should be ~4. **It matters**, because in their formulation lab error
+enters the budget twice — baseline and remeasurement — and does not scale with
+the monitoring interval, so it dominates at short intervals, which is exactly
+where projects want to claim early detection.
+
+**A smaller thing found on the way, about our own row.** `VC-ANA-001`'s
+`harmonization_note` cites *"about 1%"* from Poeplau's Discussion (*"we found
+the analytical error to be a negligible source of uncertainty (≈1%)"*) and
+converts to SD 1.25%. The Results section gives the same quantity as **1.2%
+MAPE**, which converts to **1.50%**. We took the rounded Discussion figure over
+the precise Results figure. Small, but it is the more authoritative number and
+the row should use it.
+
+**WHY THIS STAYS OPEN.** What remains is not a fact to look up but a choice
+about what `analytical` should mean in this table:
+
+* **Recommendation (mine): add a second analytical row carrying Poeplau's
+  subsampling-inclusive lab error (2.5% MAPE → 3.13% SD, concentration basis)
+  and make it the baseline**, demoting `VC-ANA-001` to a sensitivity row that
+  records the instrument-only floor. Reason: every other component in this table
+  is scoped to what a monitoring programme actually incurs, and no programme
+  ever re-measures the same milled aliquot — it subsamples a composite. The
+  narrow figure understates the error a real design faces, and understating
+  analytical error is anti-conservative for the Phase 5 audit (D-023).
+* **Against it:** `VC-ANA-001` is the only row in the table measuring the
+  instrument in isolation, and D-027's logic — prefer the decomposed term where
+  one exists — cuts the other way.
+
+Either way `VC-ANA-002` (Saby, 2.5% concentration, `verified_secondary`) turns
+out to sit almost exactly on Poeplau's subsampling-inclusive figure, which is
+mild corroboration that ~2.5–3% is the right order for a whole-pathway lab error
+on concentration.
+
+**No row is changed by this entry.** Adding or re-roling an analytical row is
+the judgement above, and it is the PI's.
+
+**What breaks if wrong.** If the two Poeplau errors are not nested as read —
+if the subsampling comparison somehow excluded the analytical step — then 2.5%
+and 1.2% would combine rather than subsume, giving 2.77% MAPE and a slightly
+larger figure; the conclusion is unchanged. If Potash's `σ_l = 2` is the
+intended value and the "4%" sentence is the loose one, then our subsampling-
+inclusive figure (3.13% concentration, 2.82 Mg C/ha at their reference soil)
+**exceeds** theirs, and the disagreement reverses sign rather than closing.
+
+---
+
+**D-052 — every row declares a BASIS. Axis and basis are orthogonal, and a
+basis mismatch is dimensionally silent.**
+
+D-051 gave every row an **axis** — what varies. It does not say what the number
+is expressed **on**, and units cannot: a 1% CV of SOC *concentration* and a 1%
+CV of SOC *stock* are dimensionally identical and semantically different.
+Summing them yields a number, not an error — no type error, no unit error, just
+a wrong answer that looks fine. D-036 is the live instance: a 1.25%
+concentration error and a 4%-with-bulk-density stock error, argued about for two
+rounds as though they were the same quantity.
+
+The table already knew. **D-020 says "a concentration CV is never treated as a
+stock CV".** It said so in prose. This is the enforceable version — the same
+move D-032 made for open decisions and D-051 made for components.
+
+New required enum `basis`: `concentration`, `stock`, `stock_change`,
+`variance_share`, `proportion`, `distance`. `tests/test_basis.py` checks it
+against each row's units and — the part with teeth — requires that **all
+baseline dispersion rows within one component share a basis**, since those are
+the summable ones. Structural rows are exempt by design: a `bias_pct` like
+`VC-REL-003` (a 50% error reduction) or a `range` like `VC-REL-004` (a
+saturation distance) modifies a budget rather than entering one.
+
+**Backfilling all 41 rows found one live mismatch, and it is a baseline
+collision.** `VC-BPS-005` is a **concentration** CV; `VC-BPS-006` and
+`VC-BPS-007…011` are **stock** CVs. All seven are baselines, all are `cv_pct` in
+`pct`, and nothing distinguished them mechanically. It is recorded in
+`MIXED_BASIS_BY_DESIGN` rather than resolved, because both are wanted —
+concentration is what the laboratory measures and is free of bulk-density error;
+stock is what a carbon claim is denominated in — and choosing one is the PI's
+call. Note D-040 already showed the two are not interchangeable even
+approximately: on a common sample the stock CV runs **below** the concentration
+CV, 11.456% against 11.897%.
+
+**The exemption is a record, not permission to sum across.** The OSSE must pick
+one basis per run and say which.
+
+**What breaks if wrong.** If the basis vocabulary is too coarse — if `stock` is
+hiding a fixed-depth versus equivalent-soil-mass distinction that matters — then
+two rows could share a basis and still not be summable. That distinction is
+currently carried by `depth_basis`, and the two fields should be read together;
+if that proves insufficient, `basis` is where the split belongs.
 
 ---
 
