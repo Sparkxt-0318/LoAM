@@ -47,6 +47,23 @@ check structural rather than a judgement call:
 > "variation **between sampling occasions** at one fixed plot" → `temporal`
 > "variation **between plots** on one sampling occasion" → `between_plot_spatial`
 
+### And every row states its basis
+
+The axis says what *varies*. It does not say what the number is expressed **on**,
+and units cannot: a 1% CV of SOC **concentration** and a 1% CV of SOC **stock**
+are dimensionally identical and semantically different. Summing them produces a
+number, just not a meaningful one — no type error, no unit error, simply a wrong
+answer that looks fine.
+
+D-020 has always said "a concentration CV is never treated as a stock CV". It
+said so in prose. `basis` is the enforceable version: `tests/test_basis.py`
+requires every row to declare one, checks it against the row's units, and — the
+part with teeth — requires that all **baseline dispersion rows within one
+component share a basis**, since those are the summable ones. Components where
+two bases genuinely coexist are listed in `MIXED_BASIS_BY_DESIGN` with the
+decision that examined them; that is a record, not permission to sum across.
+See D-052.
+
 `tests/test_quantity_definition.py` fails if a row's axis disagrees with its
 component, if a definition names no readable axis, or if one definition names
 axes for two different components — a pooled figure measures neither of them.
@@ -122,7 +139,7 @@ table with `use_as: placeholder_needs_pdf`, but it can never be a baseline.
 
 ## Columns
 
-48 columns in seven blocks. Required columns are marked ●.
+49 columns in seven blocks. Required columns are marked ●.
 
 ### Identity
 
@@ -130,6 +147,7 @@ table with `use_as: placeholder_needs_pdf`, but it can never be a baseline.
 |---|---|---|---|
 | `row_id` | str | ● | Stable key, `VC-<COMP>-NNN`. Never reused or renumbered. |
 | `component` | enum | ● | Which of the six components. |
+| `basis` | enum | ● | What the number is expressed **on**: `concentration`, `stock`, `stock_change`, `variance_share`, `proportion`, `distance`. Orthogonal to `component`. See below. |
 | `quantity_definition` | str | ● | What the number measures, stated **independently of the component** — must name its axis after *between*/*across*/*among*, and must not restate the component name. See above. |
 | `error_kind` | enum | ● | `random` / `systematic` / `mixed`. |
 | `quantity` | str | ● | Plain-language statement of what the number measures. |

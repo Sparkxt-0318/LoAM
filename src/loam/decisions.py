@@ -56,9 +56,12 @@ DECISION_REF = re.compile(r"\bD-\d{3}\b")
 #: compares the two and fails if they drift.
 OPEN_DECISIONS: dict[str, str] = {
     "D-036": (
-        "Our analytical error (VC-ANA-001, 1%) and Potash et al. 2025's "
-        "(sig_l = 2 Mg C/ha, about 4%) differ fourfold. Which is right, and "
-        "what does each actually measure?"
+        "Traced to both primary sources (D-036 update): the 4x collapses to "
+        "~1.2x once Poeplau's subsampling-inclusive lab error is compared with "
+        "Potash's whole-pathway sig_l. What remains is a CHOICE - should "
+        "VC-ANA-001 carry the instrument-only error or the whole-lab-pathway "
+        "error? - plus an inconsistency internal to Potash (sig_l = 2 Mg/ha vs "
+        "the 4.02 their own stated relative errors imply)."
     ),
 }
 
@@ -71,7 +74,7 @@ DECIDED_DECISIONS: tuple[str, ...] = (
     "D-025", "D-026", "D-027", "D-028", "D-029", "D-030", "D-031", "D-032",
     "D-033", "D-034", "D-035", "D-037", "D-038", "D-039", "D-040", "D-041",
     "D-042", "D-043", "D-044", "D-045", "D-046", "D-047", "D-048",
-    "D-049", "D-050", "D-051", "D-053",
+    "D-049", "D-050", "D-051", "D-052", "D-053",
 )
 
 ALL_DECISIONS: tuple[str, ...] = tuple(
