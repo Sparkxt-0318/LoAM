@@ -72,6 +72,7 @@ That is enforced, not requested: see D-032.
 | D-048 | decided | NEON temporal path retired, script and caveats kept |
 | D-049 | decided | superseded rows are kept, not deleted; schema gains `superseded_by` |
 | D-050 | decided | **PIPELINE VALIDATION**: our derivation reproduces the published temporal statistic |
+| D-051 | decided | **FINDING**: components are conflated by adjacency in sources — `quantity_definition` + guard |
 
 ---
 
@@ -1814,6 +1815,92 @@ temporal row would be mislabelled. If Part 3 were wrong, the G1 baseline would
 be an artefact of one implementation. Both are checkable by re-running
 `scripts/derive_temporal.py` against the public-domain data, which is why the
 comparison is in the repository rather than only in prose.
+
+---
+
+**D-051 — FINDING: variance components are reported ADJACENTLY in the literature
+and get conflated by whoever reads them next. The schema now makes each row
+state its axis of variation, and a test refuses rows filed against it.**
+
+**The failure this is built from.** `VC-TMP-002` sat in the `temporal` component
+across several PRs while reporting variance between replicate experimental
+units. It was correctly transcribed, correctly cited, correctly harmonised, and
+filed under the wrong component — **because the number appeared beside the
+temporal figure in its source.** Misclassification by proximity.
+
+**Every existing guard missed it, and each was right to.** R6 asks whether a
+locator has been verified; this one had. D-032 asks whether an open decision
+governs a live constant; none did. The staleness test compares YAML with CSV;
+they agreed. None of them asks *is this number the kind of thing its component
+says it is* — and no amount of care in the existing checks would have got there,
+because the row was internally consistent. It surfaced only when D-049 forced a
+supersession target to be named and the quantity had to be stated plainly enough
+for the mismatch to become visible.
+
+**Why this is a finding and not just a schema change.** The conflation did not
+originate with us. Wuest & Durfee print a temporal variance share and a
+between-experimental-unit variance share side by side, as any careful paper
+would — they are comparing them, and the comparison is the result. The error
+enters **downstream**, when someone lifts one number into a budget. We are that
+downstream reader, we made exactly that error, and we made it while actively
+trying not to.
+
+That generalises. A soil-carbon meta-analysis assembling error terms from
+published papers is doing precisely what we did, at scale, usually without a
+line-level provenance trail to catch it. **The claim for the paper: adjacency in
+a source is a systematic source of component conflation in downstream error
+budgets, and the defence is not care — it is requiring every number to state its
+axis of variation independently of where it is filed.** It belongs beside D-039
+(provenance-dependent reusability) and D-040 (invariance across covariates) as a
+finding about why a table like this has to exist at all.
+
+**The mechanism.** Each component in `schema.py` carries a `definition` — what
+varies, what is held fixed — and the phrases naming its **axis of variation**.
+Each row carries `quantity_definition`, required. The axis is whatever follows
+*between* / *across* / *among*; the earliest marker after each trigger resolves
+that clause to a component. Structural, not semantic, and deliberately so — the
+brief was not to build a classifier but to make a mismatch impossible to miss.
+
+Three ways to fail, all loud: the axis disagrees with the filed component; no
+readable axis is named at all; or **one definition names axes for two different
+components**, which means the figure pools them and measures neither.
+
+**The allowlist has teeth, because an allowlist without them is a silencer.**
+`KNOWN_CROSS_COMPONENT` records genuine mismatches with a reason — and
+`test_a_cross_component_row_is_never_load_bearing` forbids any row in it from
+being a `baseline`. A misfiled row may be kept for contrast; it may never drive
+a number. Re-filing it is the only way to promote it.
+
+**Backfilling all 41 rows found three more, not one.** This is the result, not a
+setback:
+
+| row | filed under | reads as | why |
+|-----|-------------|----------|-----|
+| `VC-TMP-002` | `temporal` | `between_plot_spatial` | the original failure |
+| `VC-BPS-001` | `between_plot_spatial` | **pooled** with `within_plot_spatial` | its own harmonization_note already said "this figure is NOT a pure between-plot term" — in prose, which does not fail CI |
+| `VC-BPS-003` | `between_plot_spatial` | `within_plot_spatial` (also pooled) | it is a RATIO between two components; its numerator is the within-plot term |
+| `VC-BPS-004` | `between_plot_spatial` | `temporal` | it is an **MDC** — an output of a whole variance structure plus a design, alpha and power. Not a variance component at all |
+
+**None of the four is load-bearing** — `VC-TMP-002` is `sensitivity_high` and
+superseded, the other three are `out_of_scope_reference`. So no published number
+moves. That is the reassuring half. The unreassuring half is that three of them
+had sat undetected since the table was built, and one of them was confessing in
+its own prose the whole time.
+
+**`VC-BPS-004` is the sharpest case.** An MDC is what this project *produces*.
+Filing one as an input variance component is a category error one step worse
+than filing a number under the wrong axis, and it is the kind of thing that,
+left alone, ends up inside a variance budget as though it were a variance.
+
+**What breaks if wrong.** If the axis reader is too permissive, a future misfiled
+row passes and the guard provides false assurance — mitigated by pinning the
+reader's behaviour on eight declared examples plus a regression test built from
+`VC-TMP-002`'s real definition. If it is too strict, authors contort prose to get
+past it, which is worse than no guard at all; that is why markers are resolved in
+a short window after each trigger rather than anywhere in the sentence — the
+first draft flagged "between sampling points within one plot, for plots of
+1–400 m²" as spanning two components, when "plots" there was describing plot
+size.
 
 ---
 

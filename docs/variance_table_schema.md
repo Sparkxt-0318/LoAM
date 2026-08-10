@@ -28,6 +28,32 @@ Six components:
 | 5 | `relocation` | error from not resampling the same point |
 | 6 | `depth_bd_convention` | fixed depth vs equivalent soil mass; bulk density |
 
+### Every component and every row states its axis of variation
+
+The table above names the components. It does not, on its own, stop a number
+being filed under the wrong one — and that happened. `VC-TMP-002` sat under
+`temporal` for several PRs while reporting variance between replicate
+experimental units, because the number appeared *beside* the temporal figure in
+its source. It was correctly transcribed, correctly cited, and misclassified by
+proximity.
+
+So each component in `schema.py` now carries a **`definition`** — what varies,
+and what is held fixed while it varies — plus the phrases that name its **axis
+of variation**. Each row carries a matching **`quantity_definition`**. The axis
+is whatever follows *between*, *across* or *among*, and the earliest marker
+after each of those words decides what the definition reads as. That makes the
+check structural rather than a judgement call:
+
+> "variation **between sampling occasions** at one fixed plot" → `temporal`
+> "variation **between plots** on one sampling occasion" → `between_plot_spatial`
+
+`tests/test_quantity_definition.py` fails if a row's axis disagrees with its
+component, if a definition names no readable axis, or if one definition names
+axes for two different components — a pooled figure measures neither of them.
+Genuine cross-component rows are allowlisted with a reason, and **an allowlisted
+row may never be a `baseline`**: it can be kept for contrast, it cannot drive a
+number. See D-051.
+
 ---
 
 ## Four design choices that carry the weight
@@ -83,7 +109,7 @@ assumptions, X% of claims fall below detection."*
 Rule **R12** stops `unknown` from becoming a dodge — it requires a substantive
 explanation of why no direction can be defended.
 
-Current distribution: 14 `inflates`, 7 `unknown`, 5 `deflates`.
+Current distribution: 19 `inflates`, 17 `unknown`, 5 `deflates`.
 
 ### 4. Evidence strength is graded (`verification`)
 
@@ -96,7 +122,7 @@ table with `use_as: placeholder_needs_pdf`, but it can never be a baseline.
 
 ## Columns
 
-46 columns in seven blocks. Required columns are marked ●.
+48 columns in seven blocks. Required columns are marked ●.
 
 ### Identity
 
@@ -104,6 +130,7 @@ table with `use_as: placeholder_needs_pdf`, but it can never be a baseline.
 |---|---|---|---|
 | `row_id` | str | ● | Stable key, `VC-<COMP>-NNN`. Never reused or renumbered. |
 | `component` | enum | ● | Which of the six components. |
+| `quantity_definition` | str | ● | What the number measures, stated **independently of the component** — must name its axis after *between*/*across*/*among*, and must not restate the component name. See above. |
 | `error_kind` | enum | ● | `random` / `systematic` / `mixed`. |
 | `quantity` | str | ● | Plain-language statement of what the number measures. |
 

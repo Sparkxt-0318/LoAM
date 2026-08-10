@@ -22,6 +22,10 @@ rows:
 
   - row_id: VC-ANA-001
     component: analytical
+    quantity_definition: >-
+      Standard deviation between two technical replicates of the same milled
+      soil sample, determined by dry combustion in one laboratory. One field
+      location, one date; only the determination is repeated.
     error_kind: random
     quantity: >-
       Analytical error of SOC determination, from the deviation between two
@@ -86,6 +90,9 @@ rows:
 
   - row_id: VC-ANA-002
     component: analytical
+    quantity_definition: >-
+      Dispersion between replicate determinations of the same soil sample by
+      elemental analysis in European laboratories. Nothing spatial varies.
     error_kind: random
     quantity: >-
       Analytical error of elemental analysis for SOC content in European
@@ -143,6 +150,10 @@ rows:
 
   - row_id: VC-ANA-003
     component: analytical
+    quantity_definition: >-
+      Systematic offset between determinations of the same sample air-dried at
+      40 C and oven-dried at 105 C - a difference between sample preparation
+      treatments applied to one soil, not between field positions.
     error_kind: systematic
     quantity: >-
       Underestimation of SOC concentration when samples are air-dried rather
@@ -196,6 +207,11 @@ rows:
 
   - row_id: VC-ANA-004
     component: analytical
+    quantity_definition: >-
+      Standard deviation between replicate determinations of the same
+      high-rock-content soil after mechanical grinding rather than hand
+      processing - a difference between grinding treatments applied to one
+      soil.
     error_kind: random
     quantity: >-
       Between-replicate SD of SOC stock introduced by mechanical grinding of a
@@ -256,6 +272,10 @@ rows:
 
   - row_id: VC-WPS-001
     component: within_plot_spatial
+    quantity_definition: >-
+      Relative dispersion of SOC stock between 16 cores within one 20 x 20 m
+      cropland plot at 0-10 cm, all taken on one date and analysed by one
+      laboratory.
     error_kind: random
     quantity: >-
       Coefficient of variation of SOC stock among 16 soil cores within a
@@ -319,6 +339,10 @@ rows:
 
   - row_id: VC-WPS-002
     component: within_plot_spatial
+    quantity_definition: >-
+      Relative dispersion of SOC stock between 16 cores within one 20 x 20 m
+      cropland plot at 10-30 cm, all taken on one date and analysed by one
+      laboratory.
     error_kind: random
     quantity: >-
       Coefficient of variation of SOC stock among 16 soil cores within a
@@ -379,6 +403,9 @@ rows:
 
   - row_id: VC-WPS-003
     component: within_plot_spatial
+    quantity_definition: >-
+      Relative dispersion of SOC stock between 16 cores within one 20 x 20 m
+      GRASSLAND plot, all taken on one date and analysed by one laboratory.
     error_kind: random
     quantity: >-
       Coefficient of variation of SOC stock among 16 cores within a 20 x 20 m
@@ -437,6 +464,10 @@ rows:
 
   - row_id: VC-WPS-004
     component: within_plot_spatial
+    quantity_definition: >-
+      Median relative dispersion of SOC concentration between sampling points
+      within one plot, for plots of 1-400 m2 in European agricultural
+      topsoils.
     error_kind: random
     quantity: >-
       Median plot-scale CV of SOC CONTENT for plots of 1-400 m2 in European
@@ -502,6 +533,12 @@ rows:
 
   - row_id: VC-BPS-001
     component: between_plot_spatial
+    quantity_definition: >-
+      Relative dispersion of SOC stock across a national forest inventory
+      network, pooling variation between whole plots with variation between
+      microplots within each plot. The source treats the two as comparable and
+      does not separate them, so this figure spans two components rather than
+      measuring one.
     error_kind: random
     quantity: >-
       Coefficient of variation of soil carbon stock in mineral horizons across
@@ -558,6 +595,9 @@ rows:
 
   - row_id: VC-BPS-002
     component: between_plot_spatial
+    quantity_definition: >-
+      Relative dispersion of SOC stock in ORGANIC horizons between plots of a
+      national forest inventory network, at one inventory occasion.
     error_kind: random
     quantity: >-
       Coefficient of variation of soil carbon stock in ORGANIC horizons across
@@ -606,6 +646,10 @@ rows:
 
   - row_id: VC-BPS-003
     component: between_plot_spatial
+    quantity_definition: >-
+      Share of total spatial variance attributable to variation between
+      sampling points within a plot, as opposed to variation between whole
+      plots. A ratio of two components, not a measurement of either.
     error_kind: random
     quantity: >-
       Share of total spatial variance attributable to within-plot variation,
@@ -662,6 +706,11 @@ rows:
 
   - row_id: VC-BPS-004
     component: between_plot_spatial
+    quantity_definition: >-
+      Smallest SOC stock change distinguishable from zero between two national
+      inventory occasions ten years apart, given the network's plot count,
+      alpha and power. An output of a whole variance structure plus a design,
+      not a variance component.
     error_kind: random
     quantity: >-
       Minimum detectable difference in soil carbon stock for surface mineral
@@ -716,6 +765,9 @@ rows:
 
   - row_id: VC-BPS-005
     component: between_plot_spatial
+    quantity_definition: >-
+      Relative dispersion of SOC CONCENTRATION between replicate experimental
+      units under identical management at one site, on one sampling occasion.
     error_kind: random
     quantity: >-
       Between-plot spatial variability of SOC CONCENTRATION, as the
@@ -838,6 +890,9 @@ rows:
 
   - row_id: VC-BPS-006
     component: between_plot_spatial
+    quantity_definition: >-
+      Relative dispersion of SOC STOCK between replicate experimental units
+      under identical management at one site, on one sampling occasion.
     error_kind: random
     quantity: >-
       Between-plot spatial variability of SOC STOCK at 0-15 cm, as the
@@ -956,6 +1011,11 @@ rows:
 
   - row_id: VC-BPS-007
     component: between_plot_spatial
+    quantity_definition: >-
+      Relative dispersion of SOC stock between replicate experimental units
+      under identical management at Adams, Oregon, with core-scale and
+      laboratory error averaged out by repeating the measurement over many
+      months.
     error_kind: random
     quantity: >-
       Variance between replicate experimental units under identical management
@@ -1051,6 +1111,11 @@ rows:
 
   - row_id: VC-BPS-008
     component: between_plot_spatial
+    quantity_definition: >-
+      Relative dispersion of SOC stock between replicate experimental units
+      under identical management at Adams, Oregon (residue trial), with
+      core-scale and laboratory error averaged out by repeating the
+      measurement over many months.
     error_kind: random
     quantity: >-
       Variance between replicate experimental units under identical management
@@ -1146,6 +1211,11 @@ rows:
 
   - row_id: VC-BPS-009
     component: between_plot_spatial
+    quantity_definition: >-
+      Relative dispersion of SOC stock between replicate experimental units
+      under identical management at Echo, Oregon, with core-scale and
+      laboratory error averaged out by repeating the measurement over many
+      months.
     error_kind: random
     quantity: >-
       Variance between replicate experimental units under identical management
@@ -1241,6 +1311,11 @@ rows:
 
   - row_id: VC-BPS-010
     component: between_plot_spatial
+    quantity_definition: >-
+      Relative dispersion of SOC stock between replicate experimental units
+      under identical management at Moro, Oregon, with core-scale and
+      laboratory error averaged out by repeating the measurement over many
+      months.
     error_kind: random
     quantity: >-
       Variance between replicate experimental units under identical management
@@ -1336,6 +1411,11 @@ rows:
 
   - row_id: VC-BPS-011
     component: between_plot_spatial
+    quantity_definition: >-
+      Relative dispersion of SOC stock between replicate experimental units
+      under identical management at Ritzville, Washington, with core-scale and
+      laboratory error averaged out by repeating the measurement over many
+      months.
     error_kind: random
     quantity: >-
       Variance between replicate experimental units under identical management
@@ -1435,6 +1515,10 @@ rows:
 
   - row_id: VC-TMP-001
     component: temporal
+    quantity_definition: >-
+      Share of total random error attributable to variation between sampling
+      occasions at a fixed set of positions, with management and laboratory
+      held constant.
     error_kind: random
     quantity: >-
       Month-to-month variance in measured soil carbon, as a share of total
@@ -1513,6 +1597,9 @@ rows:
 
   - row_id: VC-TMP-002
     component: temporal
+    quantity_definition: >-
+      Share of total random error attributable to variation between replicate
+      experimental units under identical management, at one sampling occasion.
     error_kind: random
     quantity: >-
       Variance between replicate experimental units, as a share of total random
@@ -1581,6 +1668,10 @@ rows:
 
   - row_id: VC-TMP-003
     component: temporal
+    quantity_definition: >-
+      Relative dispersion of SOC stock between sampling occasions, in the
+      field-wide component shared by every plot measured on a given date at
+      Adams, Oregon.
     error_kind: random
     quantity: >-
       Field-wide month-to-month variability in measured SOC stock: the
@@ -1686,6 +1777,10 @@ rows:
 
   - row_id: VC-TMP-004
     component: temporal
+    quantity_definition: >-
+      Relative dispersion of SOC stock between sampling occasions at one fixed
+      plot at Adams, Oregon, carrying the core-scale and laboratory error a
+      new core position introduces on each visit.
     error_kind: random
     quantity: >-
       Total month-to-month variability seen by a repeat visit to one fixed
@@ -1793,6 +1888,10 @@ rows:
 
   - row_id: VC-TMP-005
     component: temporal
+    quantity_definition: >-
+      Relative dispersion of SOC stock between sampling occasions, in the
+      field-wide component shared by every plot measured on a given date at
+      Adams, Oregon (residue trial).
     error_kind: random
     quantity: >-
       Field-wide month-to-month variability in measured SOC stock: the
@@ -1898,6 +1997,10 @@ rows:
 
   - row_id: VC-TMP-006
     component: temporal
+    quantity_definition: >-
+      Relative dispersion of SOC stock between sampling occasions at one fixed
+      plot at Adams, Oregon (residue trial), carrying the core-scale and
+      laboratory error a new core position introduces on each visit.
     error_kind: random
     quantity: >-
       Total month-to-month variability seen by a repeat visit to one fixed
@@ -2005,6 +2108,10 @@ rows:
 
   - row_id: VC-TMP-007
     component: temporal
+    quantity_definition: >-
+      Relative dispersion of SOC stock between sampling occasions, in the
+      field-wide component shared by every plot measured on a given date at
+      Echo, Oregon.
     error_kind: random
     quantity: >-
       Field-wide month-to-month variability in measured SOC stock: the
@@ -2110,6 +2217,10 @@ rows:
 
   - row_id: VC-TMP-008
     component: temporal
+    quantity_definition: >-
+      Relative dispersion of SOC stock between sampling occasions at one fixed
+      plot at Echo, Oregon, carrying the core-scale and laboratory error a new
+      core position introduces on each visit.
     error_kind: random
     quantity: >-
       Total month-to-month variability seen by a repeat visit to one fixed
@@ -2217,6 +2328,10 @@ rows:
 
   - row_id: VC-TMP-009
     component: temporal
+    quantity_definition: >-
+      Relative dispersion of SOC stock between sampling occasions, in the
+      field-wide component shared by every plot measured on a given date at
+      Moro, Oregon.
     error_kind: random
     quantity: >-
       Field-wide month-to-month variability in measured SOC stock: the
@@ -2322,6 +2437,10 @@ rows:
 
   - row_id: VC-TMP-010
     component: temporal
+    quantity_definition: >-
+      Relative dispersion of SOC stock between sampling occasions at one fixed
+      plot at Moro, Oregon, carrying the core-scale and laboratory error a new
+      core position introduces on each visit.
     error_kind: random
     quantity: >-
       Total month-to-month variability seen by a repeat visit to one fixed
@@ -2429,6 +2548,10 @@ rows:
 
   - row_id: VC-TMP-011
     component: temporal
+    quantity_definition: >-
+      Relative dispersion of SOC stock between sampling occasions, in the
+      field-wide component shared by every plot measured on a given date at
+      Ritzville, Washington.
     error_kind: random
     quantity: >-
       Field-wide month-to-month variability in measured SOC stock: the
@@ -2534,6 +2657,10 @@ rows:
 
   - row_id: VC-TMP-012
     component: temporal
+    quantity_definition: >-
+      Relative dispersion of SOC stock between sampling occasions at one fixed
+      plot at Ritzville, Washington, carrying the core-scale and laboratory
+      error a new core position introduces on each visit.
     error_kind: random
     quantity: >-
       Total month-to-month variability seen by a repeat visit to one fixed
@@ -2645,6 +2772,9 @@ rows:
 
   - row_id: VC-REL-001
     component: relocation
+    quantity_definition: >-
+      Mean absolute difference in SOC stock between an original profile
+      position and a resample displaced from it by about 40 cm, in cropland.
     error_kind: random
     quantity: >-
       Mean absolute error in SOC stock when one soil profile is resampled by one
@@ -2722,6 +2852,9 @@ rows:
 
   - row_id: VC-REL-002
     component: relocation
+    quantity_definition: >-
+      Mean absolute difference in SOC stock between an original profile
+      position and a resample displaced from it by about 40 cm, in GRASSLAND.
     error_kind: random
     quantity: >-
       Mean absolute error in SOC stock when one GRASSLAND profile is resampled
@@ -2776,6 +2909,10 @@ rows:
 
   - row_id: VC-REL-003
     component: relocation
+    quantity_definition: >-
+      Proportional reduction in the difference between an original position
+      and its displaced resample when three positions are averaged instead of
+      one.
     error_kind: random
     quantity: >-
       Reduction in resampling error achieved by resampling three profiles with
@@ -2838,6 +2975,9 @@ rows:
 
   - row_id: VC-REL-004
     component: relocation
+    quantity_definition: >-
+      Offset distance between an original position and its displaced resample
+      beyond which the difference stops growing with distance.
     error_kind: random
     quantity: >-
       Offset distance at which relocation error saturates - the error from a
@@ -2899,6 +3039,9 @@ rows:
 
   - row_id: VC-REL-005
     component: relocation
+    quantity_definition: >-
+      Share of survey points for which the distance between a baseline location
+      and its revisit location is under 10 m.
     error_kind: random
     quantity: >-
       Share of 2015 LUCAS revisit locations falling within 10 m of their
@@ -2957,6 +3100,10 @@ rows:
 
   - row_id: VC-REL-006
     component: relocation
+    quantity_definition: >-
+      Share of survey points for which the distance between a baseline location
+      and its revisit location is under 100 m, together with the largest such
+      distance observed.
     error_kind: random
     quantity: >-
       Share of 2015 LUCAS revisit locations within 100 m of baseline, and the
@@ -3012,6 +3159,10 @@ rows:
 
   - row_id: VC-BDC-001
     component: depth_bd_convention
+    quantity_definition: >-
+      Systematic difference between two accounting conventions applied to the
+      same soil - successive fixed-depth sampling to 30 cm versus equivalent
+      soil mass - in the estimated CHANGE in SOC stock.
     error_kind: systematic
     quantity: >-
       Underestimation of SOC stock CHANGE by successive fixed-depth sampling to
@@ -3070,6 +3221,9 @@ rows:
 
   - row_id: VC-BDC-002
     component: depth_bd_convention
+    quantity_definition: >-
+      Difference between accounting conventions applied to the same soil,
+      large enough to reverse the sign of the estimated SOC stock change.
     error_kind: systematic
     quantity: >-
       Sign reversal between conventions: the same scenario appears as a 16.2%
@@ -3125,6 +3279,9 @@ rows:
 
   - row_id: VC-BDC-003
     component: depth_bd_convention
+    quantity_definition: >-
+      Residual difference between accounting conventions applied to the same
+      soil after the 0-30 cm profile is split into 15 cm sampling increments.
     error_kind: systematic
     quantity: >-
       Residual fixed-depth bias after splitting the 0-30 cm profile into 15 cm
@@ -3172,6 +3329,9 @@ rows:
 
   - row_id: VC-BDC-004
     component: depth_bd_convention
+    quantity_definition: >-
+      Residual difference between accounting conventions applied to the same
+      soil after the 0-30 cm profile is split into 10 cm sampling increments.
     error_kind: systematic
     quantity: >-
       Residual fixed-depth bias after splitting the 0-30 cm profile into 10 cm
