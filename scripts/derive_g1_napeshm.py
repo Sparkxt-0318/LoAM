@@ -38,7 +38,23 @@ D-026  Depth is not in the dataset. Fixed by protocol at 0-15 cm and documented
 D-027  Analytical error is not separable - no lab duplicate or QC columns exist.
        The estimate is spatial + analytical COMBINED, i.e. an UPPER BOUND on
        between-plot spatial variance.
-D-028  OPEN: climate envelope. Site MAT spans 4-25 C. Not resolved here.
+D-028  DECIDED 2026-08-09. Scope is the IPCC 2006 default climate regions
+       (Vol 4 Ch 3 Figure 3A.5.2 p. 3.39), classified per site by
+       scripts/derive_ipcc_regions.py. Only the TEMPERATURE regime is used,
+       because only it is determinable: sites classified Tropical are out of
+       scope, and every other NAPESHM site is Temperate/Boreal since the
+       Boreal/Polar subtree is unreachable (coldest site 4 C). The moisture
+       regime is undetermined and is never invented. Replaces a private
+       MAT<=15 AND |lat|>=30 envelope that had no answer to "why that
+       threshold".
+D-033  Why the classification is PARTIAL. Frost days are recovered from Daymet
+       (the source NAPESHM's own dictionary cites), validated 60/60 against its
+       published temperature integers. MAP:PET is NOT recoverable - neither
+       `mi` (Thornthwaite 1948) nor `hargreave_cmd` (a one-sided monthly
+       deficit) reproduces it, and NAPESHM documents no Hargreaves formulation
+       or averaging window. Every non-tropical leaf of the figure is
+       moisture-qualified, so 87 of 94 sites end `unclassified` - explicitly,
+       never imputed. See D-039 for why that is a finding about the dataset.
 
 ESTIMATOR
 ---------
@@ -77,28 +93,26 @@ import warnings
 import numpy as np
 import pandas as pd
 
+# The filter constants live in the package, not here, so that the build and the
+# test suite can see what governs them without importing pandas. See
+# loam/decisions.py: each one is tied to the D-NNN that settles it, and
+# IPCC_OUT_OF_SCOPE_REGIONS carries the D-028 scope decision.
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+from loam.decisions import (  # noqa: E402
+    CONSTANTS_BY_NAME,
+    DEPTH_BOTTOM_CM,
+    DEPTH_TOP_CM,
+    HEADLINE_DESIGNS,
+    HEADLINE_EU_TYPE,
+    IPCC_OUT_OF_SCOPE_REGIONS,
+    IPCC_SCOPE_LABEL,
+    IPCC_SITE_REGIONS_FILE,
+    PROPOSED_FLAG,
+)
+
 warnings.filterwarnings("ignore")
 
 DATA = "data/raw/napeshm/"
-
-#: D-024. Designs in which replicate EUs are true randomized replicates.
-HEADLINE_DESIGNS = frozenset({"Randomized complete block", "Completely randomized"})
-
-#: D-025. Separation between replicates differs by an order of magnitude across
-#: these; only 'Plots' is a plot-scale measurement.
-HEADLINE_EU_TYPE = "Plots"
-
-#: D-026. Fixed by NAPESHM protocol, documented in Norris et al. 2020.
-DEPTH_TOP_CM, DEPTH_BOTTOM_CM = 0.0, 15.0
-
-#: D-028 OPEN. Candidate climate envelopes. `recommended` is a PROPOSAL awaiting
-#: a decision - it is not settled, and the headline row records that.
-CLIMATE_ENVELOPES = {
-    "recommended_temperate": dict(mat_max=15.0, abs_lat_min=30.0),
-    "strict_mat12": dict(mat_max=12.0, abs_lat_min=30.0),
-    "wide_mat18": dict(mat_max=18.0, abs_lat_min=0.0),
-    "all_sites": dict(mat_max=99.0, abs_lat_min=0.0),
-}
 
 
 # ---------------------------------------------------------------------------
@@ -115,13 +129,29 @@ def load() -> pd.DataFrame:
             "data/raw/ is gitignored - see this script's docstring for the "
             "download command."
         )
+    if not os.path.exists(IPCC_SITE_REGIONS_FILE):
+        sys.exit(
+            f"missing {IPCC_SITE_REGIONS_FILE}\n"
+            "D-028 scopes this derivation by IPCC climate region. Run:\n"
+            "    python scripts/derive_ipcc_regions.py"
+        )
     soil = pd.read_csv(DATA + "soildata.csv", low_memory=False)
     sites = pd.read_csv(DATA + "sites.csv", low_memory=False)
+    # `sitecode` is deliberately NOT taken from sites.csv: soildata.csv already
+    # carries it, and merging both would suffix them into sitecode_x/_y.
     site_cols = [
-        "siteid", "exper_design", "eu_type", "site_mean_temp", "site_precip",
-        "country", "state_prov", "site_latitude",
+        "siteid", "exper_design", "eu_type", "site_mean_temp",
+        "site_precip", "country", "state_prov", "site_latitude",
     ]
-    return soil.merge(sites[site_cols], on="siteid", how="left")
+    df = soil.merge(sites[site_cols], on="siteid", how="left")
+
+    # D-028: attach the per-site IPCC classification. `unclassified` is carried
+    # through as a value, never dropped and never filled - for this dataset it
+    # still pins the temperature regime (see IPCC_SCOPE_LABEL).
+    with open(IPCC_SITE_REGIONS_FILE, encoding="utf-8") as fh:
+        regions = {r["sitecode"]: r["region"] for r in json.load(fh)["sites"]}
+    df["ipcc_region"] = df.sitecode.map(regions)
+    return df
 
 
 def _with_replicates(d: pd.DataFrame, min_reps: int = 2) -> pd.DataFrame:
@@ -129,8 +159,11 @@ def _with_replicates(d: pd.DataFrame, min_reps: int = 2) -> pd.DataFrame:
     return d[d.treatmentid.isin(counts[counts >= min_reps].index)]
 
 
-def filter_cascade(df: pd.DataFrame, envelope: dict) -> tuple[pd.DataFrame, list]:
-    """Apply filters in order, recording survivors at each stage."""
+def filter_cascade(df: pd.DataFrame, in_scope: bool = True) -> tuple[pd.DataFrame, list]:
+    """Apply filters in order, recording survivors at each stage.
+
+    ``in_scope=False`` keeps every site regardless of IPCC region, as a contrast.
+    """
     rows = []
 
     def note(label, d):
@@ -150,11 +183,9 @@ def filter_cascade(df: pd.DataFrame, envelope: dict) -> tuple[pd.DataFrame, list
     note("2. D-024 design is RCB or CR", d)
     d = d[d.eu_type == HEADLINE_EU_TYPE]
     note(f"3. D-025 eu_type == {HEADLINE_EU_TYPE!r}", d)
-    d = d[
-        (d.site_mean_temp <= envelope["mat_max"])
-        & (d.site_latitude.abs() >= envelope["abs_lat_min"])
-    ]
-    note("4. D-028 climate envelope", d)
+    if in_scope:
+        d = d[~d.ipcc_region.isin(IPCC_OUT_OF_SCOPE_REGIONS)]
+    note("4. D-028 IPCC temperature regime (not Tropical)", d)
     d = _with_replicates(d)
     note("5. treatments with >=2 replicates", d)
     return d.copy(), rows
@@ -289,10 +320,15 @@ def main() -> int:
                   "spatial variance (D-027)",
     }
 
-    # headline cascade under the recommended (proposed) envelope
-    dh, cascade = filter_cascade(df, CLIMATE_ENVELOPES["recommended_temperate"])
+    for const in CONSTANTS_BY_NAME.values():
+        if const.is_proposed:
+            print(f"{const.name} ({const.governed_by}){PROPOSED_FLAG}")
+
+    # headline cascade under the DECIDED IPCC scope (D-028)
+    dh, cascade = filter_cascade(df, in_scope=True)
     dh = add_targets(dh)
-    result["filter_cascade_recommended_envelope"] = cascade
+    result["ipcc_scope"] = IPCC_SCOPE_LABEL
+    result["filter_cascade"] = cascade
 
     print(f"{'stage':<40}{'EUs':>6}{'sites':>7}{'trts':>6}")
     for r in cascade:
@@ -306,24 +342,35 @@ def main() -> int:
         )
         return 4
 
-    # climate envelopes x targets
-    print("\n--- climate envelope sensitivity (D-028 OPEN) ---")
-    result["climate_envelopes"] = {}
-    for name, env in CLIMATE_ENVELOPES.items():
-        d, _ = filter_cascade(df, env)
+    # climate scope: the decided scope, and the no-scope contrast (D-028)
+    print("\n--- climate scope (D-028 DECIDED: IPCC temperature regime) ---")
+    result["climate_scope"] = {}
+    for name, scoped in (("ipcc_temperate_boreal", True), ("all_sites_no_scope", False)):
+        d, _ = filter_cascade(df, in_scope=scoped)
         d = add_targets(d)
         if len(d) < 40:
             continue
-        block = {"envelope": env}
+        block = {"scope": IPCC_SCOPE_LABEL if scoped else "no climate scope"}
         for label, col in (("concentration", "log_soc"), ("stock", "log_stock")):
-            block[label] = estimate(d, col, args.bootstrap if name ==
-                                   "recommended_temperate" else 0)
+            block[label] = estimate(d, col, args.bootstrap if scoped else 0)
         block["countries"] = d.country.value_counts().to_dict()
         block["mat_range"] = [float(d.site_mean_temp.min()), float(d.site_mean_temp.max())]
-        result["climate_envelopes"][name] = block
+        block["ipcc_regions"] = d.ipcc_region.value_counts().to_dict()
+        result["climate_scope"][name] = block
         c, s = block["concentration"], block["stock"]
         print(f"  {name:<24} n={c['n_eus']:>3} EU / {c['n_sites']:>2} sites  "
               f"conc CV={c['cv_pct']}%  stock CV={s['cv_pct']}%  {block['countries']}")
+
+    # What the scope actually excluded, named rather than merely counted.
+    excluded = df[df.b_soc.notna() & df.ipcc_region.isin(IPCC_OUT_OF_SCOPE_REGIONS)]
+    result["excluded_by_ipcc_scope"] = {
+        "n_eus": int(len(excluded)),
+        "n_sites": int(excluded.siteid.nunique()),
+        "sites": sorted(excluded.sitecode.dropna().unique().tolist()),
+        "regions": excluded.ipcc_region.value_counts().to_dict(),
+    }
+    print(f"\n  excluded as Tropical: {len(excluded)} EUs / "
+          f"{excluded.siteid.nunique()} sites {result['excluded_by_ipcc_scope']['regions']}")
 
     # design / eu_type sensitivity (D-024, D-025)
     print("\n--- design & eu_type sensitivity (D-024, D-025) ---")
@@ -352,8 +399,8 @@ def main() -> int:
             print(f"  {k:<12} clay {v['clay_range_pct']}%  n={v['n_eus']:>3} EU  "
                   f"CV={v['cv_pct']}%  (mean SOC {v['mean_soc_pct']}%)")
 
-    head = result["climate_envelopes"]["recommended_temperate"]
-    print("\n=== HEADLINE (recommended envelope, PROVISIONAL pending D-028) ===")
+    head = result["climate_scope"]["ipcc_temperate_boreal"]
+    print(f"\n=== HEADLINE (D-028 decided: {IPCC_SCOPE_LABEL}) ===")
     for label in ("concentration", "stock"):
         e = head[label]
         ci = e.get("ci")

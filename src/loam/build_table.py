@@ -14,6 +14,7 @@ from typing import Any
 
 import yaml
 
+from .decisions import CONSTANTS, PROPOSED_FLAG, rows_exposed_to_open_decisions
 from .schema import COLUMN_NAMES
 from .validate import assert_valid, coverage_by_component
 
@@ -88,7 +89,36 @@ def main(argv: list[str] | None = None) -> int:
             f"in_scope={stats['in_scope']:<3} fulltext={stats['verified_fulltext']:<3} "
             f"derived={stats['derived']:<3} unverified={stats['unverified']}{flag}"
         )
+
+    print_decision_status(rows)
     return 0
+
+
+def print_decision_status(rows: list[dict[str, Any]]) -> None:
+    """Announce every constant resting on a decision nobody has made yet.
+
+    Printed on every build, next to the NO BASELINE flags, for the same reason:
+    an unratified value that drives a published number should have to be looked
+    at, not remembered.
+    """
+    print("\ndecision status of the constants behind the derived rows:")
+    for const in CONSTANTS:
+        flag = PROPOSED_FLAG if const.is_proposed else ""
+        print(
+            f"  {const.name:<22} {const.governed_by}  {const.status:<8}"
+            f"{flag}"
+        )
+
+    baselines = {r["row_id"] for r in rows if r.get("use_as") == "baseline"}
+    exposed = {
+        row_id: sorted(decisions)
+        for row_id, decisions in rows_exposed_to_open_decisions(rows).items()
+        if row_id in baselines
+    }
+    if exposed:
+        print("\n  baseline rows resting on an open decision:")
+        for row_id, decisions in sorted(exposed.items()):
+            print(f"    {row_id:<20} {', '.join(decisions)}{PROPOSED_FLAG}")
 
 
 if __name__ == "__main__":
