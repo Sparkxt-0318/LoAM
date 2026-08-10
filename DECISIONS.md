@@ -70,6 +70,8 @@ That is enforced, not requested: see D-032.
 | D-046 | decided | Wuest independently corroborates the G1 between-plot baseline |
 | D-047 | decided | KBS LTER corroborates in the opposite direction; licence blocks publication use |
 | D-048 | decided | NEON temporal path retired, script and caveats kept |
+| D-049 | decided | superseded rows are kept, not deleted; schema gains `superseded_by` |
+| D-050 | decided | **PIPELINE VALIDATION**: our derivation reproduces the published temporal statistic |
 
 ---
 
@@ -1679,17 +1681,154 @@ say — the script is there and the caveats are in it.
 
 ---
 
+**D-049 — a superseded row is KEPT, not deleted. The schema gains
+`superseded_by` to say so in data rather than in prose.**
+
+`VC-TMP-001/002` were variance *shares* read off a paywalled abstract with an
+assumed sampling depth. They are now replaced by rows derived from the primary
+data behind that same paper. The tempting move is to delete them, leaving the
+table showing only good numbers.
+
+We keep them, and the reason is not sentiment. The table's central claim about
+itself is the **verification ladder** (D-017): every number declares how deeply
+it was checked, and `baseline` status requires primary evidence. A reader can
+only trust that ladder if they can see something climb it. `VC-TMP-001`
+entering at `verified_abstract`, sitting flagged for two months as the weakest
+load-bearing row in the table, and being replaced by `derived_primary_data` from
+the same study — *with the two agreeing* — is the strongest evidence the ladder
+works that this project will ever produce. Deleting the rung we climbed from
+would throw that away to make the table look tidier.
+
+New optional column, `superseded_by`: row id(s) that replace this row, comma
+separated. It records a replacement; it does not itself change a row's role.
+A superseded row keeps its `use_as`, so whatever already excluded it from the
+OSSE still does.
+
+Note the second supersession is not like the first. `VC-TMP-002` was never a
+temporal quantity at all — it reports variance between replicate experimental
+units, which is component 3, and it sat in the temporal block only because it
+was printed beside the temporal figure. It is superseded by `VC-BPS-007` … `011`,
+not by the temporal rows. Filing an abstract's numbers where the abstract put
+them, rather than where they belong, is its own small lesson.
+
+**What breaks if wrong.** If superseded rows were deleted instead, the table
+would silently lose the record of its own corrections, and D-050's comparison —
+the single most valuable check in Phase 0 — would have nothing to point at.
+
+---
+
+**D-050 — PIPELINE VALIDATION: our derivation reproduces Wuest & Durfee's
+published temporal statistic, and the G1 code path reproduces an independently
+written implementation. One published figure does NOT reproduce, and that is
+recorded rather than smoothed over.**
+
+This is the highest-value check available in Phase 0, and it was free: we hold
+the raw data behind a published summary statistic, so we can derive the
+statistic ourselves and compare.
+
+**Part 1 — the temporal share reproduces, robustly.** Published: month-to-month
+variance 15–32% of total random error, mean ~20%. Rather than fit one model and
+declare victory, four pre-declared specifications were run, differing in which
+plot-level fixed effects are absorbed:
+
+| specification | temporal share | between-EU share |
+|---------------|----------------|------------------|
+| A — treatment only *(as shipped)* | **18.3%** (14.4–28.3) | 22.9% (9.4–40.8) |
+| B — treatment + block *(RCB)* | **not estimable** | not estimable |
+| C — block only | 18.4% (13.9–26.6) | 13.6% (5.1–28.0) |
+| D — no fixed effects | 19.5% (15.8–28.8) | 25.1% (12.1–39.6) |
+| **published (Wuest abstract)** | **20.0%** (15–32) | **17.0%** (2–42) |
+
+The temporal share lands at 18.3–19.5% against a published 20%, with a range
+overlapping the published one, **under every specification that can be fitted**.
+That is reproduction, not a lucky model choice.
+
+*Why specification B cannot be fitted, recorded because it looks like a bug and
+is not:* in a randomized complete block design with one plot per treatment-block
+cell, treatment and block **jointly identify the plot**. Absorbing both leaves
+zero degrees of freedom for a plot term. Block is therefore not separable from
+the plot effect in this design, and specification A — absorbing treatment, so
+the plot term means "between replicate experimental units" — is the one that
+matches the published quantity's own wording.
+
+**Part 2 — the between-EU share only partly reproduces. This is a finding.**
+Published 17%, range 2–42%. We recover the **upper end almost exactly** (40.8%
+against 42%) and the mean loosely (22.9% against 17%), but **nothing we fit
+reaches the published 2% floor** — our lowest is 9.4%, and the lowest across all
+specifications is 5.1%. A near-zero variance component at one site would explain
+it, and moment and REML estimators can both return zero at a boundary, but we
+cannot confirm that without the full text, which is paywalled.
+
+Recorded honestly: **the conclusion the paper is cited for reproduces; a
+secondary number in the same abstract does not fully reproduce, and we do not
+know why.** It does not touch the temporal result, and `VC-TMP-002` carries the
+discrepancy in its own notes so it travels with the number rather than living
+only here.
+
+**Part 3 — the G1 code path is cross-validated against an independent
+implementation.** This is the part that actually bears on NAPESHM.
+
+`derive_g1_napeshm.py:residual_var` is nested REML on a cross-section — one
+measurement per experimental unit, treatment nested in site. `derive_temporal.py`
+is crossed plot × occasion moments on a panel. Different structure, different
+code, written weeks apart. A Wuest series with occasion playing the role of site
+is a NAPESHM-shaped input, and the G1 residual then estimates exactly
+`v_plot + v_resid` from the crossed model:
+
+| series | G1 code path | crossed model | difference |
+|--------|--------------|---------------|------------|
+| Adams-tillage | 4.83% | 5.29% | −0.46 |
+| Adams-residue | 6.88% | 7.60% | −0.72 |
+| Echo | 9.14% | 9.62% | −0.48 |
+| Moro | 6.76% | 7.03% | −0.28 |
+| Ritzville | 11.18% | 11.32% | −0.14 |
+
+**Mean absolute difference 0.42 CV points.** The differences are all the same
+sign, and small — consistent with the REML-versus-moments gap already documented
+in D-041, where REML also sat slightly low. Two independently written estimators
+agreeing to within half a CV point on five datasets is a genuine check on the
+implementation behind `VC-BPS-005/006`.
+
+**What this validates, and what it does NOT — stated precisely, because the
+temptation is to claim more.**
+
+*Validated:* the log-scale variance decomposition, the
+`CV = 100*sqrt(exp(sigma^2)-1)` convention (D-029), the REML fitting, the
+handling of a raw CSV into variance components, and — via Part 3 — the specific
+G1 code path that produced the between-plot baseline.
+
+*Not validated, and no amount of agreement here could validate it:* the NAPESHM
+**filter cascade**. D-024 (which designs count), D-025 (which EU types count),
+D-026 (the depth scope) and D-028 (the climate scope) are decisions about *which
+rows to keep*, not about arithmetic. A perfectly correct estimator applied to a
+wrongly chosen subset returns a wrongly scoped number, and this comparison would
+not notice. The cluster bootstrap **over sites** is also untested here, because
+the Wuest bootstrap resamples occasions instead.
+
+So: the estimator is corroborated, the scope decisions still rest on their own
+arguments — which is what D-040's leave-out tests were for.
+
+**What breaks if wrong.** If Part 1 were wrong, our decomposition would be
+measuring something other than what the source measured, and every derived
+temporal row would be mislabelled. If Part 3 were wrong, the G1 baseline would
+be an artefact of one implementation. Both are checkable by re-running
+`scripts/derive_temporal.py` against the public-domain data, which is why the
+comparison is in the repository rather than only in prose.
+
+---
+
 ## Open evidence gaps
 
 | id | gap | consequence | status |
 |----|-----|-------------|--------|
 | ~~**G1**~~ | ~~No in-scope **between-plot** cropland variance. Only forest (Buchkowski).~~ | — | ✅ **CLOSED** 2026-08-08 by `VC-BPS-005/006`, derived from NAPESHM (D-024…D-030). Scoped to 0-15 cm; upper bound. |
 | **G2** | No 0–30 cm within-plot CV; only 0–10 and 10–30 separately, without inter-layer covariance. | Component 2 baseline is per-layer only. | open — needs Poeplau supplementary data |
-| **G3** | The within-plot ÷ between-plot **ratio** is unknown for cropland. | Determines whether to add plots or add cores — the central design question. | open — **narrowed**: Poeplau's within-plot stock CV (9.3–10.2%, 0-10/10-30 cm) now sits just below the NAPESHM between-plot stock CV (11.1%, 0-15 cm), implying a ratio near 1 and echoing Buchkowski's forest finding. NOT closed — different studies, continents and depths, so this is suggestive only and no row claims it. |
-| **G4** | Only temporal source is dryland Pacific Northwest, paywalled, depth unconfirmed. | Component 4 has no in-scope baseline. | open — needs Wuest PDF |
+| **G3** | The within-plot ÷ between-plot **ratio** is unknown for cropland. | Determines whether to add plots or add cores — the central design question. | open — **substantially narrowed 2026-08-10**. Previously the two sides came from different studies, continents and depths. Wuest now supplies both from the **same plots, same depth, same study**: the pure between-plot term is 3.3–5.2% (`VC-BPS-007…011`) while the residual carrying within-plot spatial error is 4.1–10.7%, **larger at every one of the five series**. Direction of the answer: variance is concentrated WITHIN plots, so add cores before adding plots. NOT closed — the residual also contains plot×occasion interaction, so it is an upper bound on the within-plot side, and it is one region (D-043, D-046). |
+| ~~**G4**~~ | ~~Only temporal source is dryland Pacific Northwest, paywalled, depth unconfirmed.~~ | — | ✅ **CLOSED** 2026-08-10 by `VC-TMP-003/005/007/009/011`, derived from the Wuest & Durfee public-domain dataset (D-041…D-044). The paywall was never the blocker: the data behind the paper was open. Depth is now fact, not assumption, and heterogeneous (D-042). **One region remains a real limitation** — see G8. |
 | **G5** | No variance-versus-distance function for offsets of 10–100 m. | Relocation error at LUCAS scale is unquantified; components 3 and 5 not orthogonal there. | open |
 | **G6** | The two LUCAS rows are unverified against the primary report. | Locked out of use by rule R6. | open — needs LUCAS PDF |
 | **G7** | No source yet isolates cover-crop or reduced-till effects on *variance* (as opposed to mean). | Practice-specific variance inflation is unparameterized. | open |
+| **G8** | Every temporal row comes from ONE region: four sites, all silt loam, all semi-arid Mediterranean, all Pacific Northwest dryland. | Component 4 is derived but not generalised. The provider says so themselves (D-042). | open — **narrowed in direction**: KBS LTER (humid temperate row-crop) is *more* variable, not less, so PNW dryland is the low end and using it understates rather than overstates (D-047). Blocked from becoming a row by a written-permission licence, confirmed to travel with the EDI mirror. |
 
 ---
 

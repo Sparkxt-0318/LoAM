@@ -564,6 +564,132 @@ def compositing_contrast(per_site: dict) -> dict:
 # ---------------------------------------------------------------------------
 
 
+#: Wuest & Durfee's own published variance shares, from the abstract. The one
+#: thing in this file taken from prose rather than derived - it is the thing
+#: being checked AGAINST, so it has to come from them.
+PUBLISHED_SHARES = {
+    "temporal": {"mean": 20.0, "low": 15.0, "high": 32.0},
+    "between_eu": {"mean": 17.0, "low": 2.0, "high": 42.0},
+}
+
+
+def specification_sweep(d: pd.DataFrame) -> dict:
+    """Do the published shares reproduce, or did one model choice get lucky?
+
+    Four specifications, declared before looking at any of their answers, that
+    differ in which plot-level fixed effects are absorbed before the variance
+    components are taken. Reporting the spread is the check; picking the
+    closest-matching one would be reverse-engineering the answer.
+
+    Specification B is expected to be UNESTIMABLE and is included for exactly
+    that reason: in a randomized complete block with one plot per
+    treatment-block cell, treatment and block jointly identify the plot, so
+    absorbing both leaves no degrees of freedom for a plot term. That is a
+    property of the design, not a bug, and it is why specification A - which
+    absorbs treatment alone, making the plot term "between replicate
+    experimental units" - is the one that matches the published wording.
+    """
+    specs = {
+        "A_treatment_only": ["trt"],
+        "B_treatment_and_block": ["trt", "Block"],
+        "C_block_only": ["Block"],
+        "D_no_fixed_effects": None,
+    }
+    out = {}
+    for name, absorb in specs.items():
+        occ_sh, plot_sh = [], []
+        for _, g in d.groupby("Expt"):
+            g = g.copy()
+            # Count the absorbed levels BEFORE residualising - they are the
+            # degrees of freedom the plot mean square loses. Computing this
+            # after the fact (when the absorbed column has been collapsed) is
+            # the obvious mistake, and it silently makes specification B look
+            # estimable on 4 df instead of correctly reporting 0.
+            n_abs = g.groupby(absorb).ngroups if absorb else 1
+            if absorb:
+                g["log_c"] = g.log_c - g.groupby(absorb).log_c.transform("mean")
+            tab = g.pivot_table(index="eu", columns="occ", values="log_c")
+            tab = tab.loc[:, ~tab.isna().any(axis=0)].dropna(axis=0, how="any")
+            p, q = tab.shape
+            if p - n_abs < 2:
+                occ_sh = plot_sh = None
+                break
+            a = tab.to_numpy(float)
+            grand, rm, cm = a.mean(), a.mean(axis=1), a.mean(axis=0)
+            ms_p = q * ((rm - grand) ** 2).sum() / (p - n_abs)
+            ms_o = p * ((cm - grand) ** 2).sum() / (q - 1)
+            res = a - rm[:, None] - cm[None, :] + grand
+            ms_e = (res ** 2).sum() / ((p - n_abs) * (q - 1))
+            vp, vo = max((ms_p - ms_e) / q, 0), max((ms_o - ms_e) / p, 0)
+            tot = vp + vo + ms_e
+            occ_sh.append(100 * vo / tot)
+            plot_sh.append(100 * vp / tot)
+        if occ_sh is None:
+            out[name] = {"estimable": False, "why": (
+                "treatment and block jointly identify the plot in this RCB, "
+                "leaving no degrees of freedom for a plot term")}
+            continue
+        out[name] = {
+            "estimable": True,
+            "temporal_share_pct": {
+                "mean": round(float(np.mean(occ_sh)), 1),
+                "min": round(float(min(occ_sh)), 1),
+                "max": round(float(max(occ_sh)), 1)},
+            "between_eu_share_pct": {
+                "mean": round(float(np.mean(plot_sh)), 1),
+                "min": round(float(min(plot_sh)), 1),
+                "max": round(float(max(plot_sh)), 1)},
+        }
+    out["published"] = PUBLISHED_SHARES
+    return out
+
+
+def g1_cross_validation(d: pd.DataFrame) -> dict:
+    """Run the G1 code path on this data and compare with the crossed model.
+
+    ``derive_g1_napeshm.residual_var`` is nested REML on a CROSS-SECTION, one
+    measurement per experimental unit. ``decompose`` above is crossed moments on
+    a PANEL. Different structure, different code, written weeks apart.
+
+    A Wuest series with OCCASION playing the role of site is a NAPESHM-shaped
+    input, and the G1 residual then estimates between-EU-within-treatment
+    variance pooled over occasions - which is ``v_plot + v_resid`` from the
+    crossed model, the same quantity by construction. If the two agree, the
+    implementation behind VC-BPS-005/006 is checked against something that did
+    not produce it.
+    """
+    sys.path.insert(0, os.path.join(REPO_ROOT, "scripts"))
+    import derive_g1_napeshm as g1
+
+    rows, diffs = {}, []
+    for e, g in d.groupby("Expt"):
+        a = anova_components(g)
+        if a is None:
+            continue
+        crossed = cv_pct(a["v_plot"] + a["v_resid"])
+        cs = g.copy()
+        cs["siteid"] = cs.occ.astype(str)
+        cs["treatmentid"] = cs.occ.astype(str) + "|" + cs.trt.astype(str)
+        v = g1.residual_var(cs, "log_c")
+        if v is None:
+            continue
+        got = g1.cv_from_logvar(v)
+        diffs.append(got - crossed)
+        rows[e] = {"g1_code_path_cv_pct": round(got, 3),
+                   "crossed_model_cv_pct": round(crossed, 3),
+                   "difference": round(got - crossed, 3)}
+    return {
+        "per_series": rows,
+        "mean_abs_difference_cv_points": round(float(np.mean(np.abs(diffs))), 3),
+        "all_same_sign": bool(len(set(np.sign(diffs))) == 1),
+        "reads": (
+            "validates the estimator core and the G1 code path. Does NOT "
+            "validate the NAPESHM filter cascade (D-024/025/026/028) or the "
+            "cluster bootstrap over sites, neither of which this exercises."
+        ),
+    }
+
+
 #: Mean annual precipitation, from the dataset description's own site
 #: paragraphs. Provider-stated, not our inference and not a supplied guess -
 #: which is the whole reason D-021 could not be closed before.
@@ -732,6 +858,32 @@ def main() -> int:
             line += " | phase " + " ".join(f"{k}={v:.2f}%" for k, v in sorted(ph.items()))
         print(line)
 
+    print("\n  D-050 PIPELINE VALIDATION - does our derivation reproduce the "
+          "published statistic?")
+    sweep = specification_sweep(w)
+    print(f"    {'specification':24}{'temporal share':>26}{'between-EU share':>26}")
+    for name, s in sweep.items():
+        if name == "published":
+            continue
+        if not s["estimable"]:
+            print(f"    {name:24}{'NOT ESTIMABLE - ' + s['why'][:40]:>26}")
+            continue
+        t, b = s["temporal_share_pct"], s["between_eu_share_pct"]
+        print(f"    {name:24}{t['mean']:15.1f}% ({t['min']:4.1f}-{t['max']:4.1f})"
+              f"{b['mean']:15.1f}% ({b['min']:4.1f}-{b['max']:4.1f})")
+    p = PUBLISHED_SHARES
+    print(f"    {'PUBLISHED (abstract)':24}"
+          f"{p['temporal']['mean']:15.1f}% ({p['temporal']['low']:4.1f}-{p['temporal']['high']:4.1f})"
+          f"{p['between_eu']['mean']:15.1f}% ({p['between_eu']['low']:4.1f}-{p['between_eu']['high']:4.1f})")
+
+    xval = g1_cross_validation(w)
+    print("\n  G1 code path vs an independently written implementation:")
+    for e, x in xval["per_series"].items():
+        print(f"    {e:6}{x['g1_code_path_cv_pct']:8.2f}%  vs "
+              f"{x['crossed_model_cv_pct']:6.2f}%   {x['difference']:+.2f}")
+    print(f"    mean absolute difference {xval['mean_abs_difference_cv_points']} "
+          f"CV points, all same sign: {xval['all_same_sign']}")
+
     scope = d021_scope(w)
     print("\n  D-021 scope check - IPCC partial classification of the four sites:")
     for e, s in scope.items():
@@ -742,6 +894,8 @@ def main() -> int:
     print("    every site is Temperate on the temperature axis, warm or cool")
 
     result["wuest"] = {
+        "d050_specification_sweep": sweep,
+        "d050_g1_cross_validation": xval,
         "d021_scope_check": scope,
         "doi_data": "10.15482/USDA.ADC/25719348.v1",
         "doi_paper": "10.1002/saj2.20660",

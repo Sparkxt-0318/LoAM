@@ -316,6 +316,13 @@ COLUMNS: tuple[Column, ...] = (
     _c("osse_distribution", "str", False,
        "Suggested sampling form for Phase 1, e.g. normal(0,sd). A hint, not a "
        "commitment; Phase 1 may override it.", block="osse"),
+    _c("superseded_by", "str", False,
+       "Row id(s) that replace this row, comma-separated. Set when a better "
+       "source arrives - typically an abstract-only value replaced by our own "
+       "derivation from the primary data. The superseded row is KEPT, not "
+       "deleted: the trail from weak evidence to strong is the verification "
+       "ladder working, and a reviewer should be able to see it (D-049).",
+       block="osse"),
     _c("notes", "str", False, "Anything a reviewer would want flagged.",
        block="osse"),
 )

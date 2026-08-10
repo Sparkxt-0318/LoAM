@@ -135,11 +135,14 @@ def test_all_six_components_are_represented(rows):
 def test_component_baseline_coverage_is_declared(component, rows):
     """Documents which components are unusable today.
 
-    Two components are knowingly without an in-scope baseline. This test pins
-    that fact so that fixing it is a deliberate, visible change rather than
-    something that drifts.
+    `temporal` was the last component here. It was closed on 2026-08-10 by
+    `VC-TMP-003/005/007/009/011`, derived from the Wuest & Durfee monthly series
+    (D-041 - D-044), so `known_gaps` is now empty and every component must carry
+    a baseline. Emptying it is the deliberate, visible change the test exists to
+    force; re-adding a component here would be too, and needs a D-NNN saying
+    why.
     """
-    known_gaps = {"temporal"}
+    known_gaps: set[str] = set()
     has_baseline = any(
         r["component"] == component and r.get("use_as") == "baseline" for r in rows
     )
