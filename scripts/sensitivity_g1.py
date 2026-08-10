@@ -74,6 +74,62 @@ def fmt(e: dict) -> str:
             f"n={e['n_eus']:>4} EU / {e['n_treatments']:>3} trt / {e['n_sites']:>2} sites")
 
 
+def joint_covariate_model(dh: pd.DataFrame) -> dict:
+    """Do texture and SOC level jointly predict between-plot variability?
+
+    The binned scan (check 3) tests one covariate at a time, which is the wrong
+    shape for this question: sand and SOC are negatively correlated, so binning
+    on either one partly cancels the other's effect. A joint model separates
+    them.
+
+    Response is log(within-treatment SD of log SOC) - i.e. log CV - per
+    treatment. Treatments with only 2 replicates are excluded: an SD on one
+    degree of freedom carries almost no information and they are all from the
+    same 8 sites, so including them would let one country drive the fit.
+    """
+    from scipy import stats
+
+    d = g1._with_replicates(dh[dh.log_soc.notna()])
+    g = d.groupby("treatmentid")
+    tr = pd.DataFrame({
+        "sd_log": g.log_soc.std(ddof=1), "mean_soc": g.b_soc.mean(),
+        "clay": g.b_clay.mean(), "sand": g.b_sand.mean(),
+        "n": g.size(), "country": g.country.first(),
+    }).dropna()
+    tr = tr[(tr.n >= 3) & (tr.sd_log > 0)]
+
+    out = {"n_treatments": int(len(tr)),
+           "by_country": {k: int(v) for k, v in tr.country.value_counts().items()},
+           "spearman": {}}
+    for v in ("mean_soc", "clay", "sand"):
+        rho, p = stats.spearmanr(tr[v], tr.sd_log)
+        out["spearman"][v] = {"rho": round(float(rho), 3), "p": round(float(p), 4)}
+
+    X = np.column_stack([np.ones(len(tr)), np.log(tr.mean_soc.values),
+                         tr.sand.values / 100])
+    y = np.log(tr.sd_log.values)
+    beta, *_ = np.linalg.lstsq(X, y, rcond=None)
+    resid = y - X @ beta
+    s2 = float(resid @ resid) / (len(tr) - X.shape[1])
+    se = np.sqrt(np.diag(np.linalg.inv(X.T @ X)) * s2)
+    out["ols_log_cv"] = {
+        name: {"beta": round(float(b), 3), "se": round(float(s), 3),
+               "t": round(float(b / s), 2)}
+        for name, b, s in zip(["intercept", "log_mean_soc", "sand_frac"], beta, se)
+    }
+    out["r2"] = round(1 - float(resid @ resid)
+                      / float(((y - y.mean()) ** 2).sum()), 3)
+
+    # D-029 cites a log-log slope of ~1.2 for raw SD vs mean. Reproduce it here
+    # so the log-scale justification is checked against the current scope rather
+    # than inherited from the retired one. 0 = constant SD, 1 = constant CV.
+    raw = pd.DataFrame({"sd": g.b_soc.std(ddof=1), "mean": g.b_soc.mean()}).dropna()
+    raw = raw[(raw.sd > 0) & (raw["mean"] > 0)]
+    out["d029_raw_slope"] = round(
+        float(np.polyfit(np.log(raw["mean"].values), np.log(raw.sd.values), 1)[0]), 3)
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--bootstrap", type=int, default=500)
@@ -186,6 +242,20 @@ def main() -> int:
               f"{max(widths):.3f} -> "
               f"{'SIGNAL' if spread > max(widths) else 'no signal above noise'}")
     result["texture_scan"] = tex
+
+    print("\n  Joint model - are texture and SOC level entangled?")
+    jm = joint_covariate_model(dh)
+    result["joint_covariate_model"] = jm
+    print(f"    {jm['n_treatments']} treatments with >=3 reps {jm['by_country']}")
+    for v, s in jm["spearman"].items():
+        print(f"    spearman {v:9} rho={s['rho']:+.3f} p={s['p']:.3f}")
+    for name, c in jm["ols_log_cv"].items():
+        if name == "intercept":
+            continue
+        print(f"    OLS {name:13} beta={c['beta']:+.3f} t={c['t']:+.2f} "
+              f"{'SIGNIFICANT' if abs(c['t']) > 2 else 'ns'}")
+    print(f"    R2 = {jm['r2']}   (D-029 raw log-log slope reproduces at "
+          f"{jm['d029_raw_slope']:+.3f})")
 
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     with open(args.out, "w", encoding="utf-8") as fh:

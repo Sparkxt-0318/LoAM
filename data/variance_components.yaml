@@ -779,12 +779,13 @@ rows:
       386 experimental units in 135 treatments across 26 sites; 2-6 replicate
       EUs per treatment (55 treatments with 2, 48 with 3, 29 with 4, 2 with 5,
       1 with 6). Randomized complete block or completely randomized designs
-      only; eu_type 'Plots' only. NOTE the 55 two-replicate treatments: the
-      retired envelope happened to contain none, so this scope rests on weaker
-      per-treatment support even though total n is larger. The REML residual
-      weights them by information rather than equally, which is why the
-      estimator was chosen, but it is a real change and not an improvement in
-      every respect.
+      only; eu_type 'Plots' only.
+      THE 55 TWO-REPLICATE TREATMENTS ARE ENTIRELY MEXICAN - all 55, with the
+      USA contributing 75 treatments of which NONE has fewer than 3 replicates
+      (D-040). So the weak-support concern and the re-admitted-sites concern are
+      not two flags but ONE, and the leave-out test above tests both at once:
+      removing the Mexican sites removes every 2-replicate treatment, and the
+      estimate moves 0.300 points. Both flags close together.
     citation: >-
       Soil Health Institute (2024). North American Project to Evaluate Soil
       Health Measurements [data set]. doi:10.15482/USDA.ADC/25632270. Design and
@@ -819,14 +820,19 @@ rows:
       87 of 94 sites are `unclassified` for want of PET (D-039).
       SUPERSEDES the retired MAT<=15 AND |lat|>=30 envelope, which had no answer
       to "why that threshold". The change is not cosmetic: n rises 212 -> 386 EUs
-      and 14 -> 26 sites, and 10 Mexican highland sites that the latitude floor
-      excluded are now IN scope, because IPCC classifies them as not-Tropical.
-      READ THAT CAVEAT DIRECTLY: the retired envelope's stated purpose was to
-      exclude exactly those Cwb summer-rain sites on moisture-seasonality
-      grounds. IPCC's temperature axis does not encode moisture seasonality, and
-      the axis that might have separated them is precisely the one we cannot
-      resolve. If the moisture regime ever becomes available, this row must be
-      re-derived, and it could move.
+      and 14 -> 26 sites. Mexican highland sites that the latitude floor excluded
+      are now in scope, because IPCC classifies them as not-Tropical: 10 pass the
+      climate scope and 8 reach this derivation (125 EUs) - MXAG01 and MXQT02 are
+      dropped by D-024/D-025 before climate is applied.
+      THE MOISTURE-SEASONALITY CONCERN IS SETTLED EMPIRICALLY AND THE FLAG IS
+      CLOSED (D-040). The retired envelope's purpose was to exclude exactly those
+      Cwb summer-rain sites, and IPCC's temperature axis does not encode moisture
+      seasonality - so it was a live worry, not a hypothetical. A leave-out test
+      answers it: dropping all 8 moves this row from 11.948% to 12.248%, a shift
+      of 0.300 points against a 95% CI width of 3.97 - about a thirteenth of the
+      interval. The sites cost nothing in bias and buy a third of the sample.
+      Should the moisture regime become available, re-deriving is still correct
+      bookkeeping, but on this evidence it would not move the number.
       Cover crops remain nearly absent, so this constrains the tillage half of
       our management scope and says little about the cover-crop half.
 
@@ -907,6 +913,12 @@ rows:
       scope: the retired envelope happened to have bulk density on every EU, so
       the two rows shared an identical sample and no longer do. The one dropped
       site is in Mexico (Queretaro).
+      THE DIFFERING SAMPLES DO NOT EXPLAIN THE STOCK < CONCENTRATION RESULT
+      (D-040). Recomputed on the 372-EU intersection, concentration is 11.897%
+      against this row's 11.456%: a gap of 0.441 points where the headline
+      comparison across differing samples gives 0.492. The cross-sample artefact
+      is 0.051 points of it. The result is a property of the data, not of the
+      sample mismatch.
     citation: >-
       Soil Health Institute (2024). North American Project to Evaluate Soil
       Health Measurements [data set]. doi:10.15482/USDA.ADC/25632270. Design and
@@ -936,8 +948,11 @@ rows:
       equivalent-soil-mass accounting to show a LARGER between-plot variance
       than this row, not a smaller one.
       SCOPED BY IPCC CLIMATE REGION (D-028, decided), same as VC-BPS-005 - see
-      that row's notes for the scope change, the 10 newly-included Mexican
-      highland sites, and the undetermined moisture axis (D-039).
+      that row's notes for the scope change, the 8 newly-included Mexican
+      highland sites, and the undetermined moisture axis (D-039). The
+      moisture-seasonality flag is CLOSED for this row too: the leave-out test
+      moves it 11.456% -> 11.304%, a shift of 0.152 points against a CI width of
+      3.52 (D-040).
 
   # =====================================================================
   # 4. TEMPORAL (MONTH-TO-MONTH) VARIANCE

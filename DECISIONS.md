@@ -61,6 +61,7 @@ That is enforced, not requested: see D-032.
 | D-037 | decided | Potash parameters are candidate cross-checks, never merged |
 | D-038 | decided | positioning vs Potash et al. 2025 in any writeup |
 | D-039 | decided | **FINDING**: NAPESHM is not fully IPCC-classifiable — for the paper |
+| D-040 | decided | G1 sensitivity: both `VC-BPS-005/006` caveat flags close; texture is not a stratifier |
 
 ---
 
@@ -1127,6 +1128,91 @@ one-paragraph fix. Not a limitations bullet.
 
 ---
 
+**D-040 — the two caveat flags on `VC-BPS-005/006` are CLOSED on evidence, the
+`stock < concentration` result is confirmed on a common sample, and texture is
+NOT a stratifier for this component.** Three sensitivity checks run before Phase
+0 closes. No row was added, no scope changed, no constant moved; the two G1 rows
+gained findings and lost two deferrals. Script: `scripts/sensitivity_g1.py`,
+results `data/processed/g1_sensitivity.json`.
+
+**Check 1 — leave-out test on the sites the scope change re-admitted.** D-028
+replaced a private envelope whose *stated* purpose was to exclude Mexican
+highland (Cwb, summer-rain) sites on moisture-seasonality grounds, with an IPCC
+temperature axis that does not encode moisture seasonality. That was a live
+worry: the axis that might have separated those sites is the one we cannot
+resolve. It is also directly testable — drop them and look.
+
+| row | with | without | shift | 95% CI width |
+|-----|------|---------|-------|--------------|
+| `VC-BPS-005` (concentration) | 11.948% (386 EU) | 12.248% (261 EU) | **+0.300** | 3.97 |
+| `VC-BPS-006` (stock) | 11.456% (372 EU) | 11.304% (261 EU) | **−0.152** | 3.52 |
+
+Both shifts are roughly **a thirteenth and a twenty-third of the interval**, and
+they point in *opposite directions* — the pattern of noise, not of a bias the
+envelope was protecting against. Note also that the sites are **8, not 10**:
+10 pass the climate scope, but `MXAG01` and `MXQT02` are removed by D-024/D-025
+before climate is ever applied. The earlier "10" conflated scope with sample and
+is corrected on the row.
+
+*Why the flag closes rather than defers.* A deferral says "we do not know yet".
+We do know: on this quantity, at this precision, the disputed sites are worth
+0.3 points and a third of the sample. Re-deriving if the moisture regime ever
+arrives remains correct bookkeeping (D-028 stands), but the row no longer carries
+an open worry about it, because the worry has an answer.
+
+**Check 1b — the 55 two-replicate treatments are the SAME finding, not a second
+one.** All 55 are Mexican. The USA contributes 75 treatments and **none** has
+fewer than 3 replicates (Mexico 2→55, 3→5; USA 3→43, 4→29, 5→2, 6→1). So the
+"weak per-treatment support" caveat and the "re-admitted sites" caveat were never
+two flags: removing the Mexican sites removes every two-replicate treatment, and
+the leave-out test above already tested both at once. Both close together, on one
+number.
+
+**Check 2 — `stock < concentration` survives a common-sample comparison.** The
+two rows are derived on different samples (bulk density is missing on 14 EUs, one
+site), so the reported gap of 0.492 points mixed a real effect with a sample
+mismatch. That matters because the ordering is being used **mechanistically** —
+bulk density covarying against concentration such that stock is the *less*
+variable quantity — and a mechanistic claim cannot rest on a cross-sample
+difference. Recomputed on the 372-EU intersection (128 treatments, 25 sites):
+concentration **11.897%**, stock **11.456%**, gap **+0.441**. The mismatch
+accounts for **0.051 points** of the 0.492. The ordering is a property of the
+data.
+
+**Check 3 — texture stratification: no signal, exploratory, no rows.** Tercile
+splits on clay (breaks 18.0 / 27.1%) and sand (24.2 / 39.9%):
+
+* clay — high 13.557%, mid 10.946%, low 11.315%; spread **2.611** against a
+  widest bin CI of **10.556**. Not monotone, and the spread is a quarter of the
+  noise on the bins.
+* sand — high 13.305%, mid 10.871%, low 9.615%; spread **3.690** against a widest
+  bin CI of **9.834**. Monotone in direction but still well inside the noise.
+
+**No stratified rows are written and none should be.** A three-way split of 26
+sites leaves 9–12 sites per bin, and cluster bootstrap CIs at that size are wider
+than every difference they would separate.
+
+*One result worth logging from the same scan, still not a row.* Regressing
+`log(CV)` on `log(mean SOC)` and sand fraction across the 80 treatments with ≥3
+replicates (SD on 1 df excluded) gives `log_mean_soc` β = +0.423 (se 0.176,
+t = +2.40) and `sand_frac` β = +0.915 (se 0.370, t = +2.47) — both nominally
+significant, R² = 0.093. Two cautions keep it out of the table: the sample is
+75/80 USA once two-replicate treatments are dropped, so this is close to a
+USA-only statement, and 9% of variance explained will not carry a stratified
+baseline. It is a **hypothesis for a future dataset**, filed beside D-029 (whose
+raw log-log slope reproduces at +1.223 in this run), not a parameterization.
+
+**What breaks if wrong.** If check 1 is wrong, the G1 headline carries a bias it
+has declared absent — but the test is a direct recomputation on a stated subset,
+so it is wrong only if the site→country mapping is wrong, which the 55/0
+replicate split independently corroborates. If check 2 is wrong, the
+bulk-density mechanism loses its evidence and the two rows revert to "different
+numbers from different samples". If check 3 is over-read — if someone treats the
+sand coefficient as a stratifier — the table would acquire bins whose CIs overlap
+completely, which is the failure R6 and D-032 exist to prevent.
+
+---
+
 ## Open evidence gaps
 
 | id | gap | consequence | status |
@@ -1151,4 +1237,5 @@ one-paragraph fix. Not a limitations bullet.
 | 2026-08-09 | **D-028 CLOSED**; D-039 | **D-028 decided: partial IPCC classification.** Private envelope retired. 94 sites classified against Figure 3A.5.2 with frost days recovered from Daymet (validated 60/60 against NAPESHM's own published temperature integers): **7 classified** (6 Tropical Dry, 1 Tropical Montane), **87 unclassified**, all blocked on `map_pet_ratio`, never imputed. G1 re-scoped to the IPCC **temperature** regime (Temperate/Boreal), which is what Table 5.5 indexes on. **`VC-BPS-005/006` RE-DERIVED, not re-labelled**: concentration 12.1% → **11.9%** [9.9, 14.0], stock 11.1% → **11.5%** [9.6, 13.5]; n rises 212 → 386 EUs and 14 → 26 sites. The scope change re-admits 10 Mexican highland sites the latitude floor was built to exclude — recorded as a caveat on the rows, because the IPCC axis that might have separated them is the undetermined one. The D-032 guard now passes. D-039 logs the unclassified bucket as a finding about NAPESHM's reusability, for the paper. |
 | 2026-08-09 | **corrections** to D-031 and D-033 | Adversarial re-audit of the committed work. **D-031 reason 1 withdrawn**: "shallower depth is more variable" is refuted by the very layer CVs it cited (9.3 → 10.2 → 25.8% *rise* with depth), so the corroboration rests on two reasons, not three. **D-033 frost half withdrawn**: frost-day counts *are* faithfully obtainable from Daymet — the source NAPESHM itself cites — verified by reproducing the published temperature integers 39/39; the 13 warm sites split 7 Tropical / 6 not, so the variable decides scope membership and is not harmless. **MAP:PET remains the sole blocker**, now bounded exactly: 35 sites Dry, 40 Moist, **19 undecidable** from `mi` (replacing an unfounded "23"). Added the decisive Table 5.5 argument — Ch 5 pools warm/cool and stratifies on moist/dry, so a partial classification is worthless. Fixed a NaN hole that let `ipcc_climate.classify` fabricate three leaves. Registered both IPCC chapters in `docs/sources.md`. No variance-table row changed. |
 | 2026-08-09 | D-034, D-035, D-037, D-038; **D-036 open**; D-021 updated | IPCC classifier committed and tested but deliberately unfed (D-034) — D-028 still blocked, guard still red. Wuest's PNW sites classify **Cool Temperate Dry** (Warm Temperate Dry if MAT > 10), i.e. **temperate either way**, but D-021 stays open because the climate inputs were supplied rather than sourced. Potash et al. 2025 logged as prior art: schema needs `scales_with_interval` (D-035), a 4× analytical-error discrepancy is **open** (D-036), their parameters are candidate cross-checks never to be merged (D-037), positioning recorded (D-038). Six sources added to `docs/sources.md` as **to obtain**, including Smith 2004 and Saby et al. 2008 — the two foundational detectability papers, neither currently cited. No variance-table row, schema field or constant changed. |
+| 2026-08-10 | D-040 | **Three sensitivity checks before Phase 0 closes. No new rows, no scope change, no constant moved.** (1) Leave-out test on the re-admitted Mexican highland sites — 8, not 10 (MXAG01/MXQT02 fall to D-024/D-025 first): concentration 11.948 → 12.248%, stock 11.456 → 11.304%, shifts of **0.300** and **0.152** against CI widths of 3.97 and 3.52, in opposite directions. **Both caveat flags CLOSED**, not deferred. (1b) All **55** two-replicate treatments are Mexican; the USA's 75 have **none** below 3 replicates — so the weak-support flag and the re-admitted-sites flag were one flag, tested once. (2) On the 372-EU intersection, concentration **11.897%** vs stock **11.456%** — gap **+0.441** where the cross-sample headline gives 0.492, so the sample mismatch is 0.051 of it and `stock < concentration` **survives** as a property of the data. (3) Texture terciles show no signal (clay spread 2.611 vs 10.556 CI; sand 3.690 vs 9.834) — **no rows written**; a joint model does find `log(mean SOC)` and sand fraction nominally significant (R² = 0.093) but on a 75/80-USA sample, filed as a hypothesis, not a parameterization. `VC-BPS-005/006` prose updated; no value changed. |
 | 2026-08-08 | D-031, D-032, D-033; **D-028 still open** | Open-decision guard: decisions and the constants they govern are now machine-readable (`src/loam/decisions.py`), the build prints `<-- PROPOSED, NOT DECIDED`, and two tests refuse to pass while an open decision governs a live constant — **the suite is red on merge, by design** (D-032). Replacing the private climate envelope with IPCC 2006 climate regions was attempted and is **blocked**: MAP:PET and frost-day counts are not derivable from NAPESHM, and no proxy is substituted (D-033). Poeplau ↔ NAPESHM corroboration logged, with a figure correction (D-031). No variance-table values changed. |
