@@ -1,6 +1,6 @@
 # Sources — bibliography and retrieval status
 
-Status of every source behind `data/variance_table.csv`, as of 2026-08-09.
+Status of every source behind `data/variance_table.csv`, as of 2026-08-10.
 
 **Legend**
 🟢 primary data held, derived by us · ✅ full text read and values verified ·
@@ -43,14 +43,78 @@ Three limits that travel with every number derived from it:
 - **Upper bound, not a point estimate.** No lab duplicate, split-sample or QC
   columns exist, so analytical error cannot be separated from spatial error
   (D-027). Both rows carry `bias_direction: inflates`.
-- **Climate envelope unresolved** (D-028). Site MAT spans 4–25 °C and includes
-  16 Mexican sites. The headline uses a *proposed* temperate envelope; the
-  estimate moves only 10.6–12.1% across every candidate, so the open question is
-  about defensibility of scope rather than about the number.
+- **Climate scope now settled** (D-028, decided). The private envelope is retired
+  and scope is set by the IPCC 2006 temperature regime; 87 of 94 sites are
+  explicitly `unclassified` for want of PET (D-039), and the re-admitted Mexican
+  highland sites were shown to move the estimate 0.2–0.3 points against a 4-point
+  interval (D-040).
 
 Cover crops are nearly absent (58 of 61 treatments have none), so NAPESHM
 constrains the **tillage** half of our management scope and says little about
 the cover-crop half.
+
+### Wuest & Durfee (2024) — temporal variability dataset
+*Data from: Temporal variability is a major source of uncertainty in soil carbon
+measurements* [data set]. Ag Data Commons.
+DOI [10.15482/USDA.ADC/25719348.v1](https://doi.org/10.15482/USDA.ADC/25719348.v1)
+Paper: Wuest & Durfee (2024), SSSAJ 88(3), 830–845,
+DOI [10.1002/saj2.20660](https://doi.org/10.1002/saj2.20660)
+
+**U.S. Public Domain.** Held at `data/raw/wuest2024/` (gitignored).
+Derivation: `scripts/derive_temporal.py --fetch` →
+`data/processed/temporal_variance.json`.
+
+```bash
+curl -sSL -o data/raw/wuest2024/SOC_variability.csv \
+  https://ndownloader.figshare.com/files/45998844
+# md5 96283b0ed5396ac480830e3dc8d37353
+```
+
+**PRIMARY SOURCE for component 4 (temporal).** Five monthly series of up to
+three years at four dryland sites in Oregon and Washington — **2195 plot-months
+across 76 plots**. Replaces reading the abstract's variance *shares*, which
+could not be added to anything and carried an assumed depth.
+
+What travels with every number derived from it:
+
+- **The depth is not uniform** (D-042). Adams-tillage is 0–30 cm fixed depth;
+  the other four series are the top **250 kg m⁻² equivalent soil mass** (≈20 cm).
+  No single depth label covers a pooled row.
+- **The residual is not separable** (D-043). One measurement per plot per
+  occasion, so within-plot spatial and analytical error cannot be split from
+  plot-specific timing. The component is reported as a **bounded pair**:
+  separable 3.75%, combined 8.00%.
+- **Provider's own use limitation, verbatim:** *"Soils were silt loams and the
+  climate was semi-arid Mediterranean pattern at all four sites tested. Other
+  soils and climates may produce more or less temporal variability."*
+
+### W.K. Kellogg Biological Station LTER — table 102
+*Soil Total Carbon and Nitrogen (1993 to 2014).*
+<https://lter.kbs.msu.edu/datatables/102> · EML metadata:
+<https://lter.kbs.msu.edu/datasets/45.eml>
+
+> 🔴 **NOT public domain, and this is a real constraint.** The file states:
+> *"These Data are copyrighted and use in a publication requires written
+> permission as detailed in our Terms of use"*
+> (<https://lter.kbs.msu.edu/data/terms-of-use/>). **Written permission must be
+> obtained before any KBS-derived number appears in a publication.** Until then
+> it may inform our reading and may not be published as a value (D-047).
+
+Held at `data/raw/kbs_lter/` (gitignored). Same derivation script.
+
+**CORROBORATION for component 4**, deliberately from a contrasting regime: humid
+temperate row-crop in southwest Michigan, 142 experimental units over six
+occasions at 0–25 cm. It corroborates **in the opposite direction to the usual
+objection** — temporal variability there is *larger* than PNW dryland, not
+smaller (D-047). Two limits: the between-year term carries obvious method drift
+(field-wide means swing 22.6%), and the within-plot core relocation protocol is
+undocumented, so only the clean within-season pair is used.
+
+Pointer, not a source: **Martin & Sprunger (2022)**, *Front. Soil Sci.* 2:917885,
+DOI [10.3389/fsoil.2022.917885](https://doi.org/10.3389/fsoil.2022.917885) —
+open access, four time points across the 2021 growing season at KBS. Its data
+statement is "available from the authors", i.e. **not deposited**, so there was
+nothing to derive from. It is what pointed us at KBS.
 
 ---
 
@@ -159,23 +223,29 @@ statistics, so the forest setting does **not** disqualify it.
 to reproduce the artifact, and `VC-BPS-004` is flagged as an external validation
 target for it.
 
-### Wuest (2024)
+### Wuest & Durfee (2024) — the paper
 *Temporal variability is a major source of uncertainty in soil carbon
-measurements.* Soil Science Society of America Journal.
+measurements.* Soil Science Society of America Journal **88(3), 830–845**.
 DOI [10.1002/saj2.20660](https://doi.org/10.1002/saj2.20660)
 
-Publisher **paywalled (HTTP 402)**. Abstract only. Supplies `VC-TMP-001/002` —
-the only temporal anchor in the table.
+Publisher **paywalled (HTTP 402)**. Abstract only — but this no longer matters,
+because **the underlying dataset is public domain and we now derive from it
+directly**; see the entry under *Primary data held* above.
 
-> ⚠️ Volume/issue/pages **unconfirmed**. Sampling depth **assumed** to be
-> 0–30 cm; the abstract does not state it.
+> ✅ Volume/issue/pages **confirmed against Crossref**, and the second author
+> (Durfee) restored — both were wrong or missing in the original citation.
+> Sampling depth is no longer assumed either: it is read off the dataset
+> description and turns out to be **heterogeneous** (D-042).
 
-> 🔶 **OPEN SCOPE QUESTION — for the PI, not for me to resolve.** These are
-> Pacific Northwest **dryland** cropping systems. In scope on land use
-> (cropland); arguably marginal on climate ("temperate"). Logged as **D-021**
-> in [`DECISIONS.md`](../DECISIONS.md) and left open. The rows stay
-> `in_scope: false` / `sensitivity_high` until it is decided — that is the
-> conservative holding position, not an answer.
+> ✅ **D-021 CLOSED, 2026-08-10.** These are Pacific Northwest **dryland**
+> cropping systems, and they classify **Temperate** — Warm at Adams and Echo,
+> Cool at Moro and Ritzville — under the committed IPCC classifier, on MAT and
+> MAP sourced from the dataset itself rather than supplied by hand. Scope no
+> longer blocks a temporal row.
+
+The abstract's variance shares (20% temporal, 17% between-replicate) are retained
+only as a **cross-check** on our own decomposition, which reproduces them at
+18.3% and 22.8% without reading them off the paper (D-041).
 
 ### Saby et al. (2008)
 *Will European soil monitoring networks be able to detect changes in topsoil
@@ -217,19 +287,26 @@ by how interesting the source is. An out-of-scope source cannot close an
 in-scope gap however good its data — that was the error in the previous
 ordering, which ranked a forest inventory first against a cropland gap.
 
-**G1 is now closed** by the NAPESHM derivation, which changes this ordering: the
-remaining gaps are temporal (G4) and relocation (G5/G6).
+**G1 is now closed** by the NAPESHM derivation and **G4 by the Wuest
+derivation**, which changes this ordering again: the remaining gaps are
+relocation (G5/G6) and the within÷between ratio (G3).
+
+Note what dropped off the top of this list. Wuest 2024 was #1 for two rounds
+running, wanted for depth confirmation and gated on D-021. Neither turned out to
+need the paper: the **dataset** answers both, and it was public domain the whole
+time. Worth remembering the next time a paywall looks like the blocker — check
+for a deposited dataset before queueing the PDF.
 
 | # | source | why it matters | can it close a gap? |
 |---|--------|----------------|---------------------|
-| **1** | **Wuest 2024** (SSSAJ, paywalled) | Confirm depth and sites; still the only temporal anchor, and `temporal` is now the **only** component without a baseline. Gated by the open scope question D-021. | ⚠️ **G4**, conditionally — see D-021 |
-| 2 | **LUCAS 2015 report** (JRC105923 / EUR 30332 EN) | Relocation-distance distribution. | ✅ **G6** — unlocks `VC-REL-005/006` |
-| 3 | **Saby et al. 2008** (GCB, paywalled) | Promotes two `verified_secondary` values to primary. | ➖ hygiene, no gap |
-| 4 | **Buchkowski et al. 2026** (GCB, paywalled) | **Not a cropland variance baseline — see Role 1/Role 2 above.** Wanted for the regression-to-the-mean finding. | ❌ never could close G1 · 📌 **Phase 3** dependency |
-| 5 | **Poeplau et al. 2022** — site-level data | Would give a *second, independent* between-plot estimate (8 German sites) against NAPESHM's 14 North American ones. No longer needed to close G1, but the strongest available check on it. | ➖ corroboration, not a gap |
-| 6 | **Poeplau et al. 2022** version of record | Confirm volume/pagination only — values already verified. | ➖ citation hygiene |
+| **1** | **LUCAS 2015 report** (JRC105923 / EUR 30332 EN) | Relocation-distance distribution. | ✅ **G6** — unlocks `VC-REL-005/006` |
+| — | ~~**Wuest 2024** (SSSAJ, paywalled)~~ | ~~Confirm depth and sites.~~ | ✅ **G4 CLOSED** — from the public-domain dataset, not the paper (D-041…D-044) |
+| **2** | **Saby et al. 2008** (GCB, paywalled) | Promotes two `verified_secondary` values to primary. | ➖ hygiene, no gap |
+| **3** | **Buchkowski et al. 2026** (GCB, paywalled) | **Not a cropland variance baseline — see Role 1/Role 2 above.** Wanted for the regression-to-the-mean finding. | ❌ never could close G1 · 📌 **Phase 3** dependency |
+| **4** | **Poeplau et al. 2022** — site-level data | Would give a *second, independent* between-plot estimate (8 German sites) against NAPESHM's 14 North American ones. No longer needed to close G1, but the strongest available check on it. | ➖ corroboration, not a gap |
+| **5** | **Poeplau et al. 2022** version of record | Confirm volume/pagination only — values already verified. | ➖ citation hygiene |
 
-### On #5 — still worth doing, for a different reason
+### On #4 — still worth doing, for a different reason
 
 Now that NAPESHM closes G1, the Poeplau site-level data is no longer load-bearing
 — it is the best available **independent replication**. Two caveats stand

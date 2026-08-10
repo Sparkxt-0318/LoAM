@@ -779,12 +779,13 @@ rows:
       386 experimental units in 135 treatments across 26 sites; 2-6 replicate
       EUs per treatment (55 treatments with 2, 48 with 3, 29 with 4, 2 with 5,
       1 with 6). Randomized complete block or completely randomized designs
-      only; eu_type 'Plots' only. NOTE the 55 two-replicate treatments: the
-      retired envelope happened to contain none, so this scope rests on weaker
-      per-treatment support even though total n is larger. The REML residual
-      weights them by information rather than equally, which is why the
-      estimator was chosen, but it is a real change and not an improvement in
-      every respect.
+      only; eu_type 'Plots' only.
+      THE 55 TWO-REPLICATE TREATMENTS ARE ENTIRELY MEXICAN - all 55, with the
+      USA contributing 75 treatments of which NONE has fewer than 3 replicates
+      (D-040). So the weak-support concern and the re-admitted-sites concern are
+      not two flags but ONE, and the leave-out test above tests both at once:
+      removing the Mexican sites removes every 2-replicate treatment, and the
+      estimate moves 0.300 points. Both flags close together.
     citation: >-
       Soil Health Institute (2024). North American Project to Evaluate Soil
       Health Measurements [data set]. doi:10.15482/USDA.ADC/25632270. Design and
@@ -819,14 +820,19 @@ rows:
       87 of 94 sites are `unclassified` for want of PET (D-039).
       SUPERSEDES the retired MAT<=15 AND |lat|>=30 envelope, which had no answer
       to "why that threshold". The change is not cosmetic: n rises 212 -> 386 EUs
-      and 14 -> 26 sites, and 10 Mexican highland sites that the latitude floor
-      excluded are now IN scope, because IPCC classifies them as not-Tropical.
-      READ THAT CAVEAT DIRECTLY: the retired envelope's stated purpose was to
-      exclude exactly those Cwb summer-rain sites on moisture-seasonality
-      grounds. IPCC's temperature axis does not encode moisture seasonality, and
-      the axis that might have separated them is precisely the one we cannot
-      resolve. If the moisture regime ever becomes available, this row must be
-      re-derived, and it could move.
+      and 14 -> 26 sites. Mexican highland sites that the latitude floor excluded
+      are now in scope, because IPCC classifies them as not-Tropical: 10 pass the
+      climate scope and 8 reach this derivation (125 EUs) - MXAG01 and MXQT02 are
+      dropped by D-024/D-025 before climate is applied.
+      THE MOISTURE-SEASONALITY CONCERN IS SETTLED EMPIRICALLY AND THE FLAG IS
+      CLOSED (D-040). The retired envelope's purpose was to exclude exactly those
+      Cwb summer-rain sites, and IPCC's temperature axis does not encode moisture
+      seasonality - so it was a live worry, not a hypothetical. A leave-out test
+      answers it: dropping all 8 moves this row from 11.948% to 12.248%, a shift
+      of 0.300 points against a 95% CI width of 3.97 - about a thirteenth of the
+      interval. The sites cost nothing in bias and buy a third of the sample.
+      Should the moisture regime become available, re-deriving is still correct
+      bookkeeping, but on this evidence it would not move the number.
       Cover crops remain nearly absent, so this constrains the tillage half of
       our management scope and says little about the cover-crop half.
 
@@ -907,6 +913,12 @@ rows:
       scope: the retired envelope happened to have bulk density on every EU, so
       the two rows shared an identical sample and no longer do. The one dropped
       site is in Mexico (Queretaro).
+      THE DIFFERING SAMPLES DO NOT EXPLAIN THE STOCK < CONCENTRATION RESULT
+      (D-040). Recomputed on the 372-EU intersection, concentration is 11.897%
+      against this row's 11.456%: a gap of 0.441 points where the headline
+      comparison across differing samples gives 0.492. The cross-sample artefact
+      is 0.051 points of it. The result is a property of the data, not of the
+      sample mismatch.
     citation: >-
       Soil Health Institute (2024). North American Project to Evaluate Soil
       Health Measurements [data set]. doi:10.15482/USDA.ADC/25632270. Design and
@@ -936,8 +948,486 @@ rows:
       equivalent-soil-mass accounting to show a LARGER between-plot variance
       than this row, not a smaller one.
       SCOPED BY IPCC CLIMATE REGION (D-028, decided), same as VC-BPS-005 - see
-      that row's notes for the scope change, the 10 newly-included Mexican
-      highland sites, and the undetermined moisture axis (D-039).
+      that row's notes for the scope change, the 8 newly-included Mexican
+      highland sites, and the undetermined moisture axis (D-039). The
+      moisture-seasonality flag is CLOSED for this row too: the leave-out test
+      moves it 11.456% -> 11.304%, a shift of 0.152 points against a CI width of
+      3.52 (D-040).
+
+  - row_id: VC-BPS-007
+    component: between_plot_spatial
+    error_kind: random
+    quantity: >-
+      Variance between replicate experimental units under identical management
+      at Adams, Oregon ('Adams-tillage'), with within-plot spatial and analytical error REMOVED
+      rather than absorbed.
+    statistic: cv_pct
+    value: 3.384
+    units: pct
+    value_low: 3.136
+    value_high: 3.732
+    uncertainty_type: ci95
+    n: 468
+    cv_pct: 3.384
+    harmonization_method: derived_see_note
+    harmonization_note: >-
+      DERIVED BY US (D-041, D-046). The plot term of the crossed model
+      log C ~ treatment + (1|plot) + (1|occasion), fitted per site on the
+      Wuest & Durfee monthly series. Because each plot is measured on 39
+      separate occasions, within-plot spatial and analytical error land in the
+      residual and NOT in this term - repeated visits average them out of the
+      plot mean. That is what makes this row different in kind from
+      VC-BPS-005/006, which are single-visit and therefore combined.
+      CV = 100*sqrt(exp(sigma^2)-1) (D-029); 95% block bootstrap over occasions.
+      No absolute SD is published: the layer is 0-30 cm, six 5-cm increments and an SD in
+      Mg C/ha would invite addition into a 0-30 cm budget (D-042).
+    reference_stock_mg_c_ha:
+    mean_dependent: false
+    bias_direction: unknown
+    bias_direction_reasoning: >-
+      No direction can be defended, and for once that is a statement about the
+      estimand rather than about ignorance. The usual inflation - within-plot
+      spatial and analytical error riding along - is genuinely absent here,
+      which is the whole point of the row. What remains is a transfer question:
+      these are long-established research plots on deliberately uniform fields,
+      3.6-9 m wide, which would push the term DOWN relative to a working farm
+      field; but they are also dryland silt loams with a fallow phase, and
+      whether that pushes plot-to-plot heterogeneity up or down against
+      irrigated or humid cropland is not something we can sign (D-023).
+    land_use: cropland
+    management: annual winter wheat; no-till / residue incorporated / residue replaced
+    climate: >-
+      Semi-arid Mediterranean pattern (provider's own description). MAT 11.1 C,
+      MAP 401 mm. IPCC 2006 temperature regime Warm Temperate; moisture regime
+      undetermined for want of MAP:PET (D-021, D-028).
+    koppen:
+    soil_texture: Walla Walla silt loam
+    soil_group: coarse-silty, mixed, superactive, mesic Typic Haploxeroll
+    country_region: Adams, Oregon, United States (45.767, -118.563)
+    depth_top_cm: 0
+    depth_bottom_cm: 30.0
+    depth_basis: fixed_depth
+    site_stock_mg_c_ha: 34.31
+    analytical_method: dry_combustion
+    bd_method: core
+    support_note: >-
+      12 plots x 39 monthly campaigns = 468 plot-months. 3.6 x 53 m plots, four randomized complete blocks.
+      3 core(s) of 50 mm per plot per month. The plot term is estimated
+      across all 39 visits, so its effective support is the plot, not the core.
+    citation: >-
+      Wuest, S. B. & Durfee, N. (2024). Data from: Temporal variability is a
+      source of uncertainty in soil carbon measurements [data set]. Ag Data
+      Commons. doi:10.15482/USDA.ADC/25719348.v1. U.S. Public Domain. Paper:
+      Wuest, S. B. & Durfee, N. (2024), Soil Science Society of America Journal
+      88(3), 830-845, doi:10.1002/saj2.20660.
+    doi_or_url: https://doi.org/10.15482/USDA.ADC/25719348.v1
+    locator: scripts/derive_temporal.py -> data/processed/temporal_variance.json (AW)
+    access: open_access
+    verification: derived_primary_data
+    extracted_on: "2026-08-10"
+    in_scope: true
+    use_as: baseline
+    spatial_extent_m: 3.6
+    osse_distribution: lognormal_cv(0.03384)
+    notes: >-
+      THE FIRST DECOMPOSED BETWEEN-PLOT TERM IN THE TABLE. Every other row for
+      this component is an upper bound with within-plot spatial and analytical
+      error baked in, because every other source measures each plot once.
+      Repeated visits are what make the split possible (D-046).
+      READ ALONGSIDE VC-BPS-005/006, DO NOT REPLACE THEM. Those are North
+      American cropland at 0-15 cm across 26 sites and are the right baseline
+      for our scope; this is four PNW dryland sites. The like-for-like
+      comparison is plot PLUS residual, which is what a single visit to one plot
+      would show: 5.29% here against 11.46% for VC-BPS-006. Across the five
+      series that quantity spans 5.3-11.3%, with Ritzville landing on the
+      NAPESHM figure almost exactly. That is the first external corroboration
+      VC-BPS-006 has had, and it is what this row is here to provide.
+      DO NOT SUM WITH ITS OWN TEMPORAL SIBLING'S COMBINED ROW - VC-TMP-004/006/
+      008/010/012 already contain the residual that was removed from here.
+      SUPERSEDES VC-TMP-002, which reported this same between-EU quantity as a
+      variance share read off the abstract and sat in the temporal block only
+      because it was printed beside the temporal figure (D-049).
+      ONE REGION ONLY: silt loam, semi-arid Mediterranean, PNW dryland (D-047).
+
+  - row_id: VC-BPS-008
+    component: between_plot_spatial
+    error_kind: random
+    quantity: >-
+      Variance between replicate experimental units under identical management
+      at Adams, Oregon ('Adams-residue'), with within-plot spatial and analytical error REMOVED
+      rather than absorbed.
+    statistic: cv_pct
+    value: 5.244
+    units: pct
+    value_low: 3.973
+    value_high: 6.573
+    uncertainty_type: ci95
+    n: 348
+    cv_pct: 5.244
+    harmonization_method: derived_see_note
+    harmonization_note: >-
+      DERIVED BY US (D-041, D-046). The plot term of the crossed model
+      log C ~ treatment + (1|plot) + (1|occasion), fitted per site on the
+      Wuest & Durfee monthly series. Because each plot is measured on 29
+      separate occasions, within-plot spatial and analytical error land in the
+      residual and NOT in this term - repeated visits average them out of the
+      plot mean. That is what makes this row different in kind from
+      VC-BPS-005/006, which are single-visit and therefore combined.
+      CV = 100*sqrt(exp(sigma^2)-1) (D-029); 95% block bootstrap over occasions.
+      No absolute SD is published: the layer is top 250 kg/m2 of dry soil, about 20 cm and an SD in
+      Mg C/ha would invite addition into a 0-30 cm budget (D-042).
+    reference_stock_mg_c_ha:
+    mean_dependent: false
+    bias_direction: unknown
+    bias_direction_reasoning: >-
+      No direction can be defended, and for once that is a statement about the
+      estimand rather than about ignorance. The usual inflation - within-plot
+      spatial and analytical error riding along - is genuinely absent here,
+      which is the whole point of the row. What remains is a transfer question:
+      these are long-established research plots on deliberately uniform fields,
+      3.6-9 m wide, which would push the term DOWN relative to a working farm
+      field; but they are also dryland silt loams with a fallow phase, and
+      whether that pushes plot-to-plot heterogeneity up or down against
+      irrigated or humid cropland is not something we can sign (D-023).
+    land_use: cropland
+    management: annual winter wheat; residue removal treatments
+    climate: >-
+      Semi-arid Mediterranean pattern (provider's own description). MAT 11.1 C,
+      MAP 401 mm. IPCC 2006 temperature regime Warm Temperate; moisture regime
+      undetermined for want of MAP:PET (D-021, D-028).
+    koppen:
+    soil_texture: Walla Walla silt loam
+    soil_group: coarse-silty, mixed, superactive, mesic Typic Haploxeroll
+    country_region: Adams, Oregon, United States (45.767, -118.563)
+    depth_top_cm: 0
+    depth_bottom_cm: 20.0
+    depth_basis: equivalent_soil_mass
+    site_stock_mg_c_ha: 28.76
+    analytical_method: dry_combustion
+    bd_method: core
+    support_note: >-
+      12 plots x 29 monthly campaigns = 348 plot-months. 6 x 60 m plots, four randomized complete blocks.
+      3 core(s) of 25 mm per plot per month. The plot term is estimated
+      across all 29 visits, so its effective support is the plot, not the core.
+    citation: >-
+      Wuest, S. B. & Durfee, N. (2024). Data from: Temporal variability is a
+      source of uncertainty in soil carbon measurements [data set]. Ag Data
+      Commons. doi:10.15482/USDA.ADC/25719348.v1. U.S. Public Domain. Paper:
+      Wuest, S. B. & Durfee, N. (2024), Soil Science Society of America Journal
+      88(3), 830-845, doi:10.1002/saj2.20660.
+    doi_or_url: https://doi.org/10.15482/USDA.ADC/25719348.v1
+    locator: scripts/derive_temporal.py -> data/processed/temporal_variance.json (CP)
+    access: open_access
+    verification: derived_primary_data
+    extracted_on: "2026-08-10"
+    in_scope: true
+    use_as: baseline
+    spatial_extent_m: 6
+    osse_distribution: lognormal_cv(0.05244)
+    notes: >-
+      THE FIRST DECOMPOSED BETWEEN-PLOT TERM IN THE TABLE. Every other row for
+      this component is an upper bound with within-plot spatial and analytical
+      error baked in, because every other source measures each plot once.
+      Repeated visits are what make the split possible (D-046).
+      READ ALONGSIDE VC-BPS-005/006, DO NOT REPLACE THEM. Those are North
+      American cropland at 0-15 cm across 26 sites and are the right baseline
+      for our scope; this is four PNW dryland sites. The like-for-like
+      comparison is plot PLUS residual, which is what a single visit to one plot
+      would show: 7.6% here against 11.46% for VC-BPS-006. Across the five
+      series that quantity spans 5.3-11.3%, with Ritzville landing on the
+      NAPESHM figure almost exactly. That is the first external corroboration
+      VC-BPS-006 has had, and it is what this row is here to provide.
+      DO NOT SUM WITH ITS OWN TEMPORAL SIBLING'S COMBINED ROW - VC-TMP-004/006/
+      008/010/012 already contain the residual that was removed from here.
+      SUPERSEDES VC-TMP-002, which reported this same between-EU quantity as a
+      variance share read off the abstract and sat in the temporal block only
+      because it was printed beside the temporal figure (D-049).
+      ONE REGION ONLY: silt loam, semi-arid Mediterranean, PNW dryland (D-047).
+
+  - row_id: VC-BPS-009
+    component: between_plot_spatial
+    error_kind: random
+    quantity: >-
+      Variance between replicate experimental units under identical management
+      at Echo, Oregon, with within-plot spatial and analytical error REMOVED
+      rather than absorbed.
+    statistic: cv_pct
+    value: 3.345
+    units: pct
+    value_low: 2.561
+    value_high: 5.432
+    uncertainty_type: ci95
+    n: 288
+    cv_pct: 3.345
+    harmonization_method: derived_see_note
+    harmonization_note: >-
+      DERIVED BY US (D-041, D-046). The plot term of the crossed model
+      log C ~ treatment + (1|plot) + (1|occasion), fitted per site on the
+      Wuest & Durfee monthly series. Because each plot is measured on 18
+      separate occasions, within-plot spatial and analytical error land in the
+      residual and NOT in this term - repeated visits average them out of the
+      plot mean. That is what makes this row different in kind from
+      VC-BPS-005/006, which are single-visit and therefore combined.
+      CV = 100*sqrt(exp(sigma^2)-1) (D-029); 95% block bootstrap over occasions.
+      No absolute SD is published: the layer is top 250 kg/m2 of dry soil, about 20 cm and an SD in
+      Mg C/ha would invite addition into a 0-30 cm budget (D-042).
+    reference_stock_mg_c_ha:
+    mean_dependent: false
+    bias_direction: unknown
+    bias_direction_reasoning: >-
+      No direction can be defended, and for once that is a statement about the
+      estimand rather than about ignorance. The usual inflation - within-plot
+      spatial and analytical error riding along - is genuinely absent here,
+      which is the whole point of the row. What remains is a transfer question:
+      these are long-established research plots on deliberately uniform fields,
+      3.6-9 m wide, which would push the term DOWN relative to a working farm
+      field; but they are also dryland silt loams with a fallow phase, and
+      whether that pushes plot-to-plot heterogeneity up or down against
+      irrigated or humid cropland is not something we can sign (D-023).
+    land_use: cropland
+    management: winter wheat-fallow, tilled vs no-till
+    climate: >-
+      Semi-arid Mediterranean pattern (provider's own description). MAT 12.81 C,
+      MAP 265 mm. IPCC 2006 temperature regime Warm Temperate; moisture regime
+      undetermined for want of MAP:PET (D-021, D-028).
+    koppen:
+    soil_texture: Ritzville silt loam - under 15% sand, at least 75% silt, 5-10% clay
+    soil_group: coarse-silty, mixed, superactive, mesic Calcidic Haploxeroll
+    country_region: Echo, Oregon, United States (45.7303, -119.0569)
+    depth_top_cm: 0
+    depth_bottom_cm: 20.0
+    depth_basis: equivalent_soil_mass
+    site_stock_mg_c_ha: 14.93
+    analytical_method: dry_combustion
+    bd_method: core
+    support_note: >-
+      16 plots x 18 monthly campaigns = 288 plot-months. 7 x 55 m plots, four randomized complete blocks.
+      1 core(s) of 25 mm per plot per month. The plot term is estimated
+      across all 18 visits, so its effective support is the plot, not the core.
+    citation: >-
+      Wuest, S. B. & Durfee, N. (2024). Data from: Temporal variability is a
+      source of uncertainty in soil carbon measurements [data set]. Ag Data
+      Commons. doi:10.15482/USDA.ADC/25719348.v1. U.S. Public Domain. Paper:
+      Wuest, S. B. & Durfee, N. (2024), Soil Science Society of America Journal
+      88(3), 830-845, doi:10.1002/saj2.20660.
+    doi_or_url: https://doi.org/10.15482/USDA.ADC/25719348.v1
+    locator: scripts/derive_temporal.py -> data/processed/temporal_variance.json (Echo)
+    access: open_access
+    verification: derived_primary_data
+    extracted_on: "2026-08-10"
+    in_scope: true
+    use_as: baseline
+    spatial_extent_m: 7
+    osse_distribution: lognormal_cv(0.03345)
+    notes: >-
+      THE FIRST DECOMPOSED BETWEEN-PLOT TERM IN THE TABLE. Every other row for
+      this component is an upper bound with within-plot spatial and analytical
+      error baked in, because every other source measures each plot once.
+      Repeated visits are what make the split possible (D-046).
+      READ ALONGSIDE VC-BPS-005/006, DO NOT REPLACE THEM. Those are North
+      American cropland at 0-15 cm across 26 sites and are the right baseline
+      for our scope; this is four PNW dryland sites. The like-for-like
+      comparison is plot PLUS residual, which is what a single visit to one plot
+      would show: 9.62% here against 11.46% for VC-BPS-006. Across the five
+      series that quantity spans 5.3-11.3%, with Ritzville landing on the
+      NAPESHM figure almost exactly. That is the first external corroboration
+      VC-BPS-006 has had, and it is what this row is here to provide.
+      DO NOT SUM WITH ITS OWN TEMPORAL SIBLING'S COMBINED ROW - VC-TMP-004/006/
+      008/010/012 already contain the residual that was removed from here.
+      SUPERSEDES VC-TMP-002, which reported this same between-EU quantity as a
+      variance share read off the abstract and sat in the temporal block only
+      because it was printed beside the temporal figure (D-049).
+      ONE REGION ONLY: silt loam, semi-arid Mediterranean, PNW dryland (D-047).
+
+  - row_id: VC-BPS-010
+    component: between_plot_spatial
+    error_kind: random
+    quantity: >-
+      Variance between replicate experimental units under identical management
+      at Moro, Oregon, with within-plot spatial and analytical error REMOVED
+      rather than absorbed.
+    statistic: cv_pct
+    value: 3.801
+    units: pct
+    value_low: 2.929
+    value_high: 4.801
+    uncertainty_type: ci95
+    n: 348
+    cv_pct: 3.801
+    harmonization_method: derived_see_note
+    harmonization_note: >-
+      DERIVED BY US (D-041, D-046). The plot term of the crossed model
+      log C ~ treatment + (1|plot) + (1|occasion), fitted per site on the
+      Wuest & Durfee monthly series. Because each plot is measured on 29
+      separate occasions, within-plot spatial and analytical error land in the
+      residual and NOT in this term - repeated visits average them out of the
+      plot mean. That is what makes this row different in kind from
+      VC-BPS-005/006, which are single-visit and therefore combined.
+      CV = 100*sqrt(exp(sigma^2)-1) (D-029); 95% block bootstrap over occasions.
+      No absolute SD is published: the layer is top 250 kg/m2 of dry soil, about 20 cm and an SD in
+      Mg C/ha would invite addition into a 0-30 cm budget (D-042).
+    reference_stock_mg_c_ha:
+    mean_dependent: false
+    bias_direction: unknown
+    bias_direction_reasoning: >-
+      No direction can be defended, and for once that is a statement about the
+      estimand rather than about ignorance. The usual inflation - within-plot
+      spatial and analytical error riding along - is genuinely absent here,
+      which is the whole point of the row. What remains is a transfer question:
+      these are long-established research plots on deliberately uniform fields,
+      3.6-9 m wide, which would push the term DOWN relative to a working farm
+      field; but they are also dryland silt loams with a fallow phase, and
+      whether that pushes plot-to-plot heterogeneity up or down against
+      irrigated or humid cropland is not something we can sign (D-023).
+    land_use: cropland
+    management: winter wheat-fallow, no-till vs minimum till
+    climate: >-
+      Semi-arid Mediterranean pattern (provider's own description). MAT 9.72 C,
+      MAP 269 mm. IPCC 2006 temperature regime Cool Temperate; moisture regime
+      undetermined for want of MAP:PET (D-021, D-028).
+    koppen:
+    soil_texture: Walla Walla silt loam - 14% fine sand, 72% silt, 14% clay
+    soil_group: coarse-silty, mixed, superactive, mesic Typic Haploxeroll
+    country_region: Moro, Oregon, United States (45.4833, -120.7184)
+    depth_top_cm: 0
+    depth_bottom_cm: 20.0
+    depth_basis: equivalent_soil_mass
+    site_stock_mg_c_ha: 19.03
+    analytical_method: dry_combustion
+    bd_method: core
+    support_note: >-
+      12 plots x 29 monthly campaigns = 348 plot-months. three randomized complete blocks across a backslope and a shoulder slope.
+      1 core(s) of 25 mm per plot per month. The plot term is estimated
+      across all 29 visits, so its effective support is the plot, not the core.
+    citation: >-
+      Wuest, S. B. & Durfee, N. (2024). Data from: Temporal variability is a
+      source of uncertainty in soil carbon measurements [data set]. Ag Data
+      Commons. doi:10.15482/USDA.ADC/25719348.v1. U.S. Public Domain. Paper:
+      Wuest, S. B. & Durfee, N. (2024), Soil Science Society of America Journal
+      88(3), 830-845, doi:10.1002/saj2.20660.
+    doi_or_url: https://doi.org/10.15482/USDA.ADC/25719348.v1
+    locator: scripts/derive_temporal.py -> data/processed/temporal_variance.json (Moro)
+    access: open_access
+    verification: derived_primary_data
+    extracted_on: "2026-08-10"
+    in_scope: true
+    use_as: baseline
+    spatial_extent_m: 
+    osse_distribution: lognormal_cv(0.03801)
+    notes: >-
+      THE FIRST DECOMPOSED BETWEEN-PLOT TERM IN THE TABLE. Every other row for
+      this component is an upper bound with within-plot spatial and analytical
+      error baked in, because every other source measures each plot once.
+      Repeated visits are what make the split possible (D-046).
+      READ ALONGSIDE VC-BPS-005/006, DO NOT REPLACE THEM. Those are North
+      American cropland at 0-15 cm across 26 sites and are the right baseline
+      for our scope; this is four PNW dryland sites. The like-for-like
+      comparison is plot PLUS residual, which is what a single visit to one plot
+      would show: 7.03% here against 11.46% for VC-BPS-006. Across the five
+      series that quantity spans 5.3-11.3%, with Ritzville landing on the
+      NAPESHM figure almost exactly. That is the first external corroboration
+      VC-BPS-006 has had, and it is what this row is here to provide.
+      DO NOT SUM WITH ITS OWN TEMPORAL SIBLING'S COMBINED ROW - VC-TMP-004/006/
+      008/010/012 already contain the residual that was removed from here.
+      SUPERSEDES VC-TMP-002, which reported this same between-EU quantity as a
+      variance share read off the abstract and sat in the temporal block only
+      because it was printed beside the temporal figure (D-049).
+      ONE REGION ONLY: silt loam, semi-arid Mediterranean, PNW dryland (D-047).
+
+  - row_id: VC-BPS-011
+    component: between_plot_spatial
+    error_kind: random
+    quantity: >-
+      Variance between replicate experimental units under identical management
+      at Ritzville, Washington, with within-plot spatial and analytical error REMOVED
+      rather than absorbed.
+    statistic: cv_pct
+    value: 3.772
+    units: pct
+    value_low: 3.381
+    value_high: 5.193
+    uncertainty_type: ci95
+    n: 743
+    cv_pct: 3.772
+    harmonization_method: derived_see_note
+    harmonization_note: >-
+      DERIVED BY US (D-041, D-046). The plot term of the crossed model
+      log C ~ treatment + (1|plot) + (1|occasion), fitted per site on the
+      Wuest & Durfee monthly series. Because each plot is measured on 31
+      separate occasions, within-plot spatial and analytical error land in the
+      residual and NOT in this term - repeated visits average them out of the
+      plot mean. That is what makes this row different in kind from
+      VC-BPS-005/006, which are single-visit and therefore combined.
+      CV = 100*sqrt(exp(sigma^2)-1) (D-029); 95% block bootstrap over occasions.
+      No absolute SD is published: the layer is top 250 kg/m2 of dry soil, about 20 cm and an SD in
+      Mg C/ha would invite addition into a 0-30 cm budget (D-042).
+    reference_stock_mg_c_ha:
+    mean_dependent: false
+    bias_direction: unknown
+    bias_direction_reasoning: >-
+      No direction can be defended, and for once that is a statement about the
+      estimand rather than about ignorance. The usual inflation - within-plot
+      spatial and analytical error riding along - is genuinely absent here,
+      which is the whole point of the row. What remains is a transfer question:
+      these are long-established research plots on deliberately uniform fields,
+      3.6-9 m wide, which would push the term DOWN relative to a working farm
+      field; but they are also dryland silt loams with a fallow phase, and
+      whether that pushes plot-to-plot heterogeneity up or down against
+      irrigated or humid cropland is not something we can sign (D-023).
+    land_use: cropland
+    management: two 3-year rotations, no-till vs conservation tillage
+    climate: >-
+      Semi-arid Mediterranean pattern (provider's own description). MAT 9.37 C,
+      MAP 296 mm. IPCC 2006 temperature regime Cool Temperate; moisture regime
+      undetermined for want of MAP:PET (D-021, D-028).
+    koppen:
+    soil_texture: Ritzville silt loam - 30% fine sand, 59% silt, 11% clay
+    soil_group: coarse-silty, mixed, superactive, mesic Calcidic Haploxeroll
+    country_region: Ritzville, Washington, United States (47.1437, -118.4693)
+    depth_top_cm: 0
+    depth_bottom_cm: 20.0
+    depth_basis: equivalent_soil_mass
+    site_stock_mg_c_ha: 19.32
+    analytical_method: dry_combustion
+    bd_method: core
+    support_note: >-
+      24 plots x 31 monthly campaigns = 743 plot-months. 9 x 150 m plots, four randomized complete blocks.
+      1 core(s) of 25 mm per plot per month. The plot term is estimated
+      across all 31 visits, so its effective support is the plot, not the core.
+    citation: >-
+      Wuest, S. B. & Durfee, N. (2024). Data from: Temporal variability is a
+      source of uncertainty in soil carbon measurements [data set]. Ag Data
+      Commons. doi:10.15482/USDA.ADC/25719348.v1. U.S. Public Domain. Paper:
+      Wuest, S. B. & Durfee, N. (2024), Soil Science Society of America Journal
+      88(3), 830-845, doi:10.1002/saj2.20660.
+    doi_or_url: https://doi.org/10.15482/USDA.ADC/25719348.v1
+    locator: scripts/derive_temporal.py -> data/processed/temporal_variance.json (Ritz)
+    access: open_access
+    verification: derived_primary_data
+    extracted_on: "2026-08-10"
+    in_scope: true
+    use_as: baseline
+    spatial_extent_m: 9
+    osse_distribution: lognormal_cv(0.03772)
+    notes: >-
+      THE FIRST DECOMPOSED BETWEEN-PLOT TERM IN THE TABLE. Every other row for
+      this component is an upper bound with within-plot spatial and analytical
+      error baked in, because every other source measures each plot once.
+      Repeated visits are what make the split possible (D-046).
+      READ ALONGSIDE VC-BPS-005/006, DO NOT REPLACE THEM. Those are North
+      American cropland at 0-15 cm across 26 sites and are the right baseline
+      for our scope; this is four PNW dryland sites. The like-for-like
+      comparison is plot PLUS residual, which is what a single visit to one plot
+      would show: 11.32% here against 11.46% for VC-BPS-006. Across the five
+      series that quantity spans 5.3-11.3%, with Ritzville landing on the
+      NAPESHM figure almost exactly. That is the first external corroboration
+      VC-BPS-006 has had, and it is what this row is here to provide.
+      DO NOT SUM WITH ITS OWN TEMPORAL SIBLING'S COMBINED ROW - VC-TMP-004/006/
+      008/010/012 already contain the residual that was removed from here.
+      SUPERSEDES VC-TMP-002, which reported this same between-EU quantity as a
+      variance share read off the abstract and sat in the temporal block only
+      because it was printed beside the temporal figure (D-049).
+      ONE REGION ONLY: silt loam, semi-arid Mediterranean, PNW dryland (D-047).
 
   # =====================================================================
   # 4. TEMPORAL (MONTH-TO-MONTH) VARIANCE
@@ -998,9 +1488,22 @@ rows:
     in_scope: false
     use_as: sensitivity_high
     osse_distribution: variance_share(0.15, 0.32)
+    superseded_by: VC-TMP-003, VC-TMP-005, VC-TMP-007, VC-TMP-009, VC-TMP-011
     notes: >-
-      THE WEAKEST LOAD-BEARING ROW IN THE TABLE, and the only temporal anchor we
-      have. in_scope is false because the climate is Pacific Northwest DRYLAND,
+      SUPERSEDED 2026-08-10 by our own derivation from this study's primary data
+      (D-041). KEPT, NOT DELETED, and deliberately so: this row entered at
+      `verified_abstract` carrying a variance SHARE and an ASSUMED depth, and a
+      reviewer should be able to see it replaced by `derived_primary_data` from
+      the same study and check that the two agree. Deleting the rung we climbed
+      from would hide the history that makes the ladder worth trusting (D-049).
+      THE TWO DO AGREE, which is the point. Our decomposition puts the
+      month-to-month share at 18.3% (range 14.4-28.3) against the 20% (15-32)
+      printed here, and the agreement survives every model specification we
+      tried - 18.3%, 18.4% and 19.5% under three different fixed-effect choices.
+      See D-050 for the full comparison, including the one part that does NOT
+      reproduce.
+      WAS THE WEAKEST LOAD-BEARING ROW IN THE TABLE, and for two months the only
+      temporal anchor we had. in_scope is false because the climate is Pacific Northwest DRYLAND,
       not temperate humid cropland - the scope says temperate. Temporal variance
       is plausibly driven by moisture and biological cycling, both of which
       differ systematically between dryland and humid systems, so the direction
@@ -1058,11 +1561,1083 @@ rows:
     extracted_on: "2026-08-07"
     in_scope: false
     use_as: sensitivity_high
+    superseded_by: VC-BPS-007
     notes: >-
+      SUPERSEDED 2026-08-10, but NOT by the temporal rows - this row was never a
+      temporal quantity. It reports variance BETWEEN replicate experimental
+      units, which is component 3, and it sat in the temporal block only because
+      it was published beside the temporal figure. Our derivation from the same
+      study's primary data replaces it (D-049).
+      THIS ONE ONLY PARTLY REPRODUCES, and that is a finding rather than a
+      footnote (D-050). We recover the upper end of the range almost exactly
+      (40.8% against 42%) and the mean loosely (22.8% against 17%), but nothing
+      we fit reaches the published 2% floor - our lowest is 9.4%. We cannot say
+      why without the full text. It does not touch the temporal conclusion,
+      which reproduces cleanly.
       The 2-42% range is enormous and spans the month-to-month range entirely.
       Any claim that temporal variance 'exceeds' replicate variance is true on
       the means but not reliably true site by site. Journal volume/issue/pages
       are UNCONFIRMED and must be checked against the PDF.
+
+  - row_id: VC-TMP-003
+    component: temporal
+    error_kind: random
+    quantity: >-
+      Field-wide month-to-month variability in measured SOC stock: the
+      component shared by every plot on a sampling date, at Adams, Oregon.
+    statistic: cv_pct
+    value: 3.322
+    units: pct
+    value_low: 2.708
+    value_high: 3.778
+    uncertainty_type: ci95
+    n: 468
+    cv_pct: 3.322
+    harmonization_method: derived_see_note
+    harmonization_note: >-
+      DERIVED BY US from the monthly series, not read from the paper (D-041).
+      Crossed random effects on log SOC stock, plot and sampling occasion, with
+      the treatment as a fixed effect so the plot term means "between replicate
+      experimental units" and not "between treatments":
+      log C ~ treatment + (1|plot) + (1|occasion).
+      Occasion is the sampling CAMPAIGN, not the calendar date - four Adams
+      campaigns ran across two consecutive days and keying on date would split
+      those months into half-occasions and manufacture an occasion effect.
+      This row is the OCCASION component alone: what every plot does together on a date. It is separable from within-plot spatial and analytical error, because both average away across the 12 plots measured on each date.
+      CV = 100*sqrt(exp(sigma^2)-1), the same convention as D-029. Estimated by
+      closed-form ANOVA moments for a balanced two-way crossed design, which is
+      exact here; REML agrees to within 0.53 CV points across all five series.
+      The interval is a 95% block bootstrap over OCCASIONS - the independent
+      unit along time. Plots are fixed by design and resampling them would
+      answer a different question.
+      NO absolute SD is published for this row on purpose. The layer is
+      0-30 cm, sampled as six 5-cm increments, and an SD in Mg C/ha would invite being added to a
+      0-30 cm budget, which is the cross-depth rescaling D-042 forbids.
+    reference_stock_mg_c_ha:
+    mean_dependent: false
+    bias_direction: unknown
+    bias_direction_reasoning: >-
+      Two known biases point in opposite directions and neither can be sized.
+      DOWNWARD: this term excludes plot-specific timing effects, which are real
+      temporal variation living in the residual, so it is a lower bound on total
+      temporal variance. UPWARD: samples were "processed monthly by the same
+      lab", so any per-month analytical batch effect is PERFECTLY confounded
+      with the occasion effect and inflates this term. A lower bound on total
+      temporal variance and an upper bound on the field-wide part are different
+      statements, and this row is both, so no net direction can be defended
+      (D-043).
+    land_use: cropland
+    management: annual winter wheat; three tillage treatments - no-till, surface residue incorporated, surface residue removed then replaced
+    climate: >-
+      Semi-arid Mediterranean pattern (the provider's own description). MAT
+      11.1 C from the dataset's own weather column, MAP 401 mm from the
+      provider's site description. IPCC 2006 temperature regime Warm Temperate;
+      moisture regime undetermined for want of MAP:PET, exactly as for NAPESHM
+      (D-021, D-028).
+    koppen:
+    soil_texture: Walla Walla silt loam
+    soil_group: coarse-silty, mixed, superactive, mesic Typic Haploxeroll
+    country_region: Adams, Oregon, United States (45.767, -118.563)
+    depth_top_cm: 0
+    depth_bottom_cm: 30.0
+    depth_basis: fixed_depth
+    site_stock_mg_c_ha: 34.31
+    analytical_method: dry_combustion
+    bd_method: core
+    support_note: >-
+      468 plot-months: 12 plots x 39 monthly campaigns.
+      3.6 x 53 m, four randomized complete blocks. 3 core(s) of 50 mm composited per plot per month.
+      Core position moves between visits: each month's sample taken 30 cm further down the crop row from the previous month's - so even the separable
+      term is measured on a slightly moving support, which is the same
+      confound that retired the NEON path (D-048), smaller by orders of
+      magnitude but not zero.
+    citation: >-
+      Wuest, S. B. & Durfee, N. (2024). Data from: Temporal variability is a
+      source of uncertainty in soil carbon measurements [data set]. Ag Data
+      Commons. doi:10.15482/USDA.ADC/25719348.v1. U.S. Public Domain. Paper:
+      Wuest, S. B. & Durfee, N. (2024), Soil Science Society of America Journal
+      88(3), 830-845, doi:10.1002/saj2.20660 (paywalled; volume and pages
+      confirmed against Crossref).
+    doi_or_url: https://doi.org/10.15482/USDA.ADC/25719348.v1
+    locator: scripts/derive_temporal.py -> data/processed/temporal_variance.json (AW)
+    access: open_access
+    verification: derived_primary_data
+    extracted_on: "2026-08-10"
+    in_scope: true
+    use_as: baseline
+    temporal_extent_months: 39
+    osse_distribution: lognormal_cv(0.03322)
+    notes: >-
+      ADDITIVE-SAFE. This term excludes within-plot spatial and analytical error, both of which the table parameterises separately, so it can be summed into a variance budget without double counting. Its paired combined row cannot.
+      SUPERSEDES the abstract-derived VC-TMP-001/002, which are kept visible so
+      the climb from verified_abstract to derived_primary_data stays legible
+      (D-049).
+      ANNIVERSARY SAMPLING DOES NOT HELP HERE (D-044): revisits 10-14 months
+      apart differ by 6.011% when they fall in the same calendar month and
+      5.888% when they do not. There is no repeatable seasonal cycle to
+      cancel by scheduling.
+      Provider's stated use limitation, quoted verbatim: "Soils were silt
+      loams and the climate was semi-arid Mediterranean pattern at all four
+      sites tested. Other soils and climates may produce more or less temporal
+      variability."
+      ONE REGION ONLY: four sites, all silt loam, all semi-arid Mediterranean,
+      all Pacific Northwest dryland. That limitation is real and does not
+      depend on whether a second region is ever obtained (D-047).
+
+  - row_id: VC-TMP-004
+    component: temporal
+    error_kind: random
+    quantity: >-
+      Total month-to-month variability seen by a repeat visit to one fixed
+      plot at Adams, Oregon.
+    statistic: cv_pct
+    value: 5.253
+    units: pct
+    value_low: 4.716
+    value_high: 5.684
+    uncertainty_type: ci95
+    n: 468
+    cv_pct: 5.253
+    harmonization_method: derived_see_note
+    harmonization_note: >-
+      DERIVED BY US from the monthly series, not read from the paper (D-041).
+      Crossed random effects on log SOC stock, plot and sampling occasion, with
+      the treatment as a fixed effect so the plot term means "between replicate
+      experimental units" and not "between treatments":
+      log C ~ treatment + (1|plot) + (1|occasion).
+      Occasion is the sampling CAMPAIGN, not the calendar date - four Adams
+      campaigns ran across two consecutive days and keying on date would split
+      those months into half-occasions and manufacture an occasion effect.
+      This row is the occasion component PLUS the residual: what a single plot revisited on a new date actually shows. The residual is plot x occasion interaction, within-plot spatial variability at the new core position, and analytical error, and this design cannot split them - one measurement per plot per occasion.
+      CV = 100*sqrt(exp(sigma^2)-1), the same convention as D-029. Estimated by
+      closed-form ANOVA moments for a balanced two-way crossed design, which is
+      exact here; REML agrees to within 0.53 CV points across all five series.
+      The interval is a 95% block bootstrap over OCCASIONS - the independent
+      unit along time. Plots are fixed by design and resampling them would
+      answer a different question.
+      NO absolute SD is published for this row on purpose. The layer is
+      0-30 cm, sampled as six 5-cm increments, and an SD in Mg C/ha would invite being added to a
+      0-30 cm budget, which is the cross-depth rescaling D-042 forbids.
+    reference_stock_mg_c_ha:
+    mean_dependent: false
+    bias_direction: inflates
+    bias_direction_reasoning: >-
+      Contains within-plot spatial variability and analytical error as well as
+      temporal variation, and cannot separate them, so it is strictly an upper
+      bound on the temporal term (D-043). The size of the inflation is
+      constrained: two series composite three cores and three composite one,
+      and within-plot spatial variance enters the residual divided by the core
+      count, so a residual made purely of it would put the single-core sites
+      sqrt(3) = 1.732 above the three-core ones. The observed ratio is 1.785 -
+      at the boundary - so the residual is DOMINATED by within-plot spatial
+      variance and this row overstates temporal variance substantially. Use the
+      paired separable row as the lower bound and treat the truth as nearer to
+      it.
+    land_use: cropland
+    management: annual winter wheat; three tillage treatments - no-till, surface residue incorporated, surface residue removed then replaced
+    climate: >-
+      Semi-arid Mediterranean pattern (the provider's own description). MAT
+      11.1 C from the dataset's own weather column, MAP 401 mm from the
+      provider's site description. IPCC 2006 temperature regime Warm Temperate;
+      moisture regime undetermined for want of MAP:PET, exactly as for NAPESHM
+      (D-021, D-028).
+    koppen:
+    soil_texture: Walla Walla silt loam
+    soil_group: coarse-silty, mixed, superactive, mesic Typic Haploxeroll
+    country_region: Adams, Oregon, United States (45.767, -118.563)
+    depth_top_cm: 0
+    depth_bottom_cm: 30.0
+    depth_basis: fixed_depth
+    site_stock_mg_c_ha: 34.31
+    analytical_method: dry_combustion
+    bd_method: core
+    support_note: >-
+      468 plot-months: 12 plots x 39 monthly campaigns.
+      3.6 x 53 m, four randomized complete blocks. 3 core(s) of 50 mm composited per plot per month.
+      Core position moves between visits: each month's sample taken 30 cm further down the crop row from the previous month's - so even the separable
+      term is measured on a slightly moving support, which is the same
+      confound that retired the NEON path (D-048), smaller by orders of
+      magnitude but not zero.
+    citation: >-
+      Wuest, S. B. & Durfee, N. (2024). Data from: Temporal variability is a
+      source of uncertainty in soil carbon measurements [data set]. Ag Data
+      Commons. doi:10.15482/USDA.ADC/25719348.v1. U.S. Public Domain. Paper:
+      Wuest, S. B. & Durfee, N. (2024), Soil Science Society of America Journal
+      88(3), 830-845, doi:10.1002/saj2.20660 (paywalled; volume and pages
+      confirmed against Crossref).
+    doi_or_url: https://doi.org/10.15482/USDA.ADC/25719348.v1
+    locator: scripts/derive_temporal.py -> data/processed/temporal_variance.json (AW)
+    access: open_access
+    verification: derived_primary_data
+    extracted_on: "2026-08-10"
+    in_scope: true
+    use_as: sensitivity_high
+    temporal_extent_months: 39
+    osse_distribution: lognormal_cv(0.05253)
+    notes: >-
+      NOT ADDITIVE-SAFE. Summing this row alongside the within-plot spatial and analytical rows DOUBLE COUNTS, because it already contains both. It is here as the honest upper bound on what a repeat visit sees, and as the quantity an MDC calculation faces if no other error terms are modelled.
+      SUPERSEDES the abstract-derived VC-TMP-001/002, which are kept visible so
+      the climb from verified_abstract to derived_primary_data stays legible
+      (D-049).
+      ANNIVERSARY SAMPLING DOES NOT HELP HERE (D-044): revisits 10-14 months
+      apart differ by 6.011% when they fall in the same calendar month and
+      5.888% when they do not. There is no repeatable seasonal cycle to
+      cancel by scheduling.
+      Provider's stated use limitation, quoted verbatim: "Soils were silt
+      loams and the climate was semi-arid Mediterranean pattern at all four
+      sites tested. Other soils and climates may produce more or less temporal
+      variability."
+      ONE REGION ONLY: four sites, all silt loam, all semi-arid Mediterranean,
+      all Pacific Northwest dryland. That limitation is real and does not
+      depend on whether a second region is ever obtained (D-047).
+
+  - row_id: VC-TMP-005
+    component: temporal
+    error_kind: random
+    quantity: >-
+      Field-wide month-to-month variability in measured SOC stock: the
+      component shared by every plot on a sampling date, at Adams, Oregon.
+    statistic: cv_pct
+    value: 3.119
+    units: pct
+    value_low: 2.264
+    value_high: 3.832
+    uncertainty_type: ci95
+    n: 348
+    cv_pct: 3.119
+    harmonization_method: derived_see_note
+    harmonization_note: >-
+      DERIVED BY US from the monthly series, not read from the paper (D-041).
+      Crossed random effects on log SOC stock, plot and sampling occasion, with
+      the treatment as a fixed effect so the plot term means "between replicate
+      experimental units" and not "between treatments":
+      log C ~ treatment + (1|plot) + (1|occasion).
+      Occasion is the sampling CAMPAIGN, not the calendar date - four Adams
+      campaigns ran across two consecutive days and keying on date would split
+      those months into half-occasions and manufacture an occasion effect.
+      This row is the OCCASION component alone: what every plot does together on a date. It is separable from within-plot spatial and analytical error, because both average away across the 12 plots measured on each date.
+      CV = 100*sqrt(exp(sigma^2)-1), the same convention as D-029. Estimated by
+      closed-form ANOVA moments for a balanced two-way crossed design, which is
+      exact here; REML agrees to within 0.53 CV points across all five series.
+      The interval is a 95% block bootstrap over OCCASIONS - the independent
+      unit along time. Plots are fixed by design and resampling them would
+      answer a different question.
+      NO absolute SD is published for this row on purpose. The layer is
+      top 250 kg/m2 of dry soil, about 20 cm, and an SD in Mg C/ha would invite being added to a
+      0-30 cm budget, which is the cross-depth rescaling D-042 forbids.
+    reference_stock_mg_c_ha:
+    mean_dependent: false
+    bias_direction: unknown
+    bias_direction_reasoning: >-
+      Two known biases point in opposite directions and neither can be sized.
+      DOWNWARD: this term excludes plot-specific timing effects, which are real
+      temporal variation living in the residual, so it is a lower bound on total
+      temporal variance. UPWARD: samples were "processed monthly by the same
+      lab", so any per-month analytical batch effect is PERFECTLY confounded
+      with the occasion effect and inflates this term. A lower bound on total
+      temporal variance and an upper bound on the field-wide part are different
+      statements, and this row is both, so no net direction can be defended
+      (D-043).
+    land_use: cropland
+    management: annual winter wheat; residue management - none removed, chaff removed, chaff and straw removed
+    climate: >-
+      Semi-arid Mediterranean pattern (the provider's own description). MAT
+      11.1 C from the dataset's own weather column, MAP 401 mm from the
+      provider's site description. IPCC 2006 temperature regime Warm Temperate;
+      moisture regime undetermined for want of MAP:PET, exactly as for NAPESHM
+      (D-021, D-028).
+    koppen:
+    soil_texture: Walla Walla silt loam
+    soil_group: coarse-silty, mixed, superactive, mesic Typic Haploxeroll
+    country_region: Adams, Oregon, United States (45.767, -118.563)
+    depth_top_cm: 0
+    depth_bottom_cm: 20.0
+    depth_basis: equivalent_soil_mass
+    site_stock_mg_c_ha: 28.76
+    analytical_method: dry_combustion
+    bd_method: core
+    support_note: >-
+      348 plot-months: 12 plots x 29 monthly campaigns.
+      6 x 60 m, four randomized complete blocks. 3 core(s) of 25 mm composited per plot per month.
+      Core position moves between visits: each month's cores taken within 30 cm of the previous month's sample - so even the separable
+      term is measured on a slightly moving support, which is the same
+      confound that retired the NEON path (D-048), smaller by orders of
+      magnitude but not zero.
+    citation: >-
+      Wuest, S. B. & Durfee, N. (2024). Data from: Temporal variability is a
+      source of uncertainty in soil carbon measurements [data set]. Ag Data
+      Commons. doi:10.15482/USDA.ADC/25719348.v1. U.S. Public Domain. Paper:
+      Wuest, S. B. & Durfee, N. (2024), Soil Science Society of America Journal
+      88(3), 830-845, doi:10.1002/saj2.20660 (paywalled; volume and pages
+      confirmed against Crossref).
+    doi_or_url: https://doi.org/10.15482/USDA.ADC/25719348.v1
+    locator: scripts/derive_temporal.py -> data/processed/temporal_variance.json (CP)
+    access: open_access
+    verification: derived_primary_data
+    extracted_on: "2026-08-10"
+    in_scope: true
+    use_as: baseline
+    temporal_extent_months: 40
+    osse_distribution: lognormal_cv(0.03119)
+    notes: >-
+      ADDITIVE-SAFE. This term excludes within-plot spatial and analytical error, both of which the table parameterises separately, so it can be summed into a variance budget without double counting. Its paired combined row cannot.
+      SUPERSEDES the abstract-derived VC-TMP-001/002, which are kept visible so
+      the climb from verified_abstract to derived_primary_data stays legible
+      (D-049).
+      ANNIVERSARY SAMPLING DOES NOT HELP HERE (D-044): revisits 10-14 months
+      apart differ by 8.914% when they fall in the same calendar month and
+      8.555% when they do not. There is no repeatable seasonal cycle to
+      cancel by scheduling.
+      Provider's stated use limitation, quoted verbatim: "Soils were silt
+      loams and the climate was semi-arid Mediterranean pattern at all four
+      sites tested. Other soils and climates may produce more or less temporal
+      variability."
+      ONE REGION ONLY: four sites, all silt loam, all semi-arid Mediterranean,
+      all Pacific Northwest dryland. That limitation is real and does not
+      depend on whether a second region is ever obtained (D-047).
+
+  - row_id: VC-TMP-006
+    component: temporal
+    error_kind: random
+    quantity: >-
+      Total month-to-month variability seen by a repeat visit to one fixed
+      plot at Adams, Oregon.
+    statistic: cv_pct
+    value: 6.32
+    units: pct
+    value_low: 5.154
+    value_high: 7.353
+    uncertainty_type: ci95
+    n: 348
+    cv_pct: 6.32
+    harmonization_method: derived_see_note
+    harmonization_note: >-
+      DERIVED BY US from the monthly series, not read from the paper (D-041).
+      Crossed random effects on log SOC stock, plot and sampling occasion, with
+      the treatment as a fixed effect so the plot term means "between replicate
+      experimental units" and not "between treatments":
+      log C ~ treatment + (1|plot) + (1|occasion).
+      Occasion is the sampling CAMPAIGN, not the calendar date - four Adams
+      campaigns ran across two consecutive days and keying on date would split
+      those months into half-occasions and manufacture an occasion effect.
+      This row is the occasion component PLUS the residual: what a single plot revisited on a new date actually shows. The residual is plot x occasion interaction, within-plot spatial variability at the new core position, and analytical error, and this design cannot split them - one measurement per plot per occasion.
+      CV = 100*sqrt(exp(sigma^2)-1), the same convention as D-029. Estimated by
+      closed-form ANOVA moments for a balanced two-way crossed design, which is
+      exact here; REML agrees to within 0.53 CV points across all five series.
+      The interval is a 95% block bootstrap over OCCASIONS - the independent
+      unit along time. Plots are fixed by design and resampling them would
+      answer a different question.
+      NO absolute SD is published for this row on purpose. The layer is
+      top 250 kg/m2 of dry soil, about 20 cm, and an SD in Mg C/ha would invite being added to a
+      0-30 cm budget, which is the cross-depth rescaling D-042 forbids.
+    reference_stock_mg_c_ha:
+    mean_dependent: false
+    bias_direction: inflates
+    bias_direction_reasoning: >-
+      Contains within-plot spatial variability and analytical error as well as
+      temporal variation, and cannot separate them, so it is strictly an upper
+      bound on the temporal term (D-043). The size of the inflation is
+      constrained: two series composite three cores and three composite one,
+      and within-plot spatial variance enters the residual divided by the core
+      count, so a residual made purely of it would put the single-core sites
+      sqrt(3) = 1.732 above the three-core ones. The observed ratio is 1.785 -
+      at the boundary - so the residual is DOMINATED by within-plot spatial
+      variance and this row overstates temporal variance substantially. Use the
+      paired separable row as the lower bound and treat the truth as nearer to
+      it.
+    land_use: cropland
+    management: annual winter wheat; residue management - none removed, chaff removed, chaff and straw removed
+    climate: >-
+      Semi-arid Mediterranean pattern (the provider's own description). MAT
+      11.1 C from the dataset's own weather column, MAP 401 mm from the
+      provider's site description. IPCC 2006 temperature regime Warm Temperate;
+      moisture regime undetermined for want of MAP:PET, exactly as for NAPESHM
+      (D-021, D-028).
+    koppen:
+    soil_texture: Walla Walla silt loam
+    soil_group: coarse-silty, mixed, superactive, mesic Typic Haploxeroll
+    country_region: Adams, Oregon, United States (45.767, -118.563)
+    depth_top_cm: 0
+    depth_bottom_cm: 20.0
+    depth_basis: equivalent_soil_mass
+    site_stock_mg_c_ha: 28.76
+    analytical_method: dry_combustion
+    bd_method: core
+    support_note: >-
+      348 plot-months: 12 plots x 29 monthly campaigns.
+      6 x 60 m, four randomized complete blocks. 3 core(s) of 25 mm composited per plot per month.
+      Core position moves between visits: each month's cores taken within 30 cm of the previous month's sample - so even the separable
+      term is measured on a slightly moving support, which is the same
+      confound that retired the NEON path (D-048), smaller by orders of
+      magnitude but not zero.
+    citation: >-
+      Wuest, S. B. & Durfee, N. (2024). Data from: Temporal variability is a
+      source of uncertainty in soil carbon measurements [data set]. Ag Data
+      Commons. doi:10.15482/USDA.ADC/25719348.v1. U.S. Public Domain. Paper:
+      Wuest, S. B. & Durfee, N. (2024), Soil Science Society of America Journal
+      88(3), 830-845, doi:10.1002/saj2.20660 (paywalled; volume and pages
+      confirmed against Crossref).
+    doi_or_url: https://doi.org/10.15482/USDA.ADC/25719348.v1
+    locator: scripts/derive_temporal.py -> data/processed/temporal_variance.json (CP)
+    access: open_access
+    verification: derived_primary_data
+    extracted_on: "2026-08-10"
+    in_scope: true
+    use_as: sensitivity_high
+    temporal_extent_months: 40
+    osse_distribution: lognormal_cv(0.06320)
+    notes: >-
+      NOT ADDITIVE-SAFE. Summing this row alongside the within-plot spatial and analytical rows DOUBLE COUNTS, because it already contains both. It is here as the honest upper bound on what a repeat visit sees, and as the quantity an MDC calculation faces if no other error terms are modelled.
+      SUPERSEDES the abstract-derived VC-TMP-001/002, which are kept visible so
+      the climb from verified_abstract to derived_primary_data stays legible
+      (D-049).
+      ANNIVERSARY SAMPLING DOES NOT HELP HERE (D-044): revisits 10-14 months
+      apart differ by 8.914% when they fall in the same calendar month and
+      8.555% when they do not. There is no repeatable seasonal cycle to
+      cancel by scheduling.
+      Provider's stated use limitation, quoted verbatim: "Soils were silt
+      loams and the climate was semi-arid Mediterranean pattern at all four
+      sites tested. Other soils and climates may produce more or less temporal
+      variability."
+      ONE REGION ONLY: four sites, all silt loam, all semi-arid Mediterranean,
+      all Pacific Northwest dryland. That limitation is real and does not
+      depend on whether a second region is ever obtained (D-047).
+
+  - row_id: VC-TMP-007
+    component: temporal
+    error_kind: random
+    quantity: >-
+      Field-wide month-to-month variability in measured SOC stock: the
+      component shared by every plot on a sampling date, at Echo, Oregon.
+    statistic: cv_pct
+    value: 4.421
+    units: pct
+    value_low: 2.186
+    value_high: 5.957
+    uncertainty_type: ci95
+    n: 288
+    cv_pct: 4.421
+    harmonization_method: derived_see_note
+    harmonization_note: >-
+      DERIVED BY US from the monthly series, not read from the paper (D-041).
+      Crossed random effects on log SOC stock, plot and sampling occasion, with
+      the treatment as a fixed effect so the plot term means "between replicate
+      experimental units" and not "between treatments":
+      log C ~ treatment + (1|plot) + (1|occasion).
+      Occasion is the sampling CAMPAIGN, not the calendar date - four Adams
+      campaigns ran across two consecutive days and keying on date would split
+      those months into half-occasions and manufacture an occasion effect.
+      This row is the OCCASION component alone: what every plot does together on a date. It is separable from within-plot spatial and analytical error, because both average away across the 16 plots measured on each date.
+      CV = 100*sqrt(exp(sigma^2)-1), the same convention as D-029. Estimated by
+      closed-form ANOVA moments for a balanced two-way crossed design, which is
+      exact here; REML agrees to within 0.53 CV points across all five series.
+      The interval is a 95% block bootstrap over OCCASIONS - the independent
+      unit along time. Plots are fixed by design and resampling them would
+      answer a different question.
+      NO absolute SD is published for this row on purpose. The layer is
+      top 250 kg/m2 of dry soil, about 20 cm, and an SD in Mg C/ha would invite being added to a
+      0-30 cm budget, which is the cross-depth rescaling D-042 forbids.
+    reference_stock_mg_c_ha:
+    mean_dependent: false
+    bias_direction: unknown
+    bias_direction_reasoning: >-
+      Two known biases point in opposite directions and neither can be sized.
+      DOWNWARD: this term excludes plot-specific timing effects, which are real
+      temporal variation living in the residual, so it is a lower bound on total
+      temporal variance. UPWARD: samples were "processed monthly by the same
+      lab", so any per-month analytical batch effect is PERFECTLY confounded
+      with the occasion effect and inflates this term. A lower bound on total
+      temporal variance and an upper bound on the field-wide part are different
+      statements, and this row is both, so no net direction can be defended
+      (D-043).
+    land_use: cropland
+    management: winter wheat-fallow, tilled vs no-till, both rotation entry points present each year
+    climate: >-
+      Semi-arid Mediterranean pattern (the provider's own description). MAT
+      12.81 C from the dataset's own weather column, MAP 265 mm from the
+      provider's site description. IPCC 2006 temperature regime Warm Temperate;
+      moisture regime undetermined for want of MAP:PET, exactly as for NAPESHM
+      (D-021, D-028).
+    koppen:
+    soil_texture: Ritzville silt loam - under 15% sand, at least 75% silt, 5-10% clay
+    soil_group: coarse-silty, mixed, superactive, mesic Calcidic Haploxeroll
+    country_region: Echo, Oregon, United States (45.7303, -119.0569)
+    depth_top_cm: 0
+    depth_bottom_cm: 20.0
+    depth_basis: equivalent_soil_mass
+    site_stock_mg_c_ha: 14.93
+    analytical_method: dry_combustion
+    bd_method: core
+    support_note: >-
+      288 plot-months: 16 plots x 18 monthly campaigns.
+      7 x 55 m, four randomized complete blocks. 1 core(s) of 25 mm per plot per month.
+      Core position moves between visits: a single core each month within a few metres of the same location - so even the separable
+      term is measured on a slightly moving support, which is the same
+      confound that retired the NEON path (D-048), smaller by orders of
+      magnitude but not zero.
+    citation: >-
+      Wuest, S. B. & Durfee, N. (2024). Data from: Temporal variability is a
+      source of uncertainty in soil carbon measurements [data set]. Ag Data
+      Commons. doi:10.15482/USDA.ADC/25719348.v1. U.S. Public Domain. Paper:
+      Wuest, S. B. & Durfee, N. (2024), Soil Science Society of America Journal
+      88(3), 830-845, doi:10.1002/saj2.20660 (paywalled; volume and pages
+      confirmed against Crossref).
+    doi_or_url: https://doi.org/10.15482/USDA.ADC/25719348.v1
+    locator: scripts/derive_temporal.py -> data/processed/temporal_variance.json (Echo)
+    access: open_access
+    verification: derived_primary_data
+    extracted_on: "2026-08-10"
+    in_scope: true
+    use_as: baseline
+    temporal_extent_months: 19
+    osse_distribution: lognormal_cv(0.04421)
+    notes: >-
+      ADDITIVE-SAFE. This term excludes within-plot spatial and analytical error, both of which the table parameterises separately, so it can be summed into a variance budget without double counting. Its paired combined row cannot.
+      SUPERSEDES the abstract-derived VC-TMP-001/002, which are kept visible so
+      the climb from verified_abstract to derived_primary_data stays legible
+      (D-049).
+      ANNIVERSARY SAMPLING DOES NOT HELP HERE (D-044): revisits 10-14 months
+      apart differ by 12.464% when they fall in the same calendar month and
+      13.713% when they do not. There is no repeatable seasonal cycle to
+      cancel by scheduling.
+      Provider's stated use limitation, quoted verbatim: "Soils were silt
+      loams and the climate was semi-arid Mediterranean pattern at all four
+      sites tested. Other soils and climates may produce more or less temporal
+      variability."
+      ONE REGION ONLY: four sites, all silt loam, all semi-arid Mediterranean,
+      all Pacific Northwest dryland. That limitation is real and does not
+      depend on whether a second region is ever obtained (D-047).
+
+  - row_id: VC-TMP-008
+    component: temporal
+    error_kind: random
+    quantity: >-
+      Total month-to-month variability seen by a repeat visit to one fixed
+      plot at Echo, Oregon.
+    statistic: cv_pct
+    value: 10.048
+    units: pct
+    value_low: 9.06
+    value_high: 10.514
+    uncertainty_type: ci95
+    n: 288
+    cv_pct: 10.048
+    harmonization_method: derived_see_note
+    harmonization_note: >-
+      DERIVED BY US from the monthly series, not read from the paper (D-041).
+      Crossed random effects on log SOC stock, plot and sampling occasion, with
+      the treatment as a fixed effect so the plot term means "between replicate
+      experimental units" and not "between treatments":
+      log C ~ treatment + (1|plot) + (1|occasion).
+      Occasion is the sampling CAMPAIGN, not the calendar date - four Adams
+      campaigns ran across two consecutive days and keying on date would split
+      those months into half-occasions and manufacture an occasion effect.
+      This row is the occasion component PLUS the residual: what a single plot revisited on a new date actually shows. The residual is plot x occasion interaction, within-plot spatial variability at the new core position, and analytical error, and this design cannot split them - one measurement per plot per occasion.
+      CV = 100*sqrt(exp(sigma^2)-1), the same convention as D-029. Estimated by
+      closed-form ANOVA moments for a balanced two-way crossed design, which is
+      exact here; REML agrees to within 0.53 CV points across all five series.
+      The interval is a 95% block bootstrap over OCCASIONS - the independent
+      unit along time. Plots are fixed by design and resampling them would
+      answer a different question.
+      NO absolute SD is published for this row on purpose. The layer is
+      top 250 kg/m2 of dry soil, about 20 cm, and an SD in Mg C/ha would invite being added to a
+      0-30 cm budget, which is the cross-depth rescaling D-042 forbids.
+    reference_stock_mg_c_ha:
+    mean_dependent: false
+    bias_direction: inflates
+    bias_direction_reasoning: >-
+      Contains within-plot spatial variability and analytical error as well as
+      temporal variation, and cannot separate them, so it is strictly an upper
+      bound on the temporal term (D-043). The size of the inflation is
+      constrained: two series composite three cores and three composite one,
+      and within-plot spatial variance enters the residual divided by the core
+      count, so a residual made purely of it would put the single-core sites
+      sqrt(3) = 1.732 above the three-core ones. The observed ratio is 1.785 -
+      at the boundary - so the residual is DOMINATED by within-plot spatial
+      variance and this row overstates temporal variance substantially. Use the
+      paired separable row as the lower bound and treat the truth as nearer to
+      it.
+    land_use: cropland
+    management: winter wheat-fallow, tilled vs no-till, both rotation entry points present each year
+    climate: >-
+      Semi-arid Mediterranean pattern (the provider's own description). MAT
+      12.81 C from the dataset's own weather column, MAP 265 mm from the
+      provider's site description. IPCC 2006 temperature regime Warm Temperate;
+      moisture regime undetermined for want of MAP:PET, exactly as for NAPESHM
+      (D-021, D-028).
+    koppen:
+    soil_texture: Ritzville silt loam - under 15% sand, at least 75% silt, 5-10% clay
+    soil_group: coarse-silty, mixed, superactive, mesic Calcidic Haploxeroll
+    country_region: Echo, Oregon, United States (45.7303, -119.0569)
+    depth_top_cm: 0
+    depth_bottom_cm: 20.0
+    depth_basis: equivalent_soil_mass
+    site_stock_mg_c_ha: 14.93
+    analytical_method: dry_combustion
+    bd_method: core
+    support_note: >-
+      288 plot-months: 16 plots x 18 monthly campaigns.
+      7 x 55 m, four randomized complete blocks. 1 core(s) of 25 mm per plot per month.
+      Core position moves between visits: a single core each month within a few metres of the same location - so even the separable
+      term is measured on a slightly moving support, which is the same
+      confound that retired the NEON path (D-048), smaller by orders of
+      magnitude but not zero.
+    citation: >-
+      Wuest, S. B. & Durfee, N. (2024). Data from: Temporal variability is a
+      source of uncertainty in soil carbon measurements [data set]. Ag Data
+      Commons. doi:10.15482/USDA.ADC/25719348.v1. U.S. Public Domain. Paper:
+      Wuest, S. B. & Durfee, N. (2024), Soil Science Society of America Journal
+      88(3), 830-845, doi:10.1002/saj2.20660 (paywalled; volume and pages
+      confirmed against Crossref).
+    doi_or_url: https://doi.org/10.15482/USDA.ADC/25719348.v1
+    locator: scripts/derive_temporal.py -> data/processed/temporal_variance.json (Echo)
+    access: open_access
+    verification: derived_primary_data
+    extracted_on: "2026-08-10"
+    in_scope: true
+    use_as: sensitivity_high
+    temporal_extent_months: 19
+    osse_distribution: lognormal_cv(0.10048)
+    notes: >-
+      NOT ADDITIVE-SAFE. Summing this row alongside the within-plot spatial and analytical rows DOUBLE COUNTS, because it already contains both. It is here as the honest upper bound on what a repeat visit sees, and as the quantity an MDC calculation faces if no other error terms are modelled.
+      SUPERSEDES the abstract-derived VC-TMP-001/002, which are kept visible so
+      the climb from verified_abstract to derived_primary_data stays legible
+      (D-049).
+      ANNIVERSARY SAMPLING DOES NOT HELP HERE (D-044): revisits 10-14 months
+      apart differ by 12.464% when they fall in the same calendar month and
+      13.713% when they do not. There is no repeatable seasonal cycle to
+      cancel by scheduling.
+      Provider's stated use limitation, quoted verbatim: "Soils were silt
+      loams and the climate was semi-arid Mediterranean pattern at all four
+      sites tested. Other soils and climates may produce more or less temporal
+      variability."
+      ONE REGION ONLY: four sites, all silt loam, all semi-arid Mediterranean,
+      all Pacific Northwest dryland. That limitation is real and does not
+      depend on whether a second region is ever obtained (D-047).
+
+  - row_id: VC-TMP-009
+    component: temporal
+    error_kind: random
+    quantity: >-
+      Field-wide month-to-month variability in measured SOC stock: the
+      component shared by every plot on a sampling date, at Moro, Oregon.
+    statistic: cv_pct
+    value: 3.015
+    units: pct
+    value_low: 1.767
+    value_high: 3.876
+    uncertainty_type: ci95
+    n: 348
+    cv_pct: 3.015
+    harmonization_method: derived_see_note
+    harmonization_note: >-
+      DERIVED BY US from the monthly series, not read from the paper (D-041).
+      Crossed random effects on log SOC stock, plot and sampling occasion, with
+      the treatment as a fixed effect so the plot term means "between replicate
+      experimental units" and not "between treatments":
+      log C ~ treatment + (1|plot) + (1|occasion).
+      Occasion is the sampling CAMPAIGN, not the calendar date - four Adams
+      campaigns ran across two consecutive days and keying on date would split
+      those months into half-occasions and manufacture an occasion effect.
+      This row is the OCCASION component alone: what every plot does together on a date. It is separable from within-plot spatial and analytical error, because both average away across the 12 plots measured on each date.
+      CV = 100*sqrt(exp(sigma^2)-1), the same convention as D-029. Estimated by
+      closed-form ANOVA moments for a balanced two-way crossed design, which is
+      exact here; REML agrees to within 0.53 CV points across all five series.
+      The interval is a 95% block bootstrap over OCCASIONS - the independent
+      unit along time. Plots are fixed by design and resampling them would
+      answer a different question.
+      NO absolute SD is published for this row on purpose. The layer is
+      top 250 kg/m2 of dry soil, about 20 cm, and an SD in Mg C/ha would invite being added to a
+      0-30 cm budget, which is the cross-depth rescaling D-042 forbids.
+    reference_stock_mg_c_ha:
+    mean_dependent: false
+    bias_direction: unknown
+    bias_direction_reasoning: >-
+      Two known biases point in opposite directions and neither can be sized.
+      DOWNWARD: this term excludes plot-specific timing effects, which are real
+      temporal variation living in the residual, so it is a lower bound on total
+      temporal variance. UPWARD: samples were "processed monthly by the same
+      lab", so any per-month analytical batch effect is PERFECTLY confounded
+      with the occasion effect and inflates this term. A lower bound on total
+      temporal variance and an upper bound on the field-wide part are different
+      statements, and this row is both, so no net direction can be defended
+      (D-043).
+    land_use: cropland
+    management: winter wheat-fallow, no-till vs minimum till, both rotation phases each year
+    climate: >-
+      Semi-arid Mediterranean pattern (the provider's own description). MAT
+      9.72 C from the dataset's own weather column, MAP 269 mm from the
+      provider's site description. IPCC 2006 temperature regime Cool Temperate;
+      moisture regime undetermined for want of MAP:PET, exactly as for NAPESHM
+      (D-021, D-028).
+    koppen:
+    soil_texture: Walla Walla silt loam - 14% fine sand, 72% silt, 14% clay
+    soil_group: coarse-silty, mixed, superactive, mesic Typic Haploxeroll
+    country_region: Moro, Oregon, United States (45.4833, -120.7184)
+    depth_top_cm: 0
+    depth_bottom_cm: 20.0
+    depth_basis: equivalent_soil_mass
+    site_stock_mg_c_ha: 19.03
+    analytical_method: dry_combustion
+    bd_method: core
+    support_note: >-
+      348 plot-months: 12 plots x 29 monthly campaigns.
+      three randomized complete blocks, two on a backslope and one on a shoulder slope. 1 core(s) of 25 mm per plot per month.
+      Core position moves between visits: a single core each month within a few metres of the same location - so even the separable
+      term is measured on a slightly moving support, which is the same
+      confound that retired the NEON path (D-048), smaller by orders of
+      magnitude but not zero.
+    citation: >-
+      Wuest, S. B. & Durfee, N. (2024). Data from: Temporal variability is a
+      source of uncertainty in soil carbon measurements [data set]. Ag Data
+      Commons. doi:10.15482/USDA.ADC/25719348.v1. U.S. Public Domain. Paper:
+      Wuest, S. B. & Durfee, N. (2024), Soil Science Society of America Journal
+      88(3), 830-845, doi:10.1002/saj2.20660 (paywalled; volume and pages
+      confirmed against Crossref).
+    doi_or_url: https://doi.org/10.15482/USDA.ADC/25719348.v1
+    locator: scripts/derive_temporal.py -> data/processed/temporal_variance.json (Moro)
+    access: open_access
+    verification: derived_primary_data
+    extracted_on: "2026-08-10"
+    in_scope: true
+    use_as: baseline
+    temporal_extent_months: 36
+    osse_distribution: lognormal_cv(0.03015)
+    notes: >-
+      ADDITIVE-SAFE. This term excludes within-plot spatial and analytical error, both of which the table parameterises separately, so it can be summed into a variance budget without double counting. Its paired combined row cannot.
+      SUPERSEDES the abstract-derived VC-TMP-001/002, which are kept visible so
+      the climb from verified_abstract to derived_primary_data stays legible
+      (D-049).
+      ANNIVERSARY SAMPLING DOES NOT HELP HERE (D-044): revisits 10-14 months
+      apart differ by 8.384% when they fall in the same calendar month and
+      8.856% when they do not. There is no repeatable seasonal cycle to
+      cancel by scheduling.
+      Provider's stated use limitation, quoted verbatim: "Soils were silt
+      loams and the climate was semi-arid Mediterranean pattern at all four
+      sites tested. Other soils and climates may produce more or less temporal
+      variability."
+      ONE REGION ONLY: four sites, all silt loam, all semi-arid Mediterranean,
+      all Pacific Northwest dryland. That limitation is real and does not
+      depend on whether a second region is ever obtained (D-047).
+
+  - row_id: VC-TMP-010
+    component: temporal
+    error_kind: random
+    quantity: >-
+      Total month-to-month variability seen by a repeat visit to one fixed
+      plot at Moro, Oregon.
+    statistic: cv_pct
+    value: 6.641
+    units: pct
+    value_low: 5.777
+    value_high: 7.235
+    uncertainty_type: ci95
+    n: 348
+    cv_pct: 6.641
+    harmonization_method: derived_see_note
+    harmonization_note: >-
+      DERIVED BY US from the monthly series, not read from the paper (D-041).
+      Crossed random effects on log SOC stock, plot and sampling occasion, with
+      the treatment as a fixed effect so the plot term means "between replicate
+      experimental units" and not "between treatments":
+      log C ~ treatment + (1|plot) + (1|occasion).
+      Occasion is the sampling CAMPAIGN, not the calendar date - four Adams
+      campaigns ran across two consecutive days and keying on date would split
+      those months into half-occasions and manufacture an occasion effect.
+      This row is the occasion component PLUS the residual: what a single plot revisited on a new date actually shows. The residual is plot x occasion interaction, within-plot spatial variability at the new core position, and analytical error, and this design cannot split them - one measurement per plot per occasion.
+      CV = 100*sqrt(exp(sigma^2)-1), the same convention as D-029. Estimated by
+      closed-form ANOVA moments for a balanced two-way crossed design, which is
+      exact here; REML agrees to within 0.53 CV points across all five series.
+      The interval is a 95% block bootstrap over OCCASIONS - the independent
+      unit along time. Plots are fixed by design and resampling them would
+      answer a different question.
+      NO absolute SD is published for this row on purpose. The layer is
+      top 250 kg/m2 of dry soil, about 20 cm, and an SD in Mg C/ha would invite being added to a
+      0-30 cm budget, which is the cross-depth rescaling D-042 forbids.
+    reference_stock_mg_c_ha:
+    mean_dependent: false
+    bias_direction: inflates
+    bias_direction_reasoning: >-
+      Contains within-plot spatial variability and analytical error as well as
+      temporal variation, and cannot separate them, so it is strictly an upper
+      bound on the temporal term (D-043). The size of the inflation is
+      constrained: two series composite three cores and three composite one,
+      and within-plot spatial variance enters the residual divided by the core
+      count, so a residual made purely of it would put the single-core sites
+      sqrt(3) = 1.732 above the three-core ones. The observed ratio is 1.785 -
+      at the boundary - so the residual is DOMINATED by within-plot spatial
+      variance and this row overstates temporal variance substantially. Use the
+      paired separable row as the lower bound and treat the truth as nearer to
+      it.
+    land_use: cropland
+    management: winter wheat-fallow, no-till vs minimum till, both rotation phases each year
+    climate: >-
+      Semi-arid Mediterranean pattern (the provider's own description). MAT
+      9.72 C from the dataset's own weather column, MAP 269 mm from the
+      provider's site description. IPCC 2006 temperature regime Cool Temperate;
+      moisture regime undetermined for want of MAP:PET, exactly as for NAPESHM
+      (D-021, D-028).
+    koppen:
+    soil_texture: Walla Walla silt loam - 14% fine sand, 72% silt, 14% clay
+    soil_group: coarse-silty, mixed, superactive, mesic Typic Haploxeroll
+    country_region: Moro, Oregon, United States (45.4833, -120.7184)
+    depth_top_cm: 0
+    depth_bottom_cm: 20.0
+    depth_basis: equivalent_soil_mass
+    site_stock_mg_c_ha: 19.03
+    analytical_method: dry_combustion
+    bd_method: core
+    support_note: >-
+      348 plot-months: 12 plots x 29 monthly campaigns.
+      three randomized complete blocks, two on a backslope and one on a shoulder slope. 1 core(s) of 25 mm per plot per month.
+      Core position moves between visits: a single core each month within a few metres of the same location - so even the separable
+      term is measured on a slightly moving support, which is the same
+      confound that retired the NEON path (D-048), smaller by orders of
+      magnitude but not zero.
+    citation: >-
+      Wuest, S. B. & Durfee, N. (2024). Data from: Temporal variability is a
+      source of uncertainty in soil carbon measurements [data set]. Ag Data
+      Commons. doi:10.15482/USDA.ADC/25719348.v1. U.S. Public Domain. Paper:
+      Wuest, S. B. & Durfee, N. (2024), Soil Science Society of America Journal
+      88(3), 830-845, doi:10.1002/saj2.20660 (paywalled; volume and pages
+      confirmed against Crossref).
+    doi_or_url: https://doi.org/10.15482/USDA.ADC/25719348.v1
+    locator: scripts/derive_temporal.py -> data/processed/temporal_variance.json (Moro)
+    access: open_access
+    verification: derived_primary_data
+    extracted_on: "2026-08-10"
+    in_scope: true
+    use_as: sensitivity_high
+    temporal_extent_months: 36
+    osse_distribution: lognormal_cv(0.06641)
+    notes: >-
+      NOT ADDITIVE-SAFE. Summing this row alongside the within-plot spatial and analytical rows DOUBLE COUNTS, because it already contains both. It is here as the honest upper bound on what a repeat visit sees, and as the quantity an MDC calculation faces if no other error terms are modelled.
+      SUPERSEDES the abstract-derived VC-TMP-001/002, which are kept visible so
+      the climb from verified_abstract to derived_primary_data stays legible
+      (D-049).
+      ANNIVERSARY SAMPLING DOES NOT HELP HERE (D-044): revisits 10-14 months
+      apart differ by 8.384% when they fall in the same calendar month and
+      8.856% when they do not. There is no repeatable seasonal cycle to
+      cancel by scheduling.
+      Provider's stated use limitation, quoted verbatim: "Soils were silt
+      loams and the climate was semi-arid Mediterranean pattern at all four
+      sites tested. Other soils and climates may produce more or less temporal
+      variability."
+      ONE REGION ONLY: four sites, all silt loam, all semi-arid Mediterranean,
+      all Pacific Northwest dryland. That limitation is real and does not
+      depend on whether a second region is ever obtained (D-047).
+
+  - row_id: VC-TMP-011
+    component: temporal
+    error_kind: random
+    quantity: >-
+      Field-wide month-to-month variability in measured SOC stock: the
+      component shared by every plot on a sampling date, at Ritzville, Washington.
+    statistic: cv_pct
+    value: 4.85
+    units: pct
+    value_low: 3.632
+    value_high: 5.836
+    uncertainty_type: ci95
+    n: 743
+    cv_pct: 4.85
+    harmonization_method: derived_see_note
+    harmonization_note: >-
+      DERIVED BY US from the monthly series, not read from the paper (D-041).
+      Crossed random effects on log SOC stock, plot and sampling occasion, with
+      the treatment as a fixed effect so the plot term means "between replicate
+      experimental units" and not "between treatments":
+      log C ~ treatment + (1|plot) + (1|occasion).
+      Occasion is the sampling CAMPAIGN, not the calendar date - four Adams
+      campaigns ran across two consecutive days and keying on date would split
+      those months into half-occasions and manufacture an occasion effect.
+      This row is the OCCASION component alone: what every plot does together on a date. It is separable from within-plot spatial and analytical error, because both average away across the 24 plots measured on each date.
+      CV = 100*sqrt(exp(sigma^2)-1), the same convention as D-029. Estimated by
+      closed-form ANOVA moments for a balanced two-way crossed design, which is
+      exact here; REML agrees to within 0.53 CV points across all five series.
+      The interval is a 95% block bootstrap over OCCASIONS - the independent
+      unit along time. Plots are fixed by design and resampling them would
+      answer a different question.
+      NO absolute SD is published for this row on purpose. The layer is
+      top 250 kg/m2 of dry soil, about 20 cm, and an SD in Mg C/ha would invite being added to a
+      0-30 cm budget, which is the cross-depth rescaling D-042 forbids.
+    reference_stock_mg_c_ha:
+    mean_dependent: false
+    bias_direction: unknown
+    bias_direction_reasoning: >-
+      Two known biases point in opposite directions and neither can be sized.
+      DOWNWARD: this term excludes plot-specific timing effects, which are real
+      temporal variation living in the residual, so it is a lower bound on total
+      temporal variance. UPWARD: samples were "processed monthly by the same
+      lab", so any per-month analytical batch effect is PERFECTLY confounded
+      with the occasion effect and inflates this term. A lower bound on total
+      temporal variance and an upper bound on the field-wide part are different
+      statements, and this row is both, so no net direction can be defended
+      (D-043).
+    land_use: cropland
+    management: two 3-year rotations - spring wheat/fallow/winter triticale no-till vs spring wheat/fallow/winter wheat conservation till
+    climate: >-
+      Semi-arid Mediterranean pattern (the provider's own description). MAT
+      9.37 C from the dataset's own weather column, MAP 296 mm from the
+      provider's site description. IPCC 2006 temperature regime Cool Temperate;
+      moisture regime undetermined for want of MAP:PET, exactly as for NAPESHM
+      (D-021, D-028).
+    koppen:
+    soil_texture: Ritzville silt loam - 30% fine sand, 59% silt, 11% clay
+    soil_group: coarse-silty, mixed, superactive, mesic Calcidic Haploxeroll
+    country_region: Ritzville, Washington, United States (47.1437, -118.4693)
+    depth_top_cm: 0
+    depth_bottom_cm: 20.0
+    depth_basis: equivalent_soil_mass
+    site_stock_mg_c_ha: 19.32
+    analytical_method: dry_combustion
+    bd_method: core
+    support_note: >-
+      743 plot-months: 24 plots x 31 monthly campaigns (30 used; one campaign is short a plot and is dropped to keep the design balanced).
+      9 x 150 m, four randomized complete blocks. 1 core(s) of 25 mm per plot per month.
+      Core position moves between visits: a single core each month within a few metres of the same location - so even the separable
+      term is measured on a slightly moving support, which is the same
+      confound that retired the NEON path (D-048), smaller by orders of
+      magnitude but not zero.
+    citation: >-
+      Wuest, S. B. & Durfee, N. (2024). Data from: Temporal variability is a
+      source of uncertainty in soil carbon measurements [data set]. Ag Data
+      Commons. doi:10.15482/USDA.ADC/25719348.v1. U.S. Public Domain. Paper:
+      Wuest, S. B. & Durfee, N. (2024), Soil Science Society of America Journal
+      88(3), 830-845, doi:10.1002/saj2.20660 (paywalled; volume and pages
+      confirmed against Crossref).
+    doi_or_url: https://doi.org/10.15482/USDA.ADC/25719348.v1
+    locator: scripts/derive_temporal.py -> data/processed/temporal_variance.json (Ritz)
+    access: open_access
+    verification: derived_primary_data
+    extracted_on: "2026-08-10"
+    in_scope: true
+    use_as: baseline
+    temporal_extent_months: 36
+    osse_distribution: lognormal_cv(0.04850)
+    notes: >-
+      ADDITIVE-SAFE. This term excludes within-plot spatial and analytical error, both of which the table parameterises separately, so it can be summed into a variance budget without double counting. Its paired combined row cannot.
+      SUPERSEDES the abstract-derived VC-TMP-001/002, which are kept visible so
+      the climb from verified_abstract to derived_primary_data stays legible
+      (D-049).
+      ANNIVERSARY SAMPLING DOES NOT HELP HERE (D-044): revisits 10-14 months
+      apart differ by 16.601% when they fall in the same calendar month and
+      16.935% when they do not. There is no repeatable seasonal cycle to
+      cancel by scheduling.
+      Provider's stated use limitation, quoted verbatim: "Soils were silt
+      loams and the climate was semi-arid Mediterranean pattern at all four
+      sites tested. Other soils and climates may produce more or less temporal
+      variability."
+      ONE REGION ONLY: four sites, all silt loam, all semi-arid Mediterranean,
+      all Pacific Northwest dryland. That limitation is real and does not
+      depend on whether a second region is ever obtained (D-047).
+
+  - row_id: VC-TMP-012
+    component: temporal
+    error_kind: random
+    quantity: >-
+      Total month-to-month variability seen by a repeat visit to one fixed
+      plot at Ritzville, Washington.
+    statistic: cv_pct
+    value: 11.726
+    units: pct
+    value_low: 10.769
+    value_high: 12.345
+    uncertainty_type: ci95
+    n: 743
+    cv_pct: 11.726
+    harmonization_method: derived_see_note
+    harmonization_note: >-
+      DERIVED BY US from the monthly series, not read from the paper (D-041).
+      Crossed random effects on log SOC stock, plot and sampling occasion, with
+      the treatment as a fixed effect so the plot term means "between replicate
+      experimental units" and not "between treatments":
+      log C ~ treatment + (1|plot) + (1|occasion).
+      Occasion is the sampling CAMPAIGN, not the calendar date - four Adams
+      campaigns ran across two consecutive days and keying on date would split
+      those months into half-occasions and manufacture an occasion effect.
+      This row is the occasion component PLUS the residual: what a single plot revisited on a new date actually shows. The residual is plot x occasion interaction, within-plot spatial variability at the new core position, and analytical error, and this design cannot split them - one measurement per plot per occasion.
+      CV = 100*sqrt(exp(sigma^2)-1), the same convention as D-029. Estimated by
+      closed-form ANOVA moments for a balanced two-way crossed design, which is
+      exact here; REML agrees to within 0.53 CV points across all five series.
+      The interval is a 95% block bootstrap over OCCASIONS - the independent
+      unit along time. Plots are fixed by design and resampling them would
+      answer a different question.
+      NO absolute SD is published for this row on purpose. The layer is
+      top 250 kg/m2 of dry soil, about 20 cm, and an SD in Mg C/ha would invite being added to a
+      0-30 cm budget, which is the cross-depth rescaling D-042 forbids.
+    reference_stock_mg_c_ha:
+    mean_dependent: false
+    bias_direction: inflates
+    bias_direction_reasoning: >-
+      Contains within-plot spatial variability and analytical error as well as
+      temporal variation, and cannot separate them, so it is strictly an upper
+      bound on the temporal term (D-043). The size of the inflation is
+      constrained: two series composite three cores and three composite one,
+      and within-plot spatial variance enters the residual divided by the core
+      count, so a residual made purely of it would put the single-core sites
+      sqrt(3) = 1.732 above the three-core ones. The observed ratio is 1.785 -
+      at the boundary - so the residual is DOMINATED by within-plot spatial
+      variance and this row overstates temporal variance substantially. Use the
+      paired separable row as the lower bound and treat the truth as nearer to
+      it.
+    land_use: cropland
+    management: two 3-year rotations - spring wheat/fallow/winter triticale no-till vs spring wheat/fallow/winter wheat conservation till
+    climate: >-
+      Semi-arid Mediterranean pattern (the provider's own description). MAT
+      9.37 C from the dataset's own weather column, MAP 296 mm from the
+      provider's site description. IPCC 2006 temperature regime Cool Temperate;
+      moisture regime undetermined for want of MAP:PET, exactly as for NAPESHM
+      (D-021, D-028).
+    koppen:
+    soil_texture: Ritzville silt loam - 30% fine sand, 59% silt, 11% clay
+    soil_group: coarse-silty, mixed, superactive, mesic Calcidic Haploxeroll
+    country_region: Ritzville, Washington, United States (47.1437, -118.4693)
+    depth_top_cm: 0
+    depth_bottom_cm: 20.0
+    depth_basis: equivalent_soil_mass
+    site_stock_mg_c_ha: 19.32
+    analytical_method: dry_combustion
+    bd_method: core
+    support_note: >-
+      743 plot-months: 24 plots x 31 monthly campaigns (30 used; one campaign is short a plot and is dropped to keep the design balanced).
+      9 x 150 m, four randomized complete blocks. 1 core(s) of 25 mm per plot per month.
+      Core position moves between visits: a single core each month within a few metres of the same location - so even the separable
+      term is measured on a slightly moving support, which is the same
+      confound that retired the NEON path (D-048), smaller by orders of
+      magnitude but not zero.
+    citation: >-
+      Wuest, S. B. & Durfee, N. (2024). Data from: Temporal variability is a
+      source of uncertainty in soil carbon measurements [data set]. Ag Data
+      Commons. doi:10.15482/USDA.ADC/25719348.v1. U.S. Public Domain. Paper:
+      Wuest, S. B. & Durfee, N. (2024), Soil Science Society of America Journal
+      88(3), 830-845, doi:10.1002/saj2.20660 (paywalled; volume and pages
+      confirmed against Crossref).
+    doi_or_url: https://doi.org/10.15482/USDA.ADC/25719348.v1
+    locator: scripts/derive_temporal.py -> data/processed/temporal_variance.json (Ritz)
+    access: open_access
+    verification: derived_primary_data
+    extracted_on: "2026-08-10"
+    in_scope: true
+    use_as: sensitivity_high
+    temporal_extent_months: 36
+    osse_distribution: lognormal_cv(0.11726)
+    notes: >-
+      NOT ADDITIVE-SAFE. Summing this row alongside the within-plot spatial and analytical rows DOUBLE COUNTS, because it already contains both. It is here as the honest upper bound on what a repeat visit sees, and as the quantity an MDC calculation faces if no other error terms are modelled.
+      SUPERSEDES the abstract-derived VC-TMP-001/002, which are kept visible so
+      the climb from verified_abstract to derived_primary_data stays legible
+      (D-049).
+      ANNIVERSARY SAMPLING DOES NOT HELP HERE (D-044): revisits 10-14 months
+      apart differ by 16.601% when they fall in the same calendar month and
+      16.935% when they do not. There is no repeatable seasonal cycle to
+      cancel by scheduling.
+      Provider's stated use limitation, quoted verbatim: "Soils were silt
+      loams and the climate was semi-arid Mediterranean pattern at all four
+      sites tested. Other soils and climates may produce more or less temporal
+      variability."
+      ONE REGION ONLY: four sites, all silt loam, all semi-arid Mediterranean,
+      all Pacific Northwest dryland. That limitation is real and does not
+      depend on whether a second region is ever obtained (D-047).
 
   # =====================================================================
   # 5. RELOCATION ERROR ON RESAMPLING

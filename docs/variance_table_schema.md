@@ -177,7 +177,28 @@ Recorded exactly as printed, before any transformation.
 | `in_scope` | bool | ● | Matches the locked scope (cropland, temperate, topsoil)? |
 | `use_as` | enum | ● | `baseline` / `sensitivity_low` / `sensitivity_high` / `out_of_scope_reference` / `placeholder_needs_pdf`. |
 | `osse_distribution` | str | | Suggested sampling form for Phase 1. A hint, not a commitment. |
+| `superseded_by` | str | | Row id(s) that replace this row, comma-separated. The superseded row is **kept, not deleted** — see below. |
 | `notes` | str | | Anything a reviewer would want flagged. |
+
+### On `superseded_by`
+
+A superseded row stays in the table. That is deliberate.
+
+When `VC-TMP-001/002` were the only temporal anchor, they were variance *shares*
+read off a paywalled abstract with an assumed sampling depth. They have now been
+replaced by ten rows derived from the primary data behind that same paper. The
+easy move would be to delete the originals and let the table show only the good
+numbers.
+
+Keeping them makes the **verification ladder legible**: a reviewer can see a
+value enter at `verified_abstract`, sit there flagged as the weakest
+load-bearing row in the table, and be replaced by `derived_primary_data` from
+the same study — and can check that the two agree. Deleting the rung you climbed
+from hides exactly the history that makes the ladder trustworthy.
+
+A superseded row keeps its original `use_as`, so it is still excluded from the
+OSSE by whatever rule already excluded it; `superseded_by` records the
+replacement, it does not itself change a row's role.
 
 ---
 
