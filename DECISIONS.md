@@ -42,7 +42,7 @@ That is enforced, not requested: see D-032.
 | D-018 | decided | relocation and between-plot terms overlap near 100 m |
 | D-019 | decided | relocation error is distance-independent within a plot |
 | D-020 | decided | concentration CV is never treated as stock CV |
-| **D-021** | **open** | whether PNW dryland is in-scope temperate → `VC-TMP-001/002` |
+| D-021 | decided | PNW dryland IS in-scope temperate — classified on sourced inputs |
 | D-022 | decided | circularity guard on the noise model |
 | D-023 | decided | `bias_direction` recorded per row |
 | D-024 | decided | `HEADLINE_DESIGNS` — RCB / CR only |
@@ -62,6 +62,14 @@ That is enforced, not requested: see D-032.
 | D-038 | decided | positioning vs Potash et al. 2025 in any writeup |
 | D-039 | decided | **FINDING**: NAPESHM is not fully IPCC-classifiable — for the paper |
 | D-040 | decided | G1 sensitivity: both `VC-BPS-005/006` caveat flags close; texture is not a stratifier |
+| D-041 | decided | temporal estimator — crossed plot × occasion REML, validated against moments |
+| D-042 | decided | Wuest sampling depth is heterogeneous — the assumed 0–30 cm is wrong for 4 of 5 series |
+| D-043 | decided | temporal is reported as a bounded pair, separable 3.75% and combined 8.00% |
+| D-044 | decided | **FINDING**: anniversary sampling does not reduce temporal variance |
+| D-045 | decided | temporal variance shows no consistent covariate dependence either |
+| D-046 | decided | Wuest independently corroborates the G1 between-plot baseline |
+| D-047 | decided | KBS LTER corroborates in the opposite direction; licence blocks publication use |
+| D-048 | decided | NEON temporal path retired, script and caveats kept |
 
 ---
 
@@ -929,6 +937,44 @@ indication, not a classification.
 promoting them would also require D-014's separate depth concern to be resolved;
 climate is necessary, not sufficient.
 
+> **D-021 IS NOW CLOSED — DECIDED 2026-08-10. Pacific Northwest dryland cropping
+> is inside the temperate scope.** The condition set out above has been met: the
+> inputs are no longer second-hand. Mean annual precipitation now comes from the
+> **provider's own site paragraphs** in the Ag Data Commons record (Adams 401,
+> Echo 265, Moro 269, Ritzville 296 mm yr⁻¹), and mean annual temperature is
+> computed from the dataset's **own `avgT` column** — the study's own weather
+> stations, averaged over calendar months so that the unsampled winter months do
+> not bias it warm. Run through the committed classifier (`ipcc_climate`,
+> partial per D-028):
+>
+> | site | MAT | MAP | temperature regime |
+> |------|-----|-----|--------------------|
+> | Adams | 11.10 °C (12 mo) | 401 mm | Warm Temperate |
+> | Echo | 12.81 °C (11 mo) | 265 mm | Warm Temperate |
+> | Moro | 9.72 °C (12 mo) | 269 mm | Cool Temperate |
+> | Ritzville | 9.37 °C (12 mo) | 296 mm | Cool Temperate |
+>
+> Warm at two sites, cool at two, **Temperate at all four** — which is the axis
+> the question was about. The full tree still returns `unclassified` on
+> `map_pet_ratio` at every site, exactly as it does for NAPESHM, and that is
+> left undetermined rather than invented. Note the dataset's own use limitation
+> already describes the climate as *"semi-arid Mediterranean"*, so the moisture
+> regime is qualitatively documented by the provider even though the IPCC ratio
+> is not computable.
+>
+> Two honest limits on this. The MAT is a **study-period average from the study's
+> own stations**, not a published 30-year normal; and Adams-residue and Echo are
+> each missing one calendar month, which biases those two slightly warm — though
+> Adams-tillage covers all twelve at the same site and gives 11.10 °C, and both
+> sites are far enough from the 10 °C warm/cool boundary in the direction that
+> matters that nothing turns on it. Neither limit touches the Temperate finding,
+> which needs only "not tropical, not boreal" and has 6 °C of headroom at each
+> end.
+>
+> **Scope no longer blocks promotion of a PNW-derived temporal row.** D-014's
+> separate depth concern was the other half, and D-042 settles it with fact
+> rather than assumption.
+
 ---
 
 ## Prior art: Potash et al. 2025 — logged, not yet implemented
@@ -1168,6 +1214,17 @@ two flags: removing the Mexican sites removes every two-replicate treatment, and
 the leave-out test above already tested both at once. Both close together, on one
 number.
 
+**Check 1c — the confound this leaves behind, recorded so nobody trips on it
+later.** Because all 55 two-replicate treatments are Mexican and no USA
+treatment has fewer than three replicates, **country and per-treatment support
+are completely aliased in this sample.** Any future Mexico-vs-USA contrast is
+also, unavoidably, a 2-replicate-vs-3+-replicate contrast. A country difference
+in an estimated variance would therefore be indistinguishable from the sampling
+behaviour of a variance estimated on one degree of freedom, which is badly
+behaved and biased in a known direction. **Nothing in this table may read a
+Mexico/USA difference as a climate difference**, and any analysis that splits on
+country has to weight or exclude by replicate count first.
+
 **Check 2 — `stock < concentration` survives a common-sample comparison.** The
 two rows are derived on different samples (bulk density is missing on 14 EUs, one
 site), so the reported gap of 0.492 points mixed a real effect with a sample
@@ -1192,6 +1249,55 @@ splits on clay (breaks 18.0 / 27.1%) and sand (24.2 / 39.9%):
 sites leaves 9–12 sites per bin, and cluster bootstrap CIs at that size are wider
 than every difference they would separate.
 
+**The three checks together are a Phase 0 RESULT, not three loose ends.**
+
+> **Between-plot CV in cropland SOC is approximately invariant across the
+> covariates a spatial MDC surface would be built from.**
+
+The three checks were run separately and answer separate questions, but they
+point at one thing. Climate region — the single largest scope change this
+project has made, retiring an envelope and re-admitting a third of the sample —
+moves the estimate **0.2–0.3 points against a ~4-point confidence interval**.
+Binned clay shows **no monotone signal at all**. The joint model, given both
+texture and carbon level at once and free to use them, reaches **R² = 0.093**.
+Three independent attempts to make this quantity depend on where you are, and it
+does not.
+
+**The caveat travels with the finding, everywhere it appears:** the joint model's
+sample is **75 of 80 treatments from the USA**, because excluding two-replicate
+treatments excludes Mexico almost entirely (check 1b). So this is a statement
+about between-plot variance in North American cropland, weighted heavily toward
+the USA, at 0–15 cm. It is not a global claim, and it has not been tested on a
+sample with real climatic spread — precisely because the climate axis that would
+give it that spread is the one D-028 could not resolve.
+
+**Consequence, and it is not a small one: Phase 3 Deliverable 3 — the spatially
+explicit MDC surface — needs rethinking before we build toward it.** A surface
+is worth drawing when the thing it maps varies over space. On this evidence the
+noise term does not, or varies far less than the interpolation error of any
+surface we could fit. Building it anyway would produce a map whose structure
+came from the covariates rather than from the data.
+
+Two possibilities are recorded here, **open, and deliberately not resolved now**:
+
+1. **MDC may vary spatially through the SIGNAL rather than through the noise** —
+   through treatment effect size, SOC level, or the depth distribution of change,
+   none of which this table currently parameterizes. An MDC surface driven by a
+   spatially varying numerator and a flat denominator is a different object from
+   the one Deliverable 3 assumes, and possibly a better one.
+2. **The conditioning signal may live in temporal variance**, which we have
+   never tested for covariate dependence at all. If temporal variance is where
+   the geography is, then the spatial surface was being built off the wrong
+   component from the start.
+
+**Framing for the writeup — this STRENGTHENS the nearest prior art.** Potash et
+al. 2025 held `sigma_b` fixed and geography-independent, and said plainly that
+they did so *for lack of information*. We now have the information, and it says
+the assumption was approximately right. That is a load-bearing simplification in
+the closest published work being independently vindicated, not a gap we caught
+them in. Any writeup says it that way round. (See D-038 for the general
+positioning, and D-036 for the one place we do disagree with them.)
+
 *One result worth logging from the same scan, still not a row.* Regressing
 `log(CV)` on `log(mean SOC)` and sand fraction across the 80 treatments with ≥3
 replicates (SD on 1 df excluded) gives `log_mean_soc` β = +0.423 (se 0.176,
@@ -1210,6 +1316,340 @@ bulk-density mechanism loses its evidence and the two rows revert to "different
 numbers from different samples". If check 3 is over-read — if someone treats the
 sand coefficient as a stratifier — the table would acquire bins whose CIs overlap
 completely, which is the failure R6 and D-032 exist to prevent.
+
+---
+
+**D-041 — the temporal component is derived from PRIMARY DATA. The estimator is
+crossed plot x occasion random effects on log SOC, treatment fixed, validated
+two independent ways.** Script: `scripts/derive_temporal.py`, results
+`data/processed/temporal_variance.json`.
+
+`VC-TMP-001/002` were read off Wuest & Durfee's **abstract**, because the paper
+is paywalled. That gave a variance *share* (20% temporal, 17% between-replicate)
+rather than a variance — a share cannot be added to anything, cannot be checked,
+and carried an **assumed** 0–30 cm depth. The underlying dataset is public
+domain on Ag Data Commons (doi:10.15482/USDA.ADC/25719348.v1, U.S. Public
+Domain), so none of that had to stand. **2195 plot-months, 76 plots, five
+monthly series, four sites.**
+
+Per site, on log SOC:
+
+```
+log C  ~  treatment  +  (1 | plot)  +  (1 | occasion)
+```
+
+Plot and occasion are **crossed**, not nested — every plot is visited on every
+occasion, and that is exactly why this design can speak about time. The occasion
+effect is what all 12–24 plots do *together* on a date, so it cannot be
+within-plot spatial noise (which averages away across plots) and cannot be
+plot-to-plot heterogeneity (that is the plot term).
+
+*Occasion is the sampling campaign (`SampleNo`), not the calendar date.* Four
+Adams campaigns ran across two consecutive days; keying on date would split
+those months into half-occasions and manufacture an occasion effect out of
+nothing.
+
+**Validated twice, on purpose.** A mixed-model optimiser is easy to trust
+wrongly. Route 1 is REML via `statsmodels`; route 2 is the closed-form ANOVA
+moment solution for a balanced two-way crossed design with one observation per
+cell. The design is balanced (one missing Ritzville cell), so route 2 is exact.
+They agree to within **0.53 CV points** at worst and 0.16–0.39 elsewhere — the
+same conclusion from both, not the same decimal. Moments are reported, because
+they are closed-form here and cost nothing to refit inside the bootstrap.
+
+**The trap that made them disagree at first, recorded because it is silent:**
+`MixedLM` returns `vcomp` in **sorted key order**, not in the order the
+`vc_formula` dict was written. With `{'plot': ..., 'occ': ...}` the first entry
+is `occ`. Reading them positionally transposes the two components and nothing
+complains. Only the moment route caught it.
+
+**Cross-check against the publication we could not read.** Our variance shares
+against Wuest's reported ones:
+
+| share | ours | published |
+|-------|------|-----------|
+| temporal | 18.3% (14.4–28.3) | 20% (15–32) |
+| between-replicate | 22.8% (9.4–40.8) | 17% (2–42) |
+
+Close on both, without ever reading the number off the paper. Not identical —
+their model surely differs in detail — so this is corroboration that we are
+measuring the same things, not a reproduction.
+
+---
+
+**D-042 — the depth on `VC-TMP-001/002` was ASSUMED and the assumption is
+WRONG. The five series are not sampled to a common depth, and four of the five
+are not on a fixed-depth basis at all.**
+
+| series | site | depth / basis | cores composited |
+|--------|------|---------------|------------------|
+| AW | Adams, OR (tillage) | **0–30 cm**, six 5-cm increments | 3 (50 mm) |
+| CP | Adams, OR (residue) | top **250 kg/m² equivalent soil mass** (≈20 cm) | 3 (25 mm) |
+| Echo | Echo, OR | top 250 kg/m² ESM (≈20 cm) | **1** (25 mm) |
+| Moro | Moro, OR | top 250 kg/m² ESM (≈20 cm) | **1** (25 mm) |
+| Ritz | Ritzville, WA | top 250 kg/m² ESM (≈20 cm) | **1** (25 mm) |
+
+So the existing "0–30 cm, `fixed_depth`" label is right for **one series in
+five** and wrong for the other four, which are equivalent-soil-mass stocks to
+roughly 20 cm. This is a fact from the dataset description, not an inference,
+and it means no single depth label can honestly cover a pooled temporal row.
+
+Two things follow that are easy to miss. First, four of five series are already
+**ESM**, which is the convention this project prefers and which removes most of
+the bulk-density/depth-convention error (component 6) from those numbers.
+Second, the **core count is not decoration** — see D-043.
+
+**The provider's own use limitation, quoted rather than paraphrased**, because
+it is documented scope and not our reading: *"Soils were silt loams and the
+climate was semi-arid Mediterranean pattern at all four sites tested. Other
+soils and climates may produce more or less temporal variability."*
+
+The citation is also now confirmed against Crossref — **Wuest, S. B. & Durfee,
+N. (2024), SSSAJ 88(3):830–845** — replacing "volume and pages UNCONFIRMED" and
+restoring the second author, who was missing.
+
+---
+
+**D-043 — what this design CAN and CANNOT separate, and therefore why the
+temporal component gets a bounded pair rather than a single number.**
+
+Three components come out per site. Two are usable and their meanings are not
+interchangeable:
+
+* **`v_occ` — field-wide month-to-month movement. SEPARABLE.** Clean of
+  within-plot spatial and of analytical error, both of which average away across
+  plots. A **lower bound** on temporal variance, because plot-specific timing
+  effects are excluded from it.
+* **`v_resid` — plot × occasion + within-plot spatial + analytical. NOT
+  separable.** One measurement per plot per occasion; nothing inside can be
+  split off by this design.
+* `v_occ + v_resid` — what a monitoring programme actually meets when it
+  revisits one plot on a new date. An **upper bound** on temporal variance.
+
+| series | between-plot | **occasion** | residual | **combined** (95% CI) |
+|--------|--------------|--------------|----------|------------------------|
+| AW | 3.38% | 3.32% | 4.07% | **5.25%** [4.7, 5.7] |
+| CP | 5.24% | 3.12% | 5.49% | **6.32%** [5.2, 7.4] |
+| Echo | 3.35% | 4.42% | 9.01% | **10.05%** [9.1, 10.5] |
+| Moro | 3.80% | 3.02% | 5.92% | **6.64%** [5.8, 7.2] |
+| Ritz | 3.77% | 4.85% | 10.66% | **11.73%** [10.8, 12.3] |
+
+**Separable temporal: mean 3.75%, range 3.02–4.85%** — strikingly tight across
+five series, three years and four sites.
+**Combined temporal: mean 8.00%, range 5.25–11.73%.**
+
+**The bounds are not symmetric, and the design says which end to believe.** Two
+series composite **three** cores into the analysed value; three analyse **one**.
+Within-plot spatial variance enters the residual divided by the core count;
+plot-specific timing and analytical error do not. If the residual were pure
+within-plot spatial noise, the single-core sites would sit √3 = **1.732** above
+the three-core sites. Observed: **8.53% against 4.78%, a ratio of 1.785.**
+
+That is at — very slightly past — the boundary. The moment solve wants a
+negative remainder for analytical error and plot-specific timing, and clips at
+zero. The honest reading is not "within-plot spatial is 8.9% and everything else
+is nil"; it is that **the residual is dominated by within-plot spatial variance,
+so the combined figure substantially overstates temporal variance and the true
+term sits much closer to the separable 3.75% than to the combined 8.00%.**
+
+Confounded with site — the three-core series are also the two highest-carbon,
+deepest-sampled ones, and it is two sites against three. It bounds; it does not
+identify. But it is the only handle the design offers on a term the design
+otherwise cannot split, and it points one way.
+
+**One caveat that runs the other direction, and belongs on any row.** Samples
+were "processed monthly by the same lab", so a per-month analytical batch effect
+would be **perfectly confounded with the occasion effect**. `v_occ` is therefore
+itself an upper bound on the field-wide temporal term. It is a lower bound on
+*total* temporal variance and an upper bound on the *field-wide* part; those are
+different statements and the rows must not blur them.
+
+**Consequence for the rows: the combined number is `combined`, and its
+`bias_direction` is `inflates`.** No row may present 8.00% as temporal variance
+without that label.
+
+---
+
+**D-044 — FINDING: sampling on the anniversary does not buy anything. The
+temporal signal is not a repeatable seasonal cycle.**
+
+The standard advice for beating seasonality is to resample in the same calendar
+month. This dataset can test that directly, and it fails. SD of the log
+difference between two visits to the same plot, 10–14 months apart:
+
+| series | all pairs | **same calendar month** | different month |
+|--------|-----------|-------------------------|-----------------|
+| AW | 5.92% | 6.01% | 5.89% |
+| CP | 8.64% | 8.91% | 8.55% |
+| Echo | 13.38% | 12.46% | 13.71% |
+| Moro | 8.74% | 8.38% | 8.86% |
+| Ritz | 16.85% | 16.60% | 16.93% |
+
+Same-month is **higher** at three sites and lower at two, by fractions of a
+point either way. There is no reproducible seasonal cycle to cancel: the
+month-to-month movement is year-specific and month-specific, which is what a
+weather-driven term looks like and not what a phenological one looks like.
+
+**This matters for the OSSE design directly.** Anniversary sampling is a lever
+the simulator could have pulled to reduce temporal noise for free. It cannot.
+The temporal term has to be carried, not scheduled away.
+
+*Second, quieter result from the same analysis:* at four of five sites the
+observed paired-difference SD matches what independent occasions would predict
+(√2 × combined CV) to within a few tenths — Ritzville 16.85% observed against
+16.6% predicted, Echo 13.38% against 14.2%. So **occasions may be treated as
+independent in an MDC calculation**, which is the assumption the simulator
+already makes. Adams-tillage is the exception (5.92% observed against 7.4%
+predicted, implying real positive autocorrelation across a year); it is also the
+most heavily composited and deepest series.
+
+---
+
+**D-045 — temporal variance shows NO consistent covariate dependence either.
+The invariance result of D-040 is not confined to the spatial component.**
+
+D-040 recorded that between-plot variance is approximately invariant across the
+covariates an MDC surface would use, and flagged as an open possibility that
+"the conditioning signal may live in temporal variance, which we have never
+tested". It has now been tested.
+
+* **Between sites** — a site's SOC level against its combined temporal CV:
+  Spearman rho **−0.700, p = 0.188** (n = 5). Suggestive of *lower* variability
+  at higher carbon, and nowhere near significant on five points. It is also
+  fully confounded: the two high-carbon sites are the two three-core composites
+  (D-043). Among the three single-core sites, mean SOC of 1493 / 1903 / 1932
+  g m⁻² maps onto temporal CV of 10.05 / 6.64 / 11.73% — **not monotone**, which
+  removes most of what the rho was carrying.
+* **Within sites, plot SOC level** — signs are **inconsistent across sites**:
+  Adams-residue rho −0.671 (p = 0.017), Echo +0.547 (p = 0.028), Ritzville
+  +0.610 (p = 0.002), Adams-tillage +0.070, Moro +0.448. Three "significant"
+  results pointing two different directions is not a covariate effect.
+* **Within sites, treatment** — F-test on per-plot temporal SD: not significant
+  at four of five sites (p = 0.42, 0.09, 0.52, 0.57); Echo alone reaches
+  p = 0.031, which is what one expects from five tests.
+* **Rotation phase (wheat vs fallow)** — a genuine within-plot, time-varying
+  driver, and the cleanest test here. Residual SD in wheat against fallow:
+  Echo 8.12 / 8.24%, Moro 5.37 / 5.24%, Ritzville 9.91 / 10.36%. **Three sites,
+  three near-identical pairs.** Whether a plot is carrying a crop or lying
+  fallow does not measurably change how much its carbon measurement moves.
+
+**So the second of D-040's two open possibilities is now closed, negatively.**
+The conditioning signal for a spatially explicit MDC surface is not in temporal
+variance either. Possibility (i) — that MDC varies spatially through the
+**signal** rather than the noise — is now the only one of the two still
+standing, and Phase 3 Deliverable 3 should be reconsidered on that basis.
+
+Same caveat structure as D-040, and it must travel: four sites, all dryland silt
+loams in a semi-arid Mediterranean climate (D-042's quoted use limitation). This
+is a demonstration that the covariates *available here* do not condition
+temporal variance. It is not a demonstration that none ever could.
+
+---
+
+**D-046 — the Wuest series independently corroborate the G1 between-plot
+baseline, which nothing else in the table has done.**
+
+`VC-BPS-005/006` are derived from NAPESHM, which measures **one sample per
+experimental unit**. Under D-027 that makes the G1 rows between-plot **plus**
+within-plot **plus** analytical, combined — an upper bound. The matching
+quantity here is `v_plot + v_resid`: one core, in one plot, on one date.
+
+| series | AW | CP | Moro | Echo | Ritz |
+|--------|----|----|------|------|------|
+| plot + residual CV | 5.29% | 7.60% | 7.03% | 9.62% | **11.32%** |
+
+`VC-BPS-006` (stock, NAPESHM, 0–15 cm) is **11.46%**. Ritzville — the largest
+series, 24 plots, single core, ESM stock — lands at **11.32%**.
+
+Read carefully, because the agreement is easy to over-claim. Different continent,
+different depth, different crop, and the five series span 5.3–11.3% rather than
+clustering on 11.5. The claim is only this: **an independent dataset, derived
+independently, produces a like-for-like between-plot number in the same range,
+with its top end sitting on ours.** That is the first external check the G1
+headline has had. No row changes on the strength of it, and G3 stays open.
+
+---
+
+**D-047 — KBS LTER is retained as corroboration but the corroboration points the
+OTHER WAY, and it cannot carry a row without a licence step.**
+
+The purpose of a second source was to test the standing objection that Pacific
+Northwest dryland is unrepresentative — that dryland moisture swings inflate
+temporal variance relative to humid temperate cropland. KBS LTER table 102
+(southwest Michigan, humid temperate row-crop, 0–25 cm, **142 experimental units
+over six occasions, 1996–2000**) is open, primary, and about as different a
+regime as North America offers.
+
+Decomposed identically: between-plot **10.99%**, occasion **7.71%**, residual
+**13.75%**, combined **15.80%**.
+
+**Larger than every Wuest series, not smaller.** So the objection is not
+supported in the direction it is usually raised: on this comparison PNW dryland
+is the **low** end of temporal variability, and using it would understate the
+term for humid cropland rather than overstate it.
+
+**Two reasons this is corroboration and not a row.**
+
+1. **The between-year term is contaminated.** Field-wide occasion means swing
+   **22.6%** across five years. Soil carbon at 0–25 cm cannot move that much
+   that fast; that is method or laboratory drift between annual campaigns, not
+   temporal variability. The only clean window is **within** a year: 2000-05-03
+   to 2000-06-27, eight weeks, 140 EUs, mean shift +4.86%, SD of the paired
+   difference **17.85%**, implying **12.62%** per visit. Still above Wuest, and
+   still the same direction.
+2. **The core relocation protocol inside a plot is not documented**, so the
+   paired difference carries within-plot spatial error twice and is an upper
+   bound of unknown tightness. The quantity is also a **concentration**, not a
+   stock, so it is never compared with Wuest on an absolute scale — only as a CV.
+
+**Licence, and it is a real constraint on the paper, not a formality.** The KBS
+file states: *"These Data are copyrighted and use in a publication requires
+written permission as detailed in our Terms of use."* The Wuest data are U.S.
+Public Domain and carry no such condition. **Written permission must be obtained
+before any KBS-derived number appears in a publication.** Until it is, KBS may
+inform our reading and may not be published as a value. Neither raw file is
+committed in any case — `data/raw/` is gitignored and `--fetch` re-downloads
+both.
+
+Martin & Sprunger 2022 (Front. Soil Sci. 2:917885), the paper that pointed at
+KBS, is **not** the source of these numbers: its data statement is "available
+from the authors", i.e. not deposited, so there was nothing to derive from. It
+is recorded in `docs/sources.md` as the pointer it was.
+
+**The two sources are reported side by side and are NOT merged into one row.**
+Different climate, different quantity, different cadence, different licence.
+
+---
+
+**D-048 — the NEON temporal path is RETIRED. Superseded by primary data that is
+better on every axis that mattered.**
+
+`scripts/neon_temporal_variance.py` is kept, with its docstring caveats intact,
+so the path stays documented and nobody re-derives the same dead end. It is no
+longer a route to closing the temporal component.
+
+Why it was never going to be enough, stated once and for the record:
+
+* **Access** — needs a token and therefore a fresh session; it has blocked twice.
+* **Support** — 4 agricultural sites and 42 site-years.
+* **Cadence** — between-bout, not monthly. The month-to-month term is precisely
+  what we needed and precisely what NEON does not resolve.
+* **Confounding, the decisive one** — NEON randomises core position within the
+  plot between bouts. Its "temporal" difference therefore contains the full
+  within-plot spatial variance, making it an upper bound on temporal variance
+  rather than an estimate of it.
+
+Wuest beats it on all four: public domain and already downloaded, 2195
+plot-months at 76 plots, genuinely monthly, and sampling **within 30 cm or a few
+metres of the previous month's location** at fixed plots rather than
+re-randomising. That last point is a matter of degree rather than of kind —
+Wuest's residual is itself dominated by within-plot spatial variance (D-043), so
+the same confound exists, just an order of magnitude smaller in offset and,
+crucially, **bounded from two directions** by the separable occasion term. NEON
+offered no such bound.
+
+If NEON is ever wanted for something else — between-bout variance at scale,
+say — the script is there and the caveats are in it.
 
 ---
 
@@ -1237,5 +1677,7 @@ completely, which is the failure R6 and D-032 exist to prevent.
 | 2026-08-09 | **D-028 CLOSED**; D-039 | **D-028 decided: partial IPCC classification.** Private envelope retired. 94 sites classified against Figure 3A.5.2 with frost days recovered from Daymet (validated 60/60 against NAPESHM's own published temperature integers): **7 classified** (6 Tropical Dry, 1 Tropical Montane), **87 unclassified**, all blocked on `map_pet_ratio`, never imputed. G1 re-scoped to the IPCC **temperature** regime (Temperate/Boreal), which is what Table 5.5 indexes on. **`VC-BPS-005/006` RE-DERIVED, not re-labelled**: concentration 12.1% → **11.9%** [9.9, 14.0], stock 11.1% → **11.5%** [9.6, 13.5]; n rises 212 → 386 EUs and 14 → 26 sites. The scope change re-admits 10 Mexican highland sites the latitude floor was built to exclude — recorded as a caveat on the rows, because the IPCC axis that might have separated them is the undetermined one. The D-032 guard now passes. D-039 logs the unclassified bucket as a finding about NAPESHM's reusability, for the paper. |
 | 2026-08-09 | **corrections** to D-031 and D-033 | Adversarial re-audit of the committed work. **D-031 reason 1 withdrawn**: "shallower depth is more variable" is refuted by the very layer CVs it cited (9.3 → 10.2 → 25.8% *rise* with depth), so the corroboration rests on two reasons, not three. **D-033 frost half withdrawn**: frost-day counts *are* faithfully obtainable from Daymet — the source NAPESHM itself cites — verified by reproducing the published temperature integers 39/39; the 13 warm sites split 7 Tropical / 6 not, so the variable decides scope membership and is not harmless. **MAP:PET remains the sole blocker**, now bounded exactly: 35 sites Dry, 40 Moist, **19 undecidable** from `mi` (replacing an unfounded "23"). Added the decisive Table 5.5 argument — Ch 5 pools warm/cool and stratifies on moist/dry, so a partial classification is worthless. Fixed a NaN hole that let `ipcc_climate.classify` fabricate three leaves. Registered both IPCC chapters in `docs/sources.md`. No variance-table row changed. |
 | 2026-08-09 | D-034, D-035, D-037, D-038; **D-036 open**; D-021 updated | IPCC classifier committed and tested but deliberately unfed (D-034) — D-028 still blocked, guard still red. Wuest's PNW sites classify **Cool Temperate Dry** (Warm Temperate Dry if MAT > 10), i.e. **temperate either way**, but D-021 stays open because the climate inputs were supplied rather than sourced. Potash et al. 2025 logged as prior art: schema needs `scales_with_interval` (D-035), a 4× analytical-error discrepancy is **open** (D-036), their parameters are candidate cross-checks never to be merged (D-037), positioning recorded (D-038). Six sources added to `docs/sources.md` as **to obtain**, including Smith 2004 and Saby et al. 2008 — the two foundational detectability papers, neither currently cited. No variance-table row, schema field or constant changed. |
+| 2026-08-10 | D-041 … D-048; **D-021 CLOSED**; D-040 extended | **The temporal component is derived from primary data.** The Wuest & Durfee dataset behind the paywalled paper is **public domain on Ag Data Commons** — 2195 plot-months, 76 plots, five monthly series, four PNW dryland sites — so the abstract's variance *shares* are replaced by a derivation (D-041: crossed plot × occasion, REML cross-checked against closed-form moments; our shares 18.3%/22.8% reproduce the published 20%/17% without reading them off the paper). **The assumed 0–30 cm depth is wrong for four of five series** (D-042): those are 250 kg m⁻² equivalent-soil-mass stocks, ≈20 cm. The residual is not separable, so temporal is reported as a **bounded pair — separable 3.75% (3.02–4.85), combined 8.00% (5.25–11.73)** — and the compositing contrast (3-core vs 1-core sites, ratio 1.785 against √3 = 1.732) says the residual is dominated by within-plot spatial variance, so the truth sits near the **lower** bound (D-043). **FINDING: anniversary sampling buys nothing** — same-calendar-month revisits are no less variable than off-month ones at any site (D-044). **Temporal variance shows no consistent covariate dependence either** (D-045), which closes the second of D-040's two open possibilities, negatively. Wuest independently corroborates the G1 between-plot baseline: like-for-like `plot + residual` spans 5.3–11.3% against `VC-BPS-006`'s 11.46% (D-046). KBS LTER corroborates in the **opposite direction to the usual objection** — humid temperate is *more* variable than PNW dryland — but carries method drift between years and a **written-permission licence** (D-047). NEON path retired (D-048). **D-021 closed**: all four sites classify Temperate on sourced inputs. **No variance-table row written — reported first, as instructed.** |
+| 2026-08-10 | D-040 extended | Two additions. **(a) Geographic confound recorded**: country and per-treatment support are completely aliased — all 55 two-replicate treatments are Mexican, no USA treatment is below three replicates — so no Mexico/USA difference may ever be read as a climate difference. **(b) The invariance finding elevated from hypothesis to a stated Phase 0 result**: between-plot CV in cropland SOC is approximately invariant across the covariates a spatial MDC surface would be built from (climate moves it 0.2–0.3 pts against a ~4-pt CI; clay shows no monotone signal; the joint model reaches R² = 0.093), with the 75/80-USA caveat attached. **Consequence: Phase 3 Deliverable 3 needs rethinking**, with two possibilities recorded and not resolved — MDC may vary spatially through the *signal*, or through *temporal* variance. Framing recorded: this **strengthens** Potash et al., who assumed `sigma_b` geography-independent "for lack of information" and turn out to have been approximately right. |
 | 2026-08-10 | D-040 | **Three sensitivity checks before Phase 0 closes. No new rows, no scope change, no constant moved.** (1) Leave-out test on the re-admitted Mexican highland sites — 8, not 10 (MXAG01/MXQT02 fall to D-024/D-025 first): concentration 11.948 → 12.248%, stock 11.456 → 11.304%, shifts of **0.300** and **0.152** against CI widths of 3.97 and 3.52, in opposite directions. **Both caveat flags CLOSED**, not deferred. (1b) All **55** two-replicate treatments are Mexican; the USA's 75 have **none** below 3 replicates — so the weak-support flag and the re-admitted-sites flag were one flag, tested once. (2) On the 372-EU intersection, concentration **11.897%** vs stock **11.456%** — gap **+0.441** where the cross-sample headline gives 0.492, so the sample mismatch is 0.051 of it and `stock < concentration` **survives** as a property of the data. (3) Texture terciles show no signal (clay spread 2.611 vs 10.556 CI; sand 3.690 vs 9.834) — **no rows written**; a joint model does find `log(mean SOC)` and sand fraction nominally significant (R² = 0.093) but on a 75/80-USA sample, filed as a hypothesis, not a parameterization. `VC-BPS-005/006` prose updated; no value changed. |
 | 2026-08-08 | D-031, D-032, D-033; **D-028 still open** | Open-decision guard: decisions and the constants they govern are now machine-readable (`src/loam/decisions.py`), the build prints `<-- PROPOSED, NOT DECIDED`, and two tests refuse to pass while an open decision governs a live constant — **the suite is red on merge, by design** (D-032). Replacing the private climate envelope with IPCC 2006 climate regions was attempted and is **blocked**: MAP:PET and frost-day counts are not derivable from NAPESHM, and no proxy is substituted (D-033). Poeplau ↔ NAPESHM corroboration logged, with a figure correction (D-031). No variance-table values changed. |
