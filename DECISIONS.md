@@ -74,6 +74,7 @@ That is enforced, not requested: see D-032.
 | D-050 | decided | **PIPELINE VALIDATION**: our derivation reproduces the published temporal statistic |
 | D-051 | decided | **FINDING**: components are conflated by adjacency in sources — `quantity_definition` + guard |
 | D-052 | decided | every row declares a `basis`; D-020 gets mechanical teeth |
+| D-053 | decided | G3 bounded: 'add cores' is unproven; disagrees with Potash's 4-core composite |
 
 ---
 
@@ -2055,6 +2056,71 @@ hiding a fixed-depth versus equivalent-soil-mass distinction that matters — th
 two rows could share a basis and still not be summable. That distinction is
 currently carried by `depth_basis`, and the two fields should be read together;
 if that proves insufficient, `basis` is where the split belongs.
+**D-053 — G3 BOUNDED, NOT CLOSED. "Add cores before adding plots" is unproven
+and probably too strong, and it cannot be settled while D-036 is open.**
+
+Recorded as a computation, not a judgement: `scripts/g3_bounding.py`,
+`data/processed/g3_bounding.json`, written up in `docs/g3_bounding.md`. No row
+is written and no design choice is made.
+
+The Wuest residual exceeds the pure between-plot term at all five series, which
+reads as "the variance is inside the plots". But the residual is within-plot
+spatial **plus** analytical **plus** plot x occasion interaction, and only the
+first is reducible by taking more cores. Writing `f` for the non-reducible
+share, coring wins while `(1 - f) * v_resid > v_plot`:
+
+| series | `f*` |
+|---|---|
+| Adams-tillage | 0.307 |
+| Adams-residue | **0.089** |
+| Echo | 0.862 |
+| Moro | 0.587 |
+| Ritzville | **0.874** |
+
+**"Add cores" holds at ALL FIVE only if `f` < 0.089. It fails at all five only
+if `f` > 0.874.** The brief expected the flip to be hard because it must happen
+at five sites independently — true, but the useful finding is the other
+direction: holding the conclusion *everywhere* needs `f` below 9%, and that is
+the constraint likely to fail.
+
+**It probably does fail, and D-036 decides by how much.** Analytical error alone
+— before any interaction term — is 1.4–9.5% of the residual under the
+instrument-only candidate and **8.7–59.3%** under the subsampling-inclusive one.
+At Adams-tillage the wider candidate consumes 59% of the residual by itself.
+**G3 cannot be closed while D-036 is open**, and that coupling only became
+visible once both were traced to primary sources.
+
+**A quantitative disagreement with the nearest prior art.** Under Potash et al.'s
+own price list (location $15, assay $20) the budget-optimal compositing is
+`C* = sqrt((20/15) * v_w / (v_plot + v_nr))` — budget and field-visit cost both
+cancel. Our variance structure gives **C\* = 1.2 to 3.3 at `f` = 0**, falling to
+**about 1 at `f` = 0.3**. **Potash use 4.** Justifying 4 needs
+`v_w / (v_plot + v_nr) = 12`; our `v_resid / v_plot`, an upper bound on it, is
+1.1 to 8.0.
+
+Held loosely for three reasons, each of which would need settling first: our
+plots are 3.6–9 m experimental units on uniform fields against their 25 ha
+commercial fields; their dominant within-field term is relocation (5 Mg/ha vs
+lab 2 Mg/ha), not the same construct as our within-plot term; and `f` is
+unidentified. Note the first reason widens the disagreement rather than closing
+it — a larger between-location term at their scale implies a *smaller* `C*`,
+not a larger one.
+
+**What would settle it:** replicate cores per plot per visit, analysed
+separately. One site, one season, three or more cores per plot per month. No
+source we hold does this, and it is the experiment G3 actually wants.
+
+**Recommendation, not acted on.** Retire the flat claim. The defensible version
+is narrower: *a single core per plot is likely the wrong design, but the optimum
+is nearer 1–3 cores per assay than the 4 used by the closest published work, and
+it cannot be pinned down until D-036 closes and `f` is measured.*
+
+**What breaks if wrong.** If relocation error does average down with compositing
+in Potash's formulation — we did not verify this in their SI — then their
+effective `v_w` is much larger than ours and `C* = 4` may be right for their
+scale while ours stays right for a research plot, and the "disagreement" is
+really a scale difference. That check is the first thing to do before this
+becomes a claim in a paper.
 
 ---
 
@@ -2064,7 +2130,7 @@ if that proves insufficient, `basis` is where the split belongs.
 |----|-----|-------------|--------|
 | ~~**G1**~~ | ~~No in-scope **between-plot** cropland variance. Only forest (Buchkowski).~~ | — | ✅ **CLOSED** 2026-08-08 by `VC-BPS-005/006`, derived from NAPESHM (D-024…D-030). Scoped to 0-15 cm; upper bound. |
 | **G2** | No 0–30 cm within-plot CV; only 0–10 and 10–30 separately, without inter-layer covariance. | Component 2 baseline is per-layer only. | open — needs Poeplau supplementary data |
-| **G3** | The within-plot ÷ between-plot **ratio** is unknown for cropland. | Determines whether to add plots or add cores — the central design question. | open — **substantially narrowed 2026-08-10**. Previously the two sides came from different studies, continents and depths. Wuest now supplies both from the **same plots, same depth, same study**: the pure between-plot term is 3.3–5.2% (`VC-BPS-007…011`) while the residual carrying within-plot spatial error is 4.1–10.7%, **larger at every one of the five series**. Direction of the answer: variance is concentrated WITHIN plots, so add cores before adding plots. NOT closed — the residual also contains plot×occasion interaction, so it is an upper bound on the within-plot side, and it is one region (D-043, D-046). |
+| **G3** | The within-plot / between-plot **ratio** is unknown for cropland. | Determines whether to add plots or add cores. | open — **BOUNDED 2026-08-10 (D-053), not closed**. 'Add cores' holds at all five Wuest series only if the non-reducible share of the residual is below **9%**; analytical error alone is 1.4–9.5% or 8.7–59.3% depending on which D-036 candidate is right, so **G3 cannot close while D-036 is open**. Budget-optimal compositing from our numbers is **1.2–3.3 cores per assay against Potash's 4**. Settling it needs replicate cores per plot per visit — an experiment nobody we hold has run. |
 | ~~**G4**~~ | ~~Only temporal source is dryland Pacific Northwest, paywalled, depth unconfirmed.~~ | — | ✅ **CLOSED** 2026-08-10 by `VC-TMP-003/005/007/009/011`, derived from the Wuest & Durfee public-domain dataset (D-041…D-044). The paywall was never the blocker: the data behind the paper was open. Depth is now fact, not assumption, and heterogeneous (D-042). **One region remains a real limitation** — see G8. |
 | **G5** | No variance-versus-distance function for offsets of 10–100 m. | Relocation error at LUCAS scale is unquantified; components 3 and 5 not orthogonal there. | open |
 | **G6** | The two LUCAS rows are unverified against the primary report. | Locked out of use by rule R6. | open — needs LUCAS PDF |
