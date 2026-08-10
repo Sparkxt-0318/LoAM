@@ -205,6 +205,39 @@ def _find_all(text: str, needle: str) -> list[int]:
         start = pos + 1
     return out
 
+#: What physical quantity a row's number is expressed ON. Orthogonal to
+#: `component` (which says what VARIES) and to `units` (which is dimensionally
+#: silent about the difference between a 1% concentration CV and a 1% stock CV).
+#:
+#: D-020 already says a concentration CV is never treated as a stock CV. It said
+#: so in prose, and prose does not fail CI - the same gap D-032 and D-051 were
+#: built to close. This is the enforceable version.
+BASES = (
+    "concentration",   # g C per g soil; independent of bulk density and depth
+    "stock",           # mass per unit area, e.g. Mg C/ha over a stated layer
+    "stock_change",    # a DIFFERENCE in stock between two states or conventions
+    "variance_share",  # dimensionless share of a variance budget
+    "proportion",      # dimensionless share of a count or of another error
+    "distance",        # a length, e.g. a relocation offset
+)
+
+#: Which units are admissible for each basis. A row claiming `stock` in units of
+#: `m` is a transcription error; a row claiming `concentration` in `Mg_C_ha` has
+#: skipped a conversion that needs a bulk density.
+UNITS_BY_BASIS: dict[str, tuple[str, ...]] = {
+    "concentration": ("pct",),
+    "stock": ("Mg_C_ha", "pct"),
+    "stock_change": ("Mg_C_ha", "Mg_C_ha_10yr", "pct"),
+    "variance_share": ("pct",),
+    "proportion": ("pct",),
+    "distance": ("m",),
+}
+
+#: Dispersion statistics - the ones that can be summed into a variance budget,
+#: and therefore the ones where a basis mismatch is dangerous rather than merely
+#: untidy. A `bias_pct` or a `range` modifies or describes; it is not an addend.
+DISPERSION_STATISTICS = ("sd", "cv_pct", "variance")
+
 ERROR_KINDS = (
     "random",      # zero-mean dispersion; enters a variance budget
     "systematic",  # directional bias; must NOT be summed into a variance budget
@@ -348,6 +381,14 @@ COLUMNS: tuple[Column, ...] = (
     _c("component", "str", True,
        "Which of the six variance components this row parameterises.",
        COMPONENTS, "identity"),
+    _c("basis", "enum", True,
+       "What physical quantity the number is expressed ON: `concentration`, "
+       "`stock`, `stock_change`, `variance_share`, `proportion` or `distance`. "
+       "Orthogonal to `component`, which says what varies. Units cannot carry "
+       "this: a 1% concentration CV and a 1% stock CV are dimensionally "
+       "identical and semantically different, and summing them yields a number "
+       "that means nothing. See D-020 and D-052.",
+       BASES, "identity"),
     _c("quantity_definition", "str", True,
        "What the number measures, stated INDEPENDENTLY of which component it is "
        "filed under. Must name its axis of variation after 'between', 'across' "

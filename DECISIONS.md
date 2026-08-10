@@ -57,7 +57,7 @@ That is enforced, not requested: see D-032.
 | D-033 | decided | IPCC climate regions are not derivable from NAPESHM; no proxy |
 | D-034 | decided | `ipcc_climate.py` — classifier committed, deliberately unfed |
 | D-035 | decided | schema gains `scales_with_interval` — next PR |
-| **D-036** | **open** | our analytical error vs Potash's differ 4× → `VC-ANA-001` |
+| **D-036** | **open** | analytical error vs Potash's — traced to source, 4× → **1.2×**; residual is internal to Potash |
 | D-037 | decided | Potash parameters are candidate cross-checks, never merged |
 | D-038 | decided | positioning vs Potash et al. 2025 in any writeup |
 | D-039 | decided | **FINDING**: NAPESHM is not fully IPCC-classifiable — for the paper |
@@ -73,6 +73,8 @@ That is enforced, not requested: see D-032.
 | D-049 | decided | superseded rows are kept, not deleted; schema gains `superseded_by` |
 | D-050 | decided | **PIPELINE VALIDATION**: our derivation reproduces the published temporal statistic |
 | D-051 | decided | **FINDING**: components are conflated by adjacency in sources — `quantity_definition` + guard |
+| D-052 | decided | every row declares a `basis`; D-020 gets mechanical teeth |
+| D-053 | decided | G3 bounded: 'add cores' is unproven; disagrees with Potash's 4-core composite |
 
 ---
 
@@ -1904,13 +1906,231 @@ size.
 
 ---
 
+**D-036 UPDATE — TRACED TO BOTH PRIMARY SOURCES. The 4x discrepancy is
+LARGELY RESOLVED: it collapses to ~1.2x once like is compared with like. The
+residual is not between the two studies at all — it is INTERNAL to Potash et al.
+D-036 STAYS OPEN, because closing it requires a judgement that is the PI's.**
+
+Both sources are now held. Potash et al. 2025 is **Environmental Research
+Letters**, doi:10.1088/1748-9326/ada16c, **open access** — it was never
+paywalled, only unlocated. Poeplau et al. 2022 was already in
+`data/literature/`.
+
+**What Potash actually says, verbatim:** *"The SOC changes are not observed
+directly but with error due to relocation (σ_r) since we cannot sample the same
+core twice (Poeplau et al 2022, Lark 2009), as well as lab error (σ_l). Note
+that our choice of σ_l = 2 Mg ha⁻¹ corresponds to a relative error of 4% in SOC
+concentration and 2% in bulk density for 0–30 cm samples with average SOC
+concentration 2% and bulk density 1.5 g cm⁻³."* Table 1 lists it as **"Lab
+measurement SD (Mg ha⁻¹) 2"**, alongside **"Relocation SD (Mg ha⁻¹) 5"**.
+
+**THE FINDING THAT DOES THE WORK — Poeplau reports TWO laboratory errors, and
+we put the narrower one in the table.** From their Results, verbatim: *"The
+average laboratory errors of SOC content caused by subsampling the same sieved
+sample and the analytical MAPE were 2.5 and 1.2% across all sites, depth
+increments and land uses."*
+
+* **analytical error** — *"averaging the deviations between the two technical
+  replicates of each original milled sample"*. The innermost step only: one
+  milled sample, measured twice.
+* **subsampling error** — *"a second aliquot was taken from each of the sieved
+  P1 samples before milling, milled again and analysed"*. This re-mills and
+  re-analyses, so it **contains** the analytical step and adds within-sample
+  heterogeneity.
+
+`VC-ANA-001` carries the analytical error alone. Potash's `σ_l` is a whole-lab
+pathway error — their parameter table notes that compositing more cores per
+assay *increases* lab error in the estimate, which only makes sense if `σ_l` is
+a per-assay error covering everything from composite to reported stock,
+**including bulk density**, which they say explicitly.
+
+**Like for like:**
+
+| comparison | ours | Potash | ratio |
+|---|---|---|---|
+| as the table stands (analytical only, no BD) vs their concentration term | 1.25% | 4% | **3.2x** |
+| Poeplau's *subsampling-inclusive* lab error vs their concentration term | 3.13% | 4% | **1.28x** |
+| the same, plus their 2% bulk-density term, on a stock basis | 3.72% | 4.47% | **1.20x** |
+
+MAPE→SD uses the same normality conversion as D-003 (×1.2533).
+
+**So: units, depth and bulk density explain very little; the WHOLE of the gap is
+explained by which of Poeplau's two lab errors we picked.** That is a result
+about our own table, not about a disagreement in the literature.
+
+**The residual is inside Potash, not between the papers.** At their own stated
+reference soil — 0–30 cm, 2% SOC, BD 1.5 g cm⁻³ — the stock is **90 Mg C/ha**.
+Their stated 4% concentration and 2% bulk-density errors combine in quadrature
+to 4.47%, which is **4.02 Mg C/ha** — not the 2 Mg C/ha they adopt. Their
+`σ_l = 2` is **2.22%** of that stock. Their own sentence therefore does not
+reconcile with their own parameter, by a factor of two, in the conservative
+direction (they use the smaller value).
+
+Two readings, and we cannot choose between them from the text: either `σ_l = 2`
+is right and the "4% and 2%" sentence is loose, or the sentence is right and
+`σ_l` should be ~4. **It matters**, because in their formulation lab error
+enters the budget twice — baseline and remeasurement — and does not scale with
+the monitoring interval, so it dominates at short intervals, which is exactly
+where projects want to claim early detection.
+
+**A smaller thing found on the way, about our own row.** `VC-ANA-001`'s
+`harmonization_note` cites *"about 1%"* from Poeplau's Discussion (*"we found
+the analytical error to be a negligible source of uncertainty (≈1%)"*) and
+converts to SD 1.25%. The Results section gives the same quantity as **1.2%
+MAPE**, which converts to **1.50%**. We took the rounded Discussion figure over
+the precise Results figure. Small, but it is the more authoritative number and
+the row should use it.
+
+**WHY THIS STAYS OPEN.** What remains is not a fact to look up but a choice
+about what `analytical` should mean in this table:
+
+* **Recommendation (mine): add a second analytical row carrying Poeplau's
+  subsampling-inclusive lab error (2.5% MAPE → 3.13% SD, concentration basis)
+  and make it the baseline**, demoting `VC-ANA-001` to a sensitivity row that
+  records the instrument-only floor. Reason: every other component in this table
+  is scoped to what a monitoring programme actually incurs, and no programme
+  ever re-measures the same milled aliquot — it subsamples a composite. The
+  narrow figure understates the error a real design faces, and understating
+  analytical error is anti-conservative for the Phase 5 audit (D-023).
+* **Against it:** `VC-ANA-001` is the only row in the table measuring the
+  instrument in isolation, and D-027's logic — prefer the decomposed term where
+  one exists — cuts the other way.
+
+Either way `VC-ANA-002` (Saby, 2.5% concentration, `verified_secondary`) turns
+out to sit almost exactly on Poeplau's subsampling-inclusive figure, which is
+mild corroboration that ~2.5–3% is the right order for a whole-pathway lab error
+on concentration.
+
+**No row is changed by this entry.** Adding or re-roling an analytical row is
+the judgement above, and it is the PI's.
+
+**What breaks if wrong.** If the two Poeplau errors are not nested as read —
+if the subsampling comparison somehow excluded the analytical step — then 2.5%
+and 1.2% would combine rather than subsume, giving 2.77% MAPE and a slightly
+larger figure; the conclusion is unchanged. If Potash's `σ_l = 2` is the
+intended value and the "4%" sentence is the loose one, then our subsampling-
+inclusive figure (3.13% concentration, 2.82 Mg C/ha at their reference soil)
+**exceeds** theirs, and the disagreement reverses sign rather than closing.
+
+---
+
+**D-052 — every row declares a BASIS. Axis and basis are orthogonal, and a
+basis mismatch is dimensionally silent.**
+
+D-051 gave every row an **axis** — what varies. It does not say what the number
+is expressed **on**, and units cannot: a 1% CV of SOC *concentration* and a 1%
+CV of SOC *stock* are dimensionally identical and semantically different.
+Summing them yields a number, not an error — no type error, no unit error, just
+a wrong answer that looks fine. D-036 is the live instance: a 1.25%
+concentration error and a 4%-with-bulk-density stock error, argued about for two
+rounds as though they were the same quantity.
+
+The table already knew. **D-020 says "a concentration CV is never treated as a
+stock CV".** It said so in prose. This is the enforceable version — the same
+move D-032 made for open decisions and D-051 made for components.
+
+New required enum `basis`: `concentration`, `stock`, `stock_change`,
+`variance_share`, `proportion`, `distance`. `tests/test_basis.py` checks it
+against each row's units and — the part with teeth — requires that **all
+baseline dispersion rows within one component share a basis**, since those are
+the summable ones. Structural rows are exempt by design: a `bias_pct` like
+`VC-REL-003` (a 50% error reduction) or a `range` like `VC-REL-004` (a
+saturation distance) modifies a budget rather than entering one.
+
+**Backfilling all 41 rows found one live mismatch, and it is a baseline
+collision.** `VC-BPS-005` is a **concentration** CV; `VC-BPS-006` and
+`VC-BPS-007…011` are **stock** CVs. All seven are baselines, all are `cv_pct` in
+`pct`, and nothing distinguished them mechanically. It is recorded in
+`MIXED_BASIS_BY_DESIGN` rather than resolved, because both are wanted —
+concentration is what the laboratory measures and is free of bulk-density error;
+stock is what a carbon claim is denominated in — and choosing one is the PI's
+call. Note D-040 already showed the two are not interchangeable even
+approximately: on a common sample the stock CV runs **below** the concentration
+CV, 11.456% against 11.897%.
+
+**The exemption is a record, not permission to sum across.** The OSSE must pick
+one basis per run and say which.
+
+**What breaks if wrong.** If the basis vocabulary is too coarse — if `stock` is
+hiding a fixed-depth versus equivalent-soil-mass distinction that matters — then
+two rows could share a basis and still not be summable. That distinction is
+currently carried by `depth_basis`, and the two fields should be read together;
+if that proves insufficient, `basis` is where the split belongs.
+**D-053 — G3 BOUNDED, NOT CLOSED. "Add cores before adding plots" is unproven
+and probably too strong, and it cannot be settled while D-036 is open.**
+
+Recorded as a computation, not a judgement: `scripts/g3_bounding.py`,
+`data/processed/g3_bounding.json`, written up in `docs/g3_bounding.md`. No row
+is written and no design choice is made.
+
+The Wuest residual exceeds the pure between-plot term at all five series, which
+reads as "the variance is inside the plots". But the residual is within-plot
+spatial **plus** analytical **plus** plot x occasion interaction, and only the
+first is reducible by taking more cores. Writing `f` for the non-reducible
+share, coring wins while `(1 - f) * v_resid > v_plot`:
+
+| series | `f*` |
+|---|---|
+| Adams-tillage | 0.307 |
+| Adams-residue | **0.089** |
+| Echo | 0.862 |
+| Moro | 0.587 |
+| Ritzville | **0.874** |
+
+**"Add cores" holds at ALL FIVE only if `f` < 0.089. It fails at all five only
+if `f` > 0.874.** The brief expected the flip to be hard because it must happen
+at five sites independently — true, but the useful finding is the other
+direction: holding the conclusion *everywhere* needs `f` below 9%, and that is
+the constraint likely to fail.
+
+**It probably does fail, and D-036 decides by how much.** Analytical error alone
+— before any interaction term — is 1.4–9.5% of the residual under the
+instrument-only candidate and **8.7–59.3%** under the subsampling-inclusive one.
+At Adams-tillage the wider candidate consumes 59% of the residual by itself.
+**G3 cannot be closed while D-036 is open**, and that coupling only became
+visible once both were traced to primary sources.
+
+**A quantitative disagreement with the nearest prior art.** Under Potash et al.'s
+own price list (location $15, assay $20) the budget-optimal compositing is
+`C* = sqrt((20/15) * v_w / (v_plot + v_nr))` — budget and field-visit cost both
+cancel. Our variance structure gives **C\* = 1.2 to 3.3 at `f` = 0**, falling to
+**about 1 at `f` = 0.3**. **Potash use 4.** Justifying 4 needs
+`v_w / (v_plot + v_nr) = 12`; our `v_resid / v_plot`, an upper bound on it, is
+1.1 to 8.0.
+
+Held loosely for three reasons, each of which would need settling first: our
+plots are 3.6–9 m experimental units on uniform fields against their 25 ha
+commercial fields; their dominant within-field term is relocation (5 Mg/ha vs
+lab 2 Mg/ha), not the same construct as our within-plot term; and `f` is
+unidentified. Note the first reason widens the disagreement rather than closing
+it — a larger between-location term at their scale implies a *smaller* `C*`,
+not a larger one.
+
+**What would settle it:** replicate cores per plot per visit, analysed
+separately. One site, one season, three or more cores per plot per month. No
+source we hold does this, and it is the experiment G3 actually wants.
+
+**Recommendation, not acted on.** Retire the flat claim. The defensible version
+is narrower: *a single core per plot is likely the wrong design, but the optimum
+is nearer 1–3 cores per assay than the 4 used by the closest published work, and
+it cannot be pinned down until D-036 closes and `f` is measured.*
+
+**What breaks if wrong.** If relocation error does average down with compositing
+in Potash's formulation — we did not verify this in their SI — then their
+effective `v_w` is much larger than ours and `C* = 4` may be right for their
+scale while ours stays right for a research plot, and the "disagreement" is
+really a scale difference. That check is the first thing to do before this
+becomes a claim in a paper.
+
+---
+
 ## Open evidence gaps
 
 | id | gap | consequence | status |
 |----|-----|-------------|--------|
 | ~~**G1**~~ | ~~No in-scope **between-plot** cropland variance. Only forest (Buchkowski).~~ | — | ✅ **CLOSED** 2026-08-08 by `VC-BPS-005/006`, derived from NAPESHM (D-024…D-030). Scoped to 0-15 cm; upper bound. |
 | **G2** | No 0–30 cm within-plot CV; only 0–10 and 10–30 separately, without inter-layer covariance. | Component 2 baseline is per-layer only. | open — needs Poeplau supplementary data |
-| **G3** | The within-plot ÷ between-plot **ratio** is unknown for cropland. | Determines whether to add plots or add cores — the central design question. | open — **substantially narrowed 2026-08-10**. Previously the two sides came from different studies, continents and depths. Wuest now supplies both from the **same plots, same depth, same study**: the pure between-plot term is 3.3–5.2% (`VC-BPS-007…011`) while the residual carrying within-plot spatial error is 4.1–10.7%, **larger at every one of the five series**. Direction of the answer: variance is concentrated WITHIN plots, so add cores before adding plots. NOT closed — the residual also contains plot×occasion interaction, so it is an upper bound on the within-plot side, and it is one region (D-043, D-046). |
+| **G3** | The within-plot / between-plot **ratio** is unknown for cropland. | Determines whether to add plots or add cores. | open — **BOUNDED 2026-08-10 (D-053), not closed**. 'Add cores' holds at all five Wuest series only if the non-reducible share of the residual is below **9%**; analytical error alone is 1.4–9.5% or 8.7–59.3% depending on which D-036 candidate is right, so **G3 cannot close while D-036 is open**. Budget-optimal compositing from our numbers is **1.2–3.3 cores per assay against Potash's 4**. Settling it needs replicate cores per plot per visit — an experiment nobody we hold has run. |
 | ~~**G4**~~ | ~~Only temporal source is dryland Pacific Northwest, paywalled, depth unconfirmed.~~ | — | ✅ **CLOSED** 2026-08-10 by `VC-TMP-003/005/007/009/011`, derived from the Wuest & Durfee public-domain dataset (D-041…D-044). The paywall was never the blocker: the data behind the paper was open. Depth is now fact, not assumption, and heterogeneous (D-042). **One region remains a real limitation** — see G8. |
 | **G5** | No variance-versus-distance function for offsets of 10–100 m. | Relocation error at LUCAS scale is unquantified; components 3 and 5 not orthogonal there. | open |
 | **G6** | The two LUCAS rows are unverified against the primary report. | Locked out of use by rule R6. | open — needs LUCAS PDF |
