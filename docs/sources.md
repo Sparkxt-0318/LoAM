@@ -2,6 +2,9 @@
 
 Status of every source behind `data/variance_table.csv`, as of 2026-08-10.
 
+Five foundational detectability papers were added on 2026-08-10 — see
+**Detectability literature** below. Three were retrievable, two are closed.
+
 **Legend**
 🟢 primary data held, derived by us · ✅ full text read and values verified ·
 🟡 abstract or citing source only · 🔴 not reached — values cannot be used
@@ -342,6 +345,103 @@ transcription against anything in the repository.
 
 Neither IPCC PDF is committed to `data/literature/` (they are large and stably
 hosted); the links above plus the page numbers are the citation of record.
+
+---
+
+## 📚 Detectability literature — the foundations we had never cited
+
+Retrieved 2026-08-10. **No rows written**: these are logged as candidates with
+what each would supply. Two retrieval attempts each, per the standing rule; no
+paywall was circumvented.
+
+Until now the table cited **none** of the foundational detectability papers,
+which is a real gap for a project whose whole subject is detectability.
+
+### ✅ von Haden, Yang & DeLucia (2020) — RETRIEVED
+*Soils' dirty little secret: Depth-based comparisons can be inadequate for
+quantifying changes in soil organic carbon and other mineral soil properties.*
+Global Change Biology **26**(7), 3759–3770.
+DOI [10.1111/gcb.15124](https://doi.org/10.1111/gcb.15124)
+
+**Green OA** — accepted manuscript at OSTI (`osti.gov/servlets/purl/1991884`),
+retrieved and read. Not committed (third-party copyright).
+
+**What it would supply — component 6, and it is stronger than what we have.**
+Their Table 1 gives mean absolute percentage error in SOC stock for fixed-depth
+against equivalent-soil-mass accounting, under simulated 2.5 cm compaction and
+expansion of four bioenergy cropping systems:
+
+| method | MAPE in SOC stock |
+|---|---|
+| **ESM** | 0.2 – 1.1% |
+| **FD** | 2.1 – **23.2%** (compaction), up to 18.6% (expansion) |
+
+> ⚠️ Column alignment was recovered from PDF text extraction and **needs visual
+> confirmation against the typeset table** before any number is tabled. The
+> range is unambiguous; the mapping of individual values to bulk-density rows
+> is not.
+
+Also usable: they state bulk-density changes of **5–20%** are commonly observed
+after land-use change, tillage and residue addition — which is the mechanism
+behind our `VC-BDC` rows, and we currently assert it without a citation. And a
+worked illustration in which fixed-depth accounting **underestimates an SOM gain
+by 20%**.
+
+**Relation to what we hold:** `VC-BDC-001…004` carry 17%, 16.2%, 8% and 6% from
+Fowler et al. 2023. Von Haden's FD range brackets all four, from an independent
+study with an explicit ESM comparison. This is corroboration for component 6 of
+the kind `VC-BPS-006` got from Wuest — worth a row once the table is confirmed.
+
+### 🔴 Smith (2004) — NOT RETRIEVED
+*How long before a change in soil organic carbon can be detected?*
+Global Change Biology **10**(11), 1878–1883.
+DOI [10.1111/j.1365-2486.2004.00854.x](https://doi.org/10.1111/j.1365-2486.2004.00854.x)
+
+Unpaywall reports **bronze OA** — free to read at the publisher — but both
+retrieval attempts returned **HTTP 403** from Wiley's bot protection. That is an
+access wall, not a paywall, and it was not circumvented. **A human with a
+browser can almost certainly open this in one click.**
+
+**What it would supply:** the canonical time-to-detection result, already cited
+*through* Poeplau in our own prose ("Smith 2004" appears in D-036's neighbourhood
+and in Poeplau's introduction) without ever being read. It is the paper our
+Phase 5 audit framing is implicitly arguing with.
+
+### 🔴 Bradford et al. (2023) — NOT RETRIEVED
+*Testing the feasibility of quantifying change in agricultural soil carbon
+stocks through empirical sampling.* Geoderma **440**, 116719.
+DOI [10.1016/j.geoderma.2023.116719](https://doi.org/10.1016/j.geoderma.2023.116719)
+
+Unpaywall reports **gold OA**. Both attempts — ScienceDirect and the DOAJ record
+— returned **HTTP 403** from bot protection. Not circumvented. **Openly
+licensed; a browser will fetch it.**
+
+**What it would supply:** it is the paper Potash et al. 2025 are answering, and
+therefore the other half of the argument our D-036/D-037/D-038 entries are
+positioned against. Likely carries sample-size requirements directly comparable
+to our G3 bounding (D-053).
+
+### 🔒 Saby et al. (2008) — CLOSED, already cited secondhand
+*Will European soil-monitoring networks be able to detect changes in topsoil
+organic carbon content?* Global Change Biology **14**(10), 2432–2442.
+DOI [10.1111/j.1365-2486.2008.01658.x](https://doi.org/10.1111/j.1365-2486.2008.01658.x)
+
+Unpaywall: **closed**, no OA location. Already supplies `VC-ANA-002` and
+`VC-WPS-004` at `verified_secondary`, read through Poeplau's discussion.
+Retrieving it would promote two rows to primary and — newly relevant — its 2.5%
+analytical figure sits almost exactly on Poeplau's subsampling-inclusive lab
+error, which is the live question in D-036.
+
+### 🔒 de Gruijter, McBratney, Minasny et al. (2016) — CLOSED
+*Farm-scale soil carbon auditing.* Geoderma **265**, 120–130.
+DOI [10.1016/j.geoderma.2015.11.010](https://doi.org/10.1016/j.geoderma.2015.11.010)
+
+Unpaywall: **closed**, no OA location.
+
+**What it would supply:** design-based sampling theory at the farm scale —
+stratification and compositing rules that bear directly on G3 (D-053), where we
+currently disagree with Potash et al. on cores per assay and have no third
+opinion.
 
 ---
 

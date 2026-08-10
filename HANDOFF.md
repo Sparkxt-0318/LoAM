@@ -68,7 +68,6 @@ approximately (stock 11.456% vs concentration 11.897% on a common sample).
 Structural rows (`bias_pct`, `range`, `proportion_pct`) are exempt by design —
 they modify a budget rather than entering one.
 
----
 
 ## TASK 2 — G3 bounding — **COMPLETE**
 Branch `claude/g3-cores-vs-plots` · `136 passed` · analysis only, no rows
@@ -107,3 +106,185 @@ PR #7 adds **D-052**, this PR adds **D-053**. Both touch the same two places —
 the `DECIDED_DECISIONS` tuple in `src/loam/decisions.py` and the Decision status
 table in `DECISIONS.md`. Expect a small conflict on the second merge; take both
 lines. D-053 deliberately skips 052 rather than renumbering.
+
+
+## TASK 3 — detectability literature — **COMPLETE**
+Branch `claude/sources-detectability` · `136 passed` · no rows written
+
+All five citations confirmed against Crossref. Availability checked via
+Unpaywall. Two retrieval attempts each; **no paywall circumvented**.
+
+| paper | status | outcome |
+|---|---|---|
+| von Haden et al. 2020, GCB 26:3759 | green OA | **RETRIEVED** and read (OSTI accepted manuscript) |
+| Smith 2004, GCB 10:1878 | bronze OA | **403 from Wiley bot protection** — free to read, a browser will open it |
+| Bradford et al. 2023, Geoderma 440:116719 | **gold OA** | **403** from ScienceDirect and DOAJ — openly licensed, a browser will open it |
+| Saby et al. 2008, GCB 14:2432 | closed | no OA location |
+| de Gruijter et al. 2016, Geoderma 265:120 | closed | no OA location |
+
+**The one real find: von Haden Table 1 is stronger than what component 6
+currently rests on.** Mean absolute percentage error in SOC stock, fixed depth
+vs equivalent soil mass, under simulated ±2.5 cm compaction/expansion:
+**ESM 0.2–1.1%, FD 2.1–23.2%.** Our `VC-BDC-001..004` carry 17 / 16.2 / 8 / 6%
+from Fowler 2023 — von Haden's FD range brackets all four, from an independent
+study with an explicit ESM comparison. Also supplies a citation for the
+bulk-density-change mechanism (5–20% after land-use change, tillage, residue
+addition) that our BDC rows currently assert uncited.
+
+⚠️ **Table 1's column alignment was recovered from PDF text extraction and needs
+visual confirmation against the typeset version before any number is tabled.**
+The range is unambiguous; the mapping of values to bulk-density rows is not.
+
+**Blockers, logged per rule 6:** Smith 2004 and Bradford 2023 are both *openly
+readable* and both blocked by bot protection, not by a paywall. Two attempts
+each (publisher + alternate legitimate host). **These are one browser click for
+a human** — the highest-value five minutes available to the PI in this whole
+handoff, since Bradford 2023 is the paper Potash et al. are answering and
+therefore the other half of the argument D-037/D-038 position against.
+
+
+## TASK 4 — Phase 1 reconnaissance — **COMPLETE**
+Branch `claude/phase1-recon` · `docs/phase1_design.md` · **no implementation**
+
+pyRothC installed and smoke-tested **outside the repo**, in a scratch directory.
+Not added to `pyproject.toml`. Nothing executable was written.
+
+**Verdict: it works, it is cleanly licensed, and it is probably not what this
+project needs.** CC0, 240 lines, deps numpy/pandas/scipy only, **last release
+2023-06-22**. Unmaintained — but RothC 26.3 is a frozen published model, so
+there is no upstream to track. If used, **vendor it**.
+
+### Three findings that matter more than the install
+
+**(a) RothC's `evaporation` input is D-039 all over again.** It needs *open-pan
+evaporation*; WorldClim does not publish it. Substituting a computed
+Penman/Hargreaves PET is **exactly the substitution D-033 refuses and D-039
+documents as a finding** — made by us, inside the model this time. Sourceable,
+but it is a decision, not a detail.
+
+**(b) The premise is at real risk through ONE channel, and it is cheap to
+close.** Most of our components are relative (`cv_pct`); converting to an
+absolute SD needs a mean stock, and **if that mean comes from RothC's simulated
+trajectory, MDC inherits RothC's level error.** Mitigation: convert using an
+*observed* mean stock (NAPESHM/Wuest site means), never the simulated one, and
+enforce it — *no variance component may read a stock from the truth generator*.
+That is the natural successor to D-032 / D-051 / D-052.
+
+**(c) RothC is single-layer, so it cannot generate the truth component 6
+measures error against.** Fixed-depth vs ESM bias has to be imposed as a separate
+observation-model step from our `VC-BDC` rows. Relevant to task 3's von Haden
+find.
+
+### The uncomfortable conclusion, stated for the PI to rule on
+
+If MDC is defined as a pure noise property — which is what our own premise
+says it is — **Phase 1 may not need a carbon model at all.** A stated change
+rate plus the variance structure is sufficient. RothC would then be supplying
+plausible values for one scenario parameter, a much smaller job than "truth
+generator" implies, and one a table of published effect sizes could also do.
+
+Six open questions are listed explicitly at the end of the design doc.
+
+---
+
+# END OF RUN
+
+Four tasks, four branches, four **draft** PRs, all CI green. Nothing merged.
+No D-NNN closed that needed judgement. No row promoted to `baseline`. No
+implementation built ahead of a decision.
+
+| task | branch | PR | status |
+|---|---|---|---|
+| 1 · D-036 + `basis` | `claude/d036-analytical` | **#7** | complete |
+| 2 · G3 bounding | `claude/g3-cores-vs-plots` | **#8** | complete |
+| 3 · detectability literature | `claude/sources-detectability` | **#9** | complete, 2 blocked |
+| 4 · Phase 1 recon | `claude/phase1-recon` | **#10** | complete, design doc only |
+| — · this handoff | `claude/handoff` | **#11** | — |
+
+**Nothing was time-boxed out.** All four finished inside their boxes.
+
+## ⚠️ Merge mechanics — read before merging anything
+
+1. **`HANDOFF.md` will conflict.** Each task branch was cut from `main` and each
+   carries only its own section, because `>>` created a fresh file on each. **This
+   branch has the superset — take this version on any conflict.**
+2. **PR #7 adds D-052, PR #8 adds D-053.** Both touch the `DECIDED_DECISIONS`
+   tuple in `src/loam/decisions.py` and the Decision status table in
+   `DECISIONS.md`. Take both lines. D-053 deliberately skips 052 rather than
+   renumbering across branches.
+3. **#7 changes the schema** (adds required `basis`, 48 → 49 columns). Merging it
+   after #8/#9/#10 is fine — none of those touch the schema or the YAML rows.
+   Merging **#7 first** is marginally cleaner.
+
+## Blockers hit, with evidence
+
+| blocker | evidence | attempts |
+|---|---|---|
+| **Smith 2004** unreachable | HTTP 403, Wiley bot protection. Unpaywall says **bronze OA** — free to read | 2 |
+| **Bradford 2023** unreachable | HTTP 403 from ScienceDirect *and* DOAJ. Unpaywall says **gold OA** — openly licensed | 2 |
+| Saby 2008, de Gruijter 2016 | Unpaywall: closed, no OA location anywhere | 1 each (definitive) |
+| von Haden Table 1 alignment | PDF text extraction garbled column mapping; range recovered, per-row mapping not | flagged, not guessed |
+
+**The two 403s are access walls, not paywalls, and both papers are openly
+readable. A browser opens them in one click — that is the highest-value five
+minutes in this handoff**, because Bradford 2023 is the paper Potash et al. are
+answering and therefore the other half of the argument D-037/D-038 position us
+against.
+
+## Decisions I did NOT make, with recommendations
+
+1. **D-036 — which analytical error should `VC-ANA-001` carry?**
+   *Recommend:* add a subsampling-inclusive row (3.13% SD, concentration) as the
+   baseline, demote `VC-ANA-001` to the instrument-only floor. No monitoring
+   programme re-measures the same milled aliquot, and understating analytical
+   error is anti-conservative for the Phase 5 audit (D-023).
+   *Against:* it is the only row isolating the instrument, and D-027 prefers
+   decomposed terms.
+2. **Potash's internal inconsistency** — `σ_l` = 2 Mg/ha vs the 4.02 their own
+   stated relative errors imply. *Recommend:* raise it with the authors; it is
+   not resolvable from the text and it is worth a footnote either way.
+3. **`VC-BPS-005` vs `VC-BPS-006/007–011`** — concentration and stock CVs
+   coexisting as baselines. *Recommend:* keep both, but make the OSSE declare one
+   basis per run. Recorded in `MIXED_BASIS_BY_DESIGN`, not resolved.
+4. **G3 / add-cores-vs-add-plots.** *Recommend:* retire the flat claim. The
+   defensible version is "a single core per plot is likely wrong, but the optimum
+   is nearer 1–3 cores per assay than Potash's 4, and cannot be pinned down until
+   D-036 closes."
+5. **Phase 1 engine.** *Recommend:* decide what the truth generator is FOR before
+   choosing one. Six explicit questions at the end of `docs/phase1_design.md`.
+6. **`VC-BPS-004`** (an MDC filed as a variance component) — allowlisted in PR #6,
+   still not re-filed. It may deserve its own `use_as`, since an MDC is a project
+   *output*.
+
+## Things that contradict a standing assumption
+
+1. **Potash et al. 2025 was never paywalled.** `sources.md` listed it as "to
+   obtain"; it is open-access in ERL and one Crossref query found it. Second time
+   this pattern has cost us — Wuest's dataset was public domain while we queued
+   the PDF. **Check for an open version before queueing a retrieval.**
+2. **The D-036 "4× discrepancy" was largely our own filing choice**, not a
+   disagreement in the literature. Poeplau reports two lab errors; we tabled the
+   narrower one and compared it to Potash's wider one for two rounds.
+3. **"Add cores before adding plots" does not survive contact with the
+   arithmetic.** Holding it at all five series needs the non-reducible share of
+   the residual below 9%; analytical error alone can exceed that.
+4. **G3 and D-036 are coupled** — G3 cannot close while D-036 is open. Neither
+   entry knew about the other before both were traced.
+5. **RothC needs open-pan evaporation, which WorldClim does not publish.** The
+   PET problem that produced D-039 reappears inside the Phase 1 engine.
+6. **Our own premise has a live leak.** If CV-based components are scaled by a
+   *simulated* mean stock, MDC inherits the truth generator's level error. Cheap
+   to close, but it needs an enforced rule.
+
+## What I would do next, in priority order
+
+1. **Open Smith 2004 and Bradford 2023 in a browser** (5 minutes, unblocks #9).
+2. **Settle D-036** — it gates G3, and the evidence is now assembled.
+3. **Merge #7 first**, then #8, #9, #10, taking this branch's `HANDOFF.md`.
+4. **Answer question 1 in `docs/phase1_design.md`** — is MDC a pure noise
+   property? Everything else about Phase 1 follows from it.
+5. **Confirm von Haden Table 1 visually** and decide whether component 6 gains a
+   corroborating row.
+6. **Decide `VC-BPS-004`'s home** — an MDC is not a variance component.
+7. Lower priority, unchanged: KBS written permission (needs a human email),
+   external PET for the 87 unclassified NAPESHM sites, the LUCAS report (G6).
