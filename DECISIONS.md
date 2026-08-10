@@ -491,6 +491,25 @@ far as the data allow and no further.** ✅
 > 18). Four of those — MXAG01, MXPU01, MXQT02, MXSL01, all with 0.2–4.2 frost
 > days/yr — would become **Tropical** if their true MAT were above 18. For those
 > four, integer rounding decides scope membership, not climate.
+>
+> > **CORRECTED 2026-08-10 (D-040): the caveat above is half the size it claims.**
+> > Scope membership is not the same as influence on a number. **MXAG01 and
+> > MXQT02 contribute 0 EUs to the derivation** — they are removed by D-024 /
+> > D-025 before climate is applied at all, and stay at 0 even with the climate
+> > filter switched off entirely. Their rounding is therefore unfalsifiable *and*
+> > inconsequential. Only **MXPU01 (16 EUs) and MXSL01 (14 EUs)** can move
+> > anything.
+> >
+> > Quantified rather than asserted, since the worst case is cheap to compute:
+> > dropping both leaves concentration at **11.469%** (from 11.948, shift 0.479,
+> > n 386 → 356) and stock at **10.863%** (from 11.456, shift 0.593, n 372 → 346).
+> > Both shifts sit well inside the CI widths of 3.97 and 3.52.
+> >
+> > So the honest statement is: for **two** sites integer rounding decides scope
+> > membership, and if both were misclassified the headline moves by about a
+> > seventh of its confidence interval. This is the same error of conflating
+> > *scope* with *sample* that produced the "10 Mexican highland sites" figure
+> > corrected in D-040 — one cause, two symptoms.
 
 *The original open question is preserved below, because it records why the
 envelope was never defensible.*
@@ -1199,6 +1218,13 @@ envelope was protecting against. Note also that the sites are **8, not 10**:
 10 pass the climate scope, but `MXAG01` and `MXQT02` are removed by D-024/D-025
 before climate is ever applied. The earlier "10" conflated scope with sample and
 is corrected on the row.
+
+*The same conflation appears once more, in D-028's rounding-fragility caveat,
+and is corrected there in place:* of the four sites whose scope membership turns
+on integer rounding, `MXAG01` and `MXQT02` contribute **0 EUs**, so only
+`MXPU01` and `MXSL01` can move a number. Dropping both — the full worst case —
+shifts concentration 0.479 and stock 0.593, against CI widths of 3.97 and 3.52.
+One cause, two symptoms, both now measured rather than asserted.
 
 *Why the flag closes rather than defers.* A deferral says "we do not know yet".
 We do know: on this quantity, at this precision, the disputed sites are worth
