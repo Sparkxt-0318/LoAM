@@ -22,6 +22,7 @@ rows:
 
   - row_id: VC-ANA-001
     component: analytical
+    basis: concentration
     quantity_definition: >-
       Standard deviation between two technical replicates of the same milled
       soil sample, determined by dry combustion in one laboratory. One field
@@ -90,6 +91,7 @@ rows:
 
   - row_id: VC-ANA-002
     component: analytical
+    basis: concentration
     quantity_definition: >-
       Dispersion between replicate determinations of the same soil sample by
       elemental analysis in European laboratories. Nothing spatial varies.
@@ -150,6 +152,7 @@ rows:
 
   - row_id: VC-ANA-003
     component: analytical
+    basis: concentration
     quantity_definition: >-
       Systematic offset between determinations of the same sample air-dried at
       40 C and oven-dried at 105 C - a difference between sample preparation
@@ -207,6 +210,7 @@ rows:
 
   - row_id: VC-ANA-004
     component: analytical
+    basis: stock
     quantity_definition: >-
       Standard deviation between replicate determinations of the same
       high-rock-content soil after mechanical grinding rather than hand
@@ -272,6 +276,7 @@ rows:
 
   - row_id: VC-WPS-001
     component: within_plot_spatial
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock between 16 cores within one 20 x 20 m
       cropland plot at 0-10 cm, all taken on one date and analysed by one
@@ -339,6 +344,7 @@ rows:
 
   - row_id: VC-WPS-002
     component: within_plot_spatial
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock between 16 cores within one 20 x 20 m
       cropland plot at 10-30 cm, all taken on one date and analysed by one
@@ -403,6 +409,7 @@ rows:
 
   - row_id: VC-WPS-003
     component: within_plot_spatial
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock between 16 cores within one 20 x 20 m
       GRASSLAND plot, all taken on one date and analysed by one laboratory.
@@ -464,6 +471,7 @@ rows:
 
   - row_id: VC-WPS-004
     component: within_plot_spatial
+    basis: concentration
     quantity_definition: >-
       Median relative dispersion of SOC concentration between sampling points
       within one plot, for plots of 1-400 m2 in European agricultural
@@ -533,6 +541,7 @@ rows:
 
   - row_id: VC-BPS-001
     component: between_plot_spatial
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock across a national forest inventory
       network, pooling variation between whole plots with variation between
@@ -595,6 +604,7 @@ rows:
 
   - row_id: VC-BPS-002
     component: between_plot_spatial
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock in ORGANIC horizons between plots of a
       national forest inventory network, at one inventory occasion.
@@ -646,6 +656,7 @@ rows:
 
   - row_id: VC-BPS-003
     component: between_plot_spatial
+    basis: variance_share
     quantity_definition: >-
       Share of total spatial variance attributable to variation between
       sampling points within a plot, as opposed to variation between whole
@@ -706,6 +717,7 @@ rows:
 
   - row_id: VC-BPS-004
     component: between_plot_spatial
+    basis: stock_change
     quantity_definition: >-
       Smallest SOC stock change distinguishable from zero between two national
       inventory occasions ten years apart, given the network's plot count,
@@ -765,6 +777,7 @@ rows:
 
   - row_id: VC-BPS-005
     component: between_plot_spatial
+    basis: concentration
     quantity_definition: >-
       Relative dispersion of SOC CONCENTRATION between replicate experimental
       units under identical management at one site, on one sampling occasion.
@@ -890,6 +903,7 @@ rows:
 
   - row_id: VC-BPS-006
     component: between_plot_spatial
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC STOCK between replicate experimental units
       under identical management at one site, on one sampling occasion.
@@ -1011,6 +1025,7 @@ rows:
 
   - row_id: VC-BPS-007
     component: between_plot_spatial
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock between replicate experimental units
       under identical management at Adams, Oregon, with core-scale and
@@ -1111,6 +1126,7 @@ rows:
 
   - row_id: VC-BPS-008
     component: between_plot_spatial
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock between replicate experimental units
       under identical management at Adams, Oregon (residue trial), with
@@ -1211,6 +1227,7 @@ rows:
 
   - row_id: VC-BPS-009
     component: between_plot_spatial
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock between replicate experimental units
       under identical management at Echo, Oregon, with core-scale and
@@ -1311,6 +1328,7 @@ rows:
 
   - row_id: VC-BPS-010
     component: between_plot_spatial
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock between replicate experimental units
       under identical management at Moro, Oregon, with core-scale and
@@ -1411,6 +1429,7 @@ rows:
 
   - row_id: VC-BPS-011
     component: between_plot_spatial
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock between replicate experimental units
       under identical management at Ritzville, Washington, with core-scale and
@@ -1515,6 +1534,7 @@ rows:
 
   - row_id: VC-TMP-001
     component: temporal
+    basis: variance_share
     quantity_definition: >-
       Share of total random error attributable to variation between sampling
       occasions at a fixed set of positions, with management and laboratory
@@ -1597,6 +1617,7 @@ rows:
 
   - row_id: VC-TMP-002
     component: temporal
+    basis: variance_share
     quantity_definition: >-
       Share of total random error attributable to variation between replicate
       experimental units under identical management, at one sampling occasion.
@@ -1668,6 +1689,7 @@ rows:
 
   - row_id: VC-TMP-003
     component: temporal
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock between sampling occasions, in the
       field-wide component shared by every plot measured on a given date at
@@ -1777,6 +1799,7 @@ rows:
 
   - row_id: VC-TMP-004
     component: temporal
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock between sampling occasions at one fixed
       plot at Adams, Oregon, carrying the core-scale and laboratory error a
@@ -1888,6 +1911,7 @@ rows:
 
   - row_id: VC-TMP-005
     component: temporal
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock between sampling occasions, in the
       field-wide component shared by every plot measured on a given date at
@@ -1997,6 +2021,7 @@ rows:
 
   - row_id: VC-TMP-006
     component: temporal
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock between sampling occasions at one fixed
       plot at Adams, Oregon (residue trial), carrying the core-scale and
@@ -2108,6 +2133,7 @@ rows:
 
   - row_id: VC-TMP-007
     component: temporal
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock between sampling occasions, in the
       field-wide component shared by every plot measured on a given date at
@@ -2217,6 +2243,7 @@ rows:
 
   - row_id: VC-TMP-008
     component: temporal
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock between sampling occasions at one fixed
       plot at Echo, Oregon, carrying the core-scale and laboratory error a new
@@ -2328,6 +2355,7 @@ rows:
 
   - row_id: VC-TMP-009
     component: temporal
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock between sampling occasions, in the
       field-wide component shared by every plot measured on a given date at
@@ -2437,6 +2465,7 @@ rows:
 
   - row_id: VC-TMP-010
     component: temporal
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock between sampling occasions at one fixed
       plot at Moro, Oregon, carrying the core-scale and laboratory error a new
@@ -2548,6 +2577,7 @@ rows:
 
   - row_id: VC-TMP-011
     component: temporal
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock between sampling occasions, in the
       field-wide component shared by every plot measured on a given date at
@@ -2657,6 +2687,7 @@ rows:
 
   - row_id: VC-TMP-012
     component: temporal
+    basis: stock
     quantity_definition: >-
       Relative dispersion of SOC stock between sampling occasions at one fixed
       plot at Ritzville, Washington, carrying the core-scale and laboratory
@@ -2772,6 +2803,7 @@ rows:
 
   - row_id: VC-REL-001
     component: relocation
+    basis: stock
     quantity_definition: >-
       Mean absolute difference in SOC stock between an original profile
       position and a resample displaced from it by about 40 cm, in cropland.
@@ -2852,6 +2884,7 @@ rows:
 
   - row_id: VC-REL-002
     component: relocation
+    basis: stock
     quantity_definition: >-
       Mean absolute difference in SOC stock between an original profile
       position and a resample displaced from it by about 40 cm, in GRASSLAND.
@@ -2909,6 +2942,7 @@ rows:
 
   - row_id: VC-REL-003
     component: relocation
+    basis: proportion
     quantity_definition: >-
       Proportional reduction in the difference between an original position
       and its displaced resample when three positions are averaged instead of
@@ -2975,6 +3009,7 @@ rows:
 
   - row_id: VC-REL-004
     component: relocation
+    basis: distance
     quantity_definition: >-
       Offset distance between an original position and its displaced resample
       beyond which the difference stops growing with distance.
@@ -3039,6 +3074,7 @@ rows:
 
   - row_id: VC-REL-005
     component: relocation
+    basis: proportion
     quantity_definition: >-
       Share of survey points for which the distance between a baseline location
       and its revisit location is under 10 m.
@@ -3100,6 +3136,7 @@ rows:
 
   - row_id: VC-REL-006
     component: relocation
+    basis: proportion
     quantity_definition: >-
       Share of survey points for which the distance between a baseline location
       and its revisit location is under 100 m, together with the largest such
@@ -3159,6 +3196,7 @@ rows:
 
   - row_id: VC-BDC-001
     component: depth_bd_convention
+    basis: stock_change
     quantity_definition: >-
       Systematic difference between two accounting conventions applied to the
       same soil - successive fixed-depth sampling to 30 cm versus equivalent
@@ -3221,6 +3259,7 @@ rows:
 
   - row_id: VC-BDC-002
     component: depth_bd_convention
+    basis: stock_change
     quantity_definition: >-
       Difference between accounting conventions applied to the same soil,
       large enough to reverse the sign of the estimated SOC stock change.
@@ -3279,6 +3318,7 @@ rows:
 
   - row_id: VC-BDC-003
     component: depth_bd_convention
+    basis: stock_change
     quantity_definition: >-
       Residual difference between accounting conventions applied to the same
       soil after the 0-30 cm profile is split into 15 cm sampling increments.
@@ -3329,6 +3369,7 @@ rows:
 
   - row_id: VC-BDC-004
     component: depth_bd_convention
+    basis: stock_change
     quantity_definition: >-
       Residual difference between accounting conventions applied to the same
       soil after the 0-30 cm profile is split into 10 cm sampling increments.
