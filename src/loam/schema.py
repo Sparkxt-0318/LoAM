@@ -40,6 +40,171 @@ COMPONENTS = (
     "depth_bd_convention",    # 6. fixed depth vs equivalent soil mass, bulk density
 )
 
+
+@dataclass(frozen=True)
+class ComponentDefinition:
+    """What a component measures, stated independently of its name.
+
+    ``VC-TMP-002`` sat under ``temporal`` for several PRs while reporting
+    variance between replicate experimental units. It was correctly
+    transcribed, correctly cited, and filed under the wrong component - because
+    the number appeared BESIDE the temporal figure in the source. Nothing
+    caught it: R6 tests locators, D-032 tests decision status, the staleness
+    test compares YAML with CSV. None of them asks whether a number is what its
+    component says it is.
+
+    The fix is to make every component and every row state its **axis of
+    variation** - the thing that differs between the two measurements being
+    compared - in the same vocabulary, so a mismatch is mechanically visible.
+    """
+
+    name: str
+    #: Plain language: what varies, and what is held fixed while it varies.
+    definition: str
+    #: Phrases that name this component's axis. A row's ``quantity_definition``
+    #: is matched against these; see :data:`AXIS_TRIGGERS` for how the axis
+    #: phrase is located inside the sentence.
+    varies_across: tuple[str, ...]
+
+
+#: Words that introduce the axis of variation. A ``quantity_definition`` must
+#: contain at least one, and the EARLIEST component marker after the earliest
+#: trigger decides which component the definition reads as. That convention is
+#: what makes the check structural rather than a guess: "variation between
+#: sampling occasions at one fixed plot" resolves to `temporal` because
+#: `sampling occasions` comes before `plot`, not because a human judged it.
+AXIS_TRIGGERS = ("between ", "across ", "among ")
+
+#: How far after a trigger word to look for a component marker. Long enough for
+#: "between replicate experimental units under identical management", short
+#: enough that a later subordinate clause is not mistaken for a second axis.
+AXIS_WINDOW_CHARS = 80
+
+COMPONENT_DEFINITIONS: tuple[ComponentDefinition, ...] = (
+    ComponentDefinition(
+        "analytical",
+        "Variation between repeated DETERMINATIONS OF THE SAME MATERIAL - the "
+        "same soil, milled and homogenised, measured more than once or "
+        "processed more than one way. Everything spatial is held fixed: there "
+        "is only one field location involved.",
+        ("replicate determinations", "technical replicates", "duplicate "
+         "determinations", "repeat determinations", "determinations of the "
+         "same sample", "analyses of the same sample", "replicate "
+         "determinations of the same", "aliquots", "sample preparation "
+         "treatments", "drying treatments", "grinding treatments",
+         "laboratories"),
+    ),
+    ComponentDefinition(
+        "within_plot_spatial",
+        "Variation between SAMPLING POSITIONS INSIDE ONE PLOT, measured at one "
+        "time by one laboratory. The plot, the date and the method are all "
+        "held fixed; only the position within the plot differs.",
+        ("cores within", "points within", "sampling positions within",
+         "sampling points within", "cores taken within", "subsamples within",
+         "microplots within", "locations within a plot",
+         "positions within a plot"),
+    ),
+    ComponentDefinition(
+        "between_plot_spatial",
+        "Variation between WHOLE PLOTS or experimental units under the same "
+        "management, at one time. The management, the date and the method are "
+        "held fixed; only which plot differs. Note this is a different axis "
+        "from within_plot_spatial, and a figure that pools the two belongs to "
+        "neither.",
+        ("plots", "experimental units", "replicate experimental units",
+         "replicate plots", "fields"),
+    ),
+    ComponentDefinition(
+        "temporal",
+        "Variation between SAMPLING OCCASIONS AT THE SAME PLACE - the same "
+        "plot revisited, or a whole field resampled on a later date. Position "
+        "and method are held fixed; only when the sample was taken differs.",
+        ("sampling occasions", "sampling dates", "sampling campaigns",
+         "occasions", "months", "revisits of the same", "visits to the same",
+         "successive visits", "dates"),
+    ),
+    ComponentDefinition(
+        "relocation",
+        "Variation between AN ORIGINAL POSITION AND A DISPLACED ONE when a "
+        "point is resampled without being relocated exactly. Time is not the "
+        "axis here even though resampling happens later; the axis is the "
+        "offset in space between baseline and revisit positions.",
+        ("original position", "original profile position", "baseline position",
+         "baseline location", "revisit locations", "relocation distances",
+         "offset resample", "displaced position"),
+    ),
+    ComponentDefinition(
+        "depth_bd_convention",
+        "Difference between ACCOUNTING CONVENTIONS applied to the same soil - "
+        "fixed depth versus equivalent soil mass, or one bulk-density "
+        "treatment versus another. Nothing about the field sampling differs; "
+        "the two numbers come from the same soil under different bookkeeping.",
+        ("accounting conventions", "depth conventions", "conventions",
+         "fixed-depth and equivalent-soil-mass", "sampling increments"),
+    ),
+)
+
+COMPONENT_DEFINITIONS_BY_NAME: dict[str, ComponentDefinition] = {
+    c.name: c for c in COMPONENT_DEFINITIONS
+}
+
+
+def read_axis(quantity_definition: str) -> tuple[str, str | None, frozenset[str]]:
+    """Return ``(axis_phrase, primary_component, all_components_matched)``.
+
+    ``primary_component`` is whichever component's marker appears EARLIEST in
+    the axis phrase, and is ``None`` when nothing matches - itself a failure
+    worth reporting, since a definition that names no axis is not doing the job
+    the field exists for.
+
+    ``all_components_matched`` exists because some published figures have more
+    than one axis. ``VC-BPS-001`` is a CV computed across a national plot
+    network that pools plot-to-plot variation with microplot-to-microplot
+    variation inside each plot; its own harmonization note says it "is NOT a
+    pure between-plot term". A reader that returned only the primary component
+    would file it as between-plot and say nothing, which is the same silence
+    that let VC-TMP-002 through. Two matches means the quantity spans two
+    components and belongs to neither.
+    """
+    text = " ".join(str(quantity_definition or "").lower().split())
+    starts = sorted(
+        pos
+        for trigger in AXIS_TRIGGERS
+        for pos in _find_all(text, trigger)
+    )
+    if not starts:
+        return "", None, frozenset()
+
+    # Resolve each trigger SEPARATELY, over a short window, and take the
+    # earliest marker inside it. Scanning the whole sentence for markers instead
+    # would flag "between sampling points within one plot, for plots of
+    # 1-400 m2" as spanning two components - "plots" there is describing plot
+    # SIZE, not naming a second axis. A guard that forces authors to contort
+    # ordinary prose around it gets routed around, so the window matters.
+    per_trigger: list[str] = []
+    for start in starts:
+        window = text[start:start + AXIS_WINDOW_CHARS]
+        best_pos, best = len(window) + 1, None
+        for comp in COMPONENT_DEFINITIONS:
+            for marker in comp.varies_across:
+                pos = window.find(marker)
+                if 0 <= pos < best_pos:
+                    best_pos, best = pos, comp.name
+        if best is not None:
+            per_trigger.append(best)
+
+    axis = text[starts[0]:starts[0] + 140]
+    primary = per_trigger[0] if per_trigger else None
+    return axis, primary, frozenset(per_trigger)
+
+
+def _find_all(text: str, needle: str) -> list[int]:
+    out, start = [], 0
+    while (pos := text.find(needle, start)) >= 0:
+        out.append(pos)
+        start = pos + 1
+    return out
+
 ERROR_KINDS = (
     "random",      # zero-mean dispersion; enters a variance budget
     "systematic",  # directional bias; must NOT be summed into a variance budget
@@ -183,6 +348,15 @@ COLUMNS: tuple[Column, ...] = (
     _c("component", "str", True,
        "Which of the six variance components this row parameterises.",
        COMPONENTS, "identity"),
+    _c("quantity_definition", "str", True,
+       "What the number measures, stated INDEPENDENTLY of which component it is "
+       "filed under. Must name its axis of variation after 'between', 'across' "
+       "or 'among' - the thing that differs between the two measurements being "
+       "compared - and must not simply restate the component name. Good: "
+       "'standard deviation of SOC concentration between replicate experimental "
+       "units under identical management at one site, on one sampling occasion'. "
+       "Bad: 'between-plot spatial variance'. See D-051.",
+       block="identity"),
     _c("error_kind", "str", True,
        "Whether the term is zero-mean dispersion, a directional bias, or both. "
        "Systematic rows must never be summed into a variance budget.",
