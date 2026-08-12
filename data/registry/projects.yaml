@@ -1,0 +1,652 @@
+# LoAM Phase 5 registry corpus — sampling design parameters of registered
+# soil carbon projects.
+#
+# PURPOSE. Phase 5 asks whether a registered project's sampling design could
+# have detected the change it claimed. That question needs design parameters,
+# and this file is where they are collected from public registry documents.
+#
+# DISCIPLINE, mirroring data/variance_components.yaml. Every field carries a
+# `status`, a `source` key and a `locator`. Nothing is filled in from memory,
+# from a press release, or from what the methodology requires — a methodology
+# requirement is what a project OUGHT to do, not what it did.
+#
+#   status values
+#     stated        the document says it, in the words recorded in `note`
+#     inferred      derived by us from something the document does say; the
+#                   derivation is in `note` and it is ALWAYS marked
+#     not_disclosed searched for and NOT found in the public documents held.
+#                   The search is recorded so a reader can retrace it.
+#     withheld      the public document EXPLICITLY refers to a document that
+#                   carries the parameter, and that document is not public.
+#                   Stronger than not_disclosed: we know the number exists.
+#     not_applicable the parameter has no meaning for this project
+#
+# `withheld` is the finding-bearing status. It separates "nobody wrote it down"
+# from "it is written down and you may not see it".
+#
+# SCOPE. LoAM is locked to SOC, cropland topsoil, temperate, 1-2 practices.
+# Projects outside that are recorded with `in_loam_scope: false` and a reason,
+# never deleted — same rule as D-016 for variance-table rows. They still carry
+# the gap analysis, which is about disclosure and not about scope.
+#
+# Access date for every source in this file: 2026-08-12.
+
+schema_version: 1
+compiled: 2026-08-12
+compiled_by: scripts have not been written for this file; it is hand-curated
+note: >-
+  FIRST PASS. Seven projects across three registries, selected to span the
+  disclosure range rather than to be representative. The corpus is not a
+  sample and no rate computed from it generalises. The register-wide counts in
+  `registry_coverage` DO generalise, because they are censuses.
+
+# ---------------------------------------------------------------------------
+# Registry-level census figures. These are complete counts, not samples.
+# ---------------------------------------------------------------------------
+
+registry_coverage:
+  - registry: Australian ACCU Scheme (Clean Energy Regulator)
+    as_at: 2026-06-30
+    source: cer_register_csv
+    n_projects_total: 3025
+    n_soil_carbon_projects: 999
+    n_soil_projects_with_credits_issued: 53
+    accus_issued_to_soil_projects: 439348
+    largest_single_soil_project_accus: 94666
+    field_completeness_across_999_soil_projects:
+      project_name: "999/999 (100%)"
+      method: "999/999 (100%)"
+      project_activities: "999/999 (100%)"
+      crediting_period: "999/999 (100%)"
+      accus_issued: "999/999 (100%)"
+      estimation_or_measurement_approach_or_model: "24/999 (2%)"
+      carbon_estimation_area_mapping_file_url: "53/999 (5%)"
+      model_start_dates: "0/999 (0%)"
+      supplementary_project_information: "0/999 (0%)"
+    sampling_design_fields_published: none
+    note: >-
+      The register carries no field for sample count, sampling depth, cores per
+      composite, sampling density, depth convention or remeasurement interval —
+      not blank fields, no fields. The CER landing page for the register states
+      that project-level sampling plans and measurement reports are not
+      published. So for 999 of 999 Australian soil carbon projects, the Phase 5
+      audit cannot be attempted from public documents at all.
+
+# ---------------------------------------------------------------------------
+
+sources:
+  car1459_mp_rp1:
+    title: "Project Monitoring Plan, CAR1459 Indigo U.S. Project No. 1, v3.1"
+    document_date: 2022-06-14
+    pages: 102
+    url: https://www.indigoag.com/hubfs/CAR1459%20Documents/RP1/CAR1459_RP1_Monitoring-Plan.pdf
+    accessed: 2026-08-12
+  car1459_docs:
+    title: "Climate Action Reserve public document list for CAR1459 (64 documents)"
+    url: https://thereserve2.apx.com/mymodule/reg/TabDocuments.asp?r=111&ad=Prpt&act=update&type=PRO&aProj=pub&tablename=doc&id1=1459
+    accessed: 2026-08-12
+  car1513_mp_v4:
+    title: "Soil Enrichment Monitoring Plan, CAR1513 AgriCapture US Rice Methane Project, v4"
+    document_date: 2026-04-15
+    pages: 12
+    url: https://thereserve2.apx.com/mymodule/ProjectDoc/Project_ViewFile.asp?FileID=119908
+    accessed: 2026-08-12
+    note: >-
+      Reached from the CAR1513 public document list. The FileID URL also
+      requires an IDKEY token issued with the listing page, so it is not a
+      stable citation on its own; cite the document list and the document title.
+  car1513_docs:
+    title: "Climate Action Reserve public document list for CAR1513 (41 documents)"
+    url: https://thereserve2.apx.com/mymodule/reg/TabDocuments.asp?r=111&ad=Prpt&act=update&type=PRO&aProj=pub&tablename=doc&id1=1513
+    accessed: 2026-08-12
+  agreena_val_v4:
+    title: "VCS Validation Report of AgreenaCarbon Project, v4.0, Report ID VCS.VAL.22.89"
+    author: Earthood Services Private Limited
+    document_date: 2024-12-20
+    pages: 151
+    url: https://terrapass.com/wp-content/uploads/2025/02/AgreenaCarbon-Project-VCS-Validation-Report.pdf
+    accessed: 2026-08-12
+  cer_register_csv:
+    title: "ACCU Scheme project register (CSV), Clean Energy Regulator, updates as at 30 June 2026"
+    url: https://cer.gov.au/document/accu-scheme-project-register-0
+    accessed: 2026-08-12
+    rows: 3025
+  cer_register_page:
+    title: "ACCU project and contract register (landing page)"
+    url: https://cer.gov.au/markets/reports-and-data/accu-project-and-contract-register
+    accessed: 2026-08-12
+  cer_sampling_guidance:
+    title: "Sampling guidance for measurement-based soil carbon methods, Clean Energy Regulator"
+    pages: 13
+    url: https://cer.gov.au/document/sampling-guidance-measurement-based-soil-carbon-methods
+    accessed: 2026-08-12
+
+# ---------------------------------------------------------------------------
+
+projects:
+
+  # =========================================================================
+  - project_id: CAR1459
+    project_name: Indigo U.S. Project No. 1
+    registry: Climate Action Reserve
+    protocol: Soil Enrichment Protocol (SEP) v1.1
+    developer: Indigo Ag
+    in_loam_scope: true
+    scope_note: >-
+      US cropland, temperate, tillage/residue/fertiliser/cover-crop practices,
+      0-30 cm. The closest match in the corpus to LoAM's scope lock.
+    disclosure_tier: 1
+    disclosure_note: >-
+      The most completely documented soil carbon project found. A 102-page
+      monitoring plan naming the sample design, the estimator, the sampling
+      density, the assignment rule for each sample type, and the uncertainty
+      equation. Everything below comes from that one document.
+
+    geography:
+      value: "16 US states: AR, IL, IN, IA, KS, KY, LA, MN, MS, MO, NE, ND, OH, OK, SD, TN"
+      status: stated
+      source: car1459_mp_rp1
+      locator: "Section 3, project location; 'mainly located in the Midwest and Southeast agricultural regions'"
+    area:
+      value: 100371
+      units: acres
+      status: stated
+      source: car1459_mp_rp1
+      locator: "Section 1.2 / 3; figure as of the v3.1 document date, an aggregated project that grows"
+      note: "40,619 ha. 175 enrolled growers, 573 acres/grower average."
+    n_growers:
+      value: 175
+      status: stated
+      source: car1459_mp_rp1
+      locator: "Section 3"
+    practices:
+      value: "tillage and/or residue management, fertiliser management, cover cropping"
+      status: stated
+      source: car1459_mp_rp1
+      locator: "Table 3.1, project activities and mechanisms"
+
+    quantification_approach:
+      value: measure_and_model
+      status: stated
+      source: car1459_mp_rp1
+      locator: "Section 1.2 — 'running a biogeochemical model at a random sample of points at which we collect soil samples'"
+    model:
+      value: DayCent-CR
+      status: stated
+      source: car1459_mp_rp1
+      locator: "Section 5; model validation report IndigoCarbon US-1 2020 0046"
+
+    sampling_design:
+      value: >-
+        Two designs used in different strata. Design 1: POISSWR (Poisson
+        sampling with replacement) from a national point map. Design 2 (from
+        2020-09-13): two-stage PPSWR over fields by area, then SRSWR within
+        field, self-weighting with m constant across fields.
+      status: stated
+      source: car1459_mp_rp1
+      locator: "Sections 5.2.2.1 and 5.2.2.2; Design 2 is the example in SEP v1.1 Appendix D.4"
+    sampling_density:
+      value: 8
+      units: acres_per_sample_point
+      status: stated
+      source: car1459_mp_rp1
+      locator: "Table 5.2 — 'Sample Design 1 (POISSWR), 1 point per 8 acres on average'"
+      note: >-
+        3.24 ha per point. Applies to Designs 1 only; the Design 2 density is a
+        function of the two-stage allocation and is not given as a single figure.
+    n_samples:
+      value: null
+      status: not_disclosed
+      source: car1459_mp_rp1
+      locator: "searched sections 5.2 and 6.4; the plan gives the RULE (1 point per 8 acres) but no realised count"
+      note: >-
+        INFERRABLE but not stated: at 1 point per 8 acres over 100,371 acres,
+        Design 1 implies of order 12,500 carbon sampling points. Left as
+        not_disclosed rather than recorded as a number, because the two designs
+        were applied in different strata and the split is not given.
+    cores_per_composite:
+      value: 1
+      status: stated
+      source: car1459_mp_rp1
+      locator: "Section 6.4.1.2 — 'At each carbon sampling location, an individual 30-cm sample was collected'"
+      note: >-
+        THE MOST INTERESTING NUMBER IN THE CORPUS FOR LoAM. Carbon samples are
+        NOT composited: one core per assay, per point. Compositing is used only
+        for pH and texture. This is the single-core-per-plot design G3/D-053
+        analysed, at continental scale, and it is the opposite of Potash et
+        al.'s assumed 4-core composite.
+    depth_cm:
+      value: [0, 30]
+      status: stated
+      source: car1459_mp_rp1
+      locator: "Sections 6.4.1.2-6.4.1.4; bulk density taken over 30.48 cm (12 inches)"
+      note: "Carbon 30 cm, bulk density 30.48 cm — a 1.6% depth mismatch between the two terms of the stock."
+    depth_increments:
+      value: null
+      status: not_disclosed
+      source: car1459_mp_rp1
+      locator: "full-text search of the 102-page plan for 'depth increment', 'equivalent soil mass', 'soil mass', '0-10', '10-30' — no match"
+    depth_convention:
+      value: null
+      status: not_disclosed
+      source: car1459_mp_rp1
+      locator: "same search; neither 'fixed depth' nor 'equivalent soil mass' appears anywhere in the document"
+      note: >-
+        Single 30-cm sample with no increments cannot support an ESM correction,
+        so the accounting is fixed-depth by construction. That is an INFERENCE
+        from the absence of increments and is recorded as not_disclosed rather
+        than as a stated fixed_depth, because the document never says so.
+    bulk_density:
+      value: "measured at 1 of every 5 carbon points before 2020-03-16, 1 of every 3 after; interpolated elsewhere"
+      status: stated
+      source: car1459_mp_rp1
+      locator: "Section 5.2.3.2 and Table 5.2; slide-hammer or demolition-hammer core with liner, 30.48 cm"
+      note: >-
+        The frequency was raised from 1-in-5 to 1-in-3 explicitly 'to increase
+        the precision of our estimates of SOC stock changes' after dropping a
+        planned prediction device. A documented design change made for variance
+        reasons — rare, and directly useful to Phase 5.
+    lab_method:
+      value: dry combustion
+      status: stated
+      source: car1459_mp_rp1
+      locator: "Section 6.4.2; NAPTP-PAP accredited laboratory per SEP v1.1 Table 6.3"
+    remeasurement_interval_years:
+      value: 5
+      status: stated
+      source: car1459_mp_rp1
+      locator: "Section 5 — 'Indigo Ag plans to re-sample soils at least every 5 years using direct measurements'"
+      note: "'At least every 5 years' is an upper bound on the interval, not a schedule."
+    stratification:
+      value: "the two sample designs were implemented independently in different strata"
+      status: stated
+      source: car1459_mp_rp1
+      locator: "Section 5.4.6"
+    n_strata:
+      value: null
+      status: not_disclosed
+      source: car1459_mp_rp1
+      locator: "Section 5.4.6 refers to 'all strata' without giving a count or a stratification variable"
+
+    uncertainty_treatment:
+      value: "UNC_t = z(70%) x s(ER_t) / ER_t, where s(ER_t) is the half-width of the 95% confidence interval"
+      status: stated
+      source: car1459_mp_rp1
+      locator: "Tables 5.11 and 5.12, citing SEP v1.1 Equation 5.1"
+      note: >-
+        z(70%) = 0.5244. So the deduction is 0.524 x (95% CI half-width) / ER.
+        Three error sources are named as entering it: sample error, measurement
+        error of model inputs, and model prediction error from calibration and
+        validation residuals. NOTE this is NOT the 0.43-SE rule the brief
+        attributed to VM0042 — CAR SEP and Verra VM0042 use different rules and
+        the corpus must not blur them.
+    uncertainty_deduction_applied_pct:
+      value: null
+      status: not_disclosed
+      source: car1459_mp_rp1
+      locator: "the plan gives the equation; the realised value is in the reporting-period monitoring reports, not held"
+    credits_issued:
+      value: null
+      status: not_disclosed
+      source: car1459_docs
+      locator: >-
+        the 64-document public list carries monitoring reports RP1-RP5 and
+        verification reports; the issuance total was not extracted in this pass
+      note: "Retrievable — CAR1459_Monitoring_Report_v5.8.pdf is public. Not fetched this session."
+    claimed_soc_change_rate:
+      value: null
+      status: not_disclosed
+      source: car1459_mp_rp1
+      locator: "the monitoring plan states the method, not the realised result"
+
+  # =========================================================================
+  - project_id: CAR1513
+    project_name: AgriCapture US Rice Methane Project
+    registry: Climate Action Reserve
+    protocol: Soil Enrichment Protocol (SEP) v1.1
+    developer: AgriCapture Inc
+    in_loam_scope: false
+    scope_note: >-
+      OUT OF SCOPE. Registered under the same soil protocol as CAR1459, but the
+      emission reductions are methane from irrigated rice, not SOC. Kept because
+      it demonstrates that 'Soil Enrichment Protocol' does not imply an SOC
+      project — a classification trap Phase 5 must avoid — and because its
+      disclosure contrast with CAR1459 is the finding.
+    disclosure_tier: 3
+    disclosure_note: >-
+      A 12-page fill-in of the Reserve's monitoring plan TEMPLATE, against
+      CAR1459's 102-page document. Same registry, same protocol version. The
+      sampling design is not in it; it is deferred to a memo that is not public.
+
+    geography:
+      value: "Arkansas, Mississippi, Louisiana, Missouri"
+      status: stated
+      source: car1513_mp_v4
+      locator: "Project Description, section 1"
+    area:
+      value: 154508
+      units: acres
+      status: stated
+      source: car1513_mp_v4
+      locator: "section 1 — '154,508 unique acres that have implemented improved rice production'; 158,152 acres of field data collected"
+    practices:
+      value: "irrigation management (alternate wetting and drying) in rice; cover cropping monitored separately"
+      status: stated
+      source: car1513_mp_v4
+      locator: "section on project activities; 'All CAR1513 acres included in this verification implemented irrigation management practice'"
+    quantification_approach:
+      value: measure_and_model
+      status: stated
+      source: car1513_mp_v4
+      locator: "section 10, modeling plan"
+    model:
+      value: DNDC
+      status: stated
+      source: car1513_mp_v4
+      locator: "section 10 — 'Regrow utilized the DNDC model for the project calculations'"
+
+    sampling_design:
+      value: null
+      status: withheld
+      source: car1513_mp_v4
+      locator: >-
+        section 9 — 'See the CAR1513 V4 Soil Sampling Memo' for stratification
+        and soil sampling; 'Location of evidence or documentation: CAR1513 V4
+        Soil Sampling Memo'
+      note: >-
+        THE MEMO IS NOT IN THE 41-DOCUMENT PUBLIC LIST. Checked by name and by
+        regex across every public document title for this project. The
+        monitoring plan names the document that holds the sampling design and
+        that document is not published. This is the cleanest single instance of
+        the transparency gap in the corpus.
+    sampling_unit:
+      value: field
+      status: stated
+      source: car1513_mp_v4
+      locator: "section 9 — 'The sampling unit for all procedures within CAR1513 is at the field level'"
+    n_samples: {value: null, status: withheld, source: car1513_mp_v4, locator: "deferred to CAR1513 V4 Soil Sampling Memo, not public"}
+    cores_per_composite: {value: null, status: withheld, source: car1513_mp_v4, locator: "deferred to CAR1513 V4 Soil Sampling Memo, not public"}
+    sampling_density: {value: null, status: withheld, source: car1513_mp_v4, locator: "deferred to CAR1513 V4 Soil Sampling Memo, not public"}
+    depth_cm: {value: null, status: withheld, source: car1513_mp_v4, locator: "deferred to CAR1513 V4 Soil Sampling Memo, not public"}
+    depth_convention: {value: null, status: not_disclosed, source: car1513_mp_v4, locator: "no ESM or fixed-depth language in the 12-page plan"}
+    stratification:
+      value: "field may be further stratified based on soil characteristics during soil sampling"
+      status: stated
+      source: car1513_mp_v4
+      locator: "section 9"
+      note: "The rule is disclosed; the realised strata are in the withheld memo."
+    remeasurement_interval_years: {value: null, status: not_disclosed, source: car1513_mp_v4, locator: "not addressed in the monitoring plan"}
+    uncertainty_treatment:
+      value: "CAR SEP v1.1 rule (as CAR1459)"
+      status: inferred
+      source: car1513_mp_v4
+      locator: "protocol version stated as SEP v1.1; the equation itself is not restated in this plan"
+      note: "INFERRED from the protocol version, not stated in the project document."
+    credits_issued: {value: null, status: not_disclosed, source: car1513_docs, locator: "not extracted this pass; verification reports are public"}
+
+  # =========================================================================
+  - project_id: VCS 4022
+    project_name: AgreenaCarbon Project
+    registry: Verra (VCS)
+    protocol: VM0042 Improved Agricultural Land Management v2.0 (VCS Standard v4.5)
+    developer: Agreena ApS
+    validation_body: Earthood Services Private Limited
+    in_loam_scope: true
+    scope_note: >-
+      European arable cropland, temperate, tillage and cover-crop practices.
+      In scope, and the largest in-scope project in the corpus by area.
+    disclosure_tier: 2
+    disclosure_note: >-
+      The validation report is public and detailed about PROCESS — it confirms
+      that a sampling design exists, was reviewed, and was found complete — but
+      the design parameters live in Project Description appendices 6 and 9,
+      which the report cites by name and does not reproduce.
+
+    geography:
+      value: "pan-European, 10 countries"
+      status: stated
+      source: agreena_val_v4
+      locator: "section 3.1 — 'the initial project instances cover 10 countries, the project boundary is pan-European'"
+    area:
+      value: 479834.11
+      units: hectares
+      status: stated
+      source: agreena_val_v4
+      locator: "section 3.1 — 'The total area is 479,834.11 ha and number of fields involved in the first PAI is 12,616'"
+    n_fields:
+      value: 12616
+      status: stated
+      source: agreena_val_v4
+      locator: "section 3.1, first project activity instance"
+    practices:
+      value: "reduced/no tillage, cover cropping, residue retention, reduced synthetic inputs (baseline was intensive tillage, no cover cropping, residue removal or burial)"
+      status: stated
+      source: agreena_val_v4
+      locator: "section on conditions prior to project initiation, quoting PD section 1.1.2"
+    crediting_period:
+      value: "2021-09-15 to 2041-09-15 (20 years)"
+      status: stated
+      source: agreena_val_v4
+      locator: "section 3.1, project crediting period"
+    claimed_abatement:
+      value: 543369.95
+      units: tCO2e_per_year
+      status: stated
+      source: agreena_val_v4
+      locator: "summary and section 3.1 — 'average emission reductions of 543,369.95 tCO2e/year over its entire crediting period'"
+      note: >-
+        1.13 tCO2e/ha/y over 479,834 ha. Roughly 0.31 t C/ha/y — the signal the
+        design has to detect, and directly comparable to Potash et al.'s tau of
+        0.3 Mg C/ha/y.
+
+    quantification_approach:
+      value: measure_and_model
+      status: stated
+      source: agreena_val_v4
+      locator: >-
+        section 3 — 'quantification approach 1: measure and model for soil
+        organic carbon and soil methanogenesis, and quantification approach 3:
+        default for the parameters'
+    model:
+      value: RothC
+      status: stated
+      source: agreena_val_v4
+      locator: "section 5 — 'Modelling plan for the model RothC applied following the Quantification Approach 1'"
+      note: >-
+        Relevant to LoAM's own Phase 1 recon (docs/phase1_design.md): the
+        largest in-scope registered project runs the same class of model the
+        testbed was considering as its truth generator.
+
+    sampling_design:
+      value: "stratified random; stratification on soil type, geological parent material and topography"
+      status: stated
+      source: agreena_val_v4
+      locator: >-
+        section 5 — 'the stratification is based on key factors for explaining
+        variation such as soil type, geological parent material and topography.
+        These variables are congruous with the similarity criteria listed in
+        Table 7 of Section 8.2 in VM0042 V.2'
+    sampling_density:
+      value: "at least 20 ha sampled per 1000 ha of project area (about 2%)"
+      status: inferred
+      source: agreena_val_v4
+      locator: "section 5 — 'for 1000 ha of area, more than 20 ha of area is taken as per sampling'"
+      note: >-
+        INFERRED, AND THE WORDING IS AMBIGUOUS. The validation report is
+        paraphrasing PD Appendix 9. '20 ha of area is taken as per sampling'
+        could mean the sampled sub-area, or the stratum size, or a minimum
+        field-selection quantum. It is NOT a sample count and must not be read
+        as one. Recorded because it is the only density-like figure in any
+        public document for this project.
+    n_samples: {value: null, status: withheld, source: agreena_val_v4, locator: "PD Appendix 6 (soil sampling protocol) and Appendix 9 (stratification), cited by the validation report and not reproduced in it"}
+    cores_per_composite:
+      value: null
+      status: withheld
+      source: agreena_val_v4
+      locator: >-
+        the parameter table lists 'N | Unitless | Number of cores' with the
+        value given as 'to be calculated'; the realised value is in PD Appendix 6
+      note: >-
+        The parameter is named in the monitored-parameter table, so its
+        existence is public and its value is not. Textbook `withheld`.
+    depth_cm: {value: null, status: withheld, source: agreena_val_v4, locator: "PD Appendix 6, not reproduced; VM0042 requires a minimum of 30 cm but the project's own depth is not in this document"}
+    depth_convention:
+      value: null
+      status: withheld
+      source: agreena_val_v4
+      locator: "PD Appendix 6, not reproduced"
+      note: >-
+        VM0042 requires at least two depth increments to enable equivalent-soil-
+        mass accounting. Whether this project used ESM is not stated in any
+        public document held. The methodology requirement is not evidence of the
+        project's practice and is not recorded as such.
+    remeasurement_interval_years:
+      value: 5
+      status: inferred
+      source: agreena_val_v4
+      locator: "VM0042 Quantification Approach 1 requires soil sampling at project start and at minimum every five years thereafter"
+      note: "INFERRED from the methodology requirement plus the stated QA1 choice. The project's own schedule is not disclosed."
+    uncertainty_deduction_applied_pct:
+      value: 31.35
+      status: stated
+      source: agreena_val_v4
+      locator: >-
+        corrective action log — 'The uncertainty value is 31.35% and is
+        consistently reported in PD Table 4-17'
+      note: >-
+        The VVB raised a corrective action because the PD reported 23.97% in
+        Table 4-17 while the calculation sheet gave a different figure; 31.35%
+        is the resolved value. Worth keeping: a nearly one-third deduction, and
+        an internal inconsistency the validator had to catch.
+
+  # =========================================================================
+  # Australian ACCU projects. Everything below the administrative block is
+  # not_disclosed for ALL of them, and that is uniform across all 999.
+  # =========================================================================
+  - project_id: ERF108333
+    project_name: Bonnie Doone Soil Carbon Project
+    registry: Australian ACCU Scheme (Clean Energy Regulator)
+    protocol: >-
+      Carbon Credits (Carbon Farming Initiative - Estimation of Soil Organic
+      Carbon Sequestration using Measurement and Models) Methodology
+      Determination 2021
+    developer: Bonnie Doone Enterprises Pty Ltd as Trustee for GA & CD Burnham Family Trust
+    in_loam_scope: false
+    scope_note: "OUT OF SCOPE — grazing system, not cropland. Kept for the disclosure census."
+    disclosure_tier: 4
+    disclosure_note: "Administrative record only. No design parameter of any kind is published."
+    geography: {value: "Queensland, North Burnett local government area", status: stated, source: cer_register_csv, locator: "Project location; Project Area(s) lot/plan 7/RW684, 8/RP816988, 9/RP816988"}
+    practices: {value: "altering stocking rate, duration or intensity of grazing", status: stated, source: cer_register_csv, locator: "Project activities"}
+    crediting_period: {value: "2017-01-25 to 2042-01-24 (25 years)", status: stated, source: cer_register_csv, locator: "Crediting period start/end date"}
+    permanence_period_years: {value: 25, status: stated, source: cer_register_csv, locator: "Nominated Permanence Period"}
+    credits_issued: {value: 94666, units: ACCUs, status: stated, source: cer_register_csv, locator: "ACCUs Total units issued — the largest soil-carbon issuance in the scheme"}
+    quantification_approach: {value: null, status: not_disclosed, source: cer_register_csv, locator: "'Estimation or measurement approach or model' is BLANK for this project"}
+    area: {value: null, status: not_disclosed, source: cer_register_csv, locator: "the register gives lot/plan identifiers and a CEA mapping file, not an area"}
+    n_samples: {value: null, status: not_disclosed, source: cer_register_page, locator: "no such field exists in the register; project sampling plans are not published"}
+    cores_per_composite: {value: null, status: not_disclosed, source: cer_register_page, locator: "no such field exists in the register"}
+    sampling_density: {value: null, status: not_disclosed, source: cer_register_page, locator: "no such field exists in the register"}
+    depth_cm: {value: null, status: not_disclosed, source: cer_register_page, locator: "no such field exists in the register"}
+    depth_convention: {value: null, status: not_disclosed, source: cer_register_page, locator: "no such field exists in the register"}
+    remeasurement_interval_years: {value: null, status: not_disclosed, source: cer_register_page, locator: "no such field exists in the register"}
+    uncertainty_treatment: {value: null, status: not_disclosed, source: cer_register_page, locator: "no such field exists in the register"}
+    claimed_soc_change_rate: {value: null, status: not_disclosed, source: cer_register_csv, locator: "credits issued are published; the SOC change rate behind them is not"}
+
+  - project_id: ERF105067
+    project_name: Moora Plains Soil Carbon Project
+    registry: Australian ACCU Scheme (Clean Energy Regulator)
+    protocol: "Estimation of Soil Organic Carbon Sequestration using Measurement and Models, 2021"
+    developer: Paringa Pasture Pty Ltd as Trustee for Lawrie Family Trust
+    in_loam_scope: false
+    scope_note: "OUT OF SCOPE — grazing system, not cropland."
+    disclosure_tier: 4
+    geography: {value: "Queensland, Rockhampton local government area", status: stated, source: cer_register_csv, locator: "Project location; Project Area(s)"}
+    practices: {value: "altering stocking rate, duration or intensity of grazing", status: stated, source: cer_register_csv, locator: "Project activities"}
+    crediting_period: {value: "2017-01-12 to 2042-01-11 (25 years)", status: stated, source: cer_register_csv, locator: "Crediting period start/end date"}
+    credits_issued: {value: 85262, units: ACCUs, status: stated, source: cer_register_csv, locator: "ACCUs Total units issued"}
+    quantification_approach: {value: null, status: not_disclosed, source: cer_register_csv, locator: "'Estimation or measurement approach or model' is BLANK"}
+    all_sampling_design_fields: {value: null, status: not_disclosed, source: cer_register_page, locator: "no sampling-design field exists in the register; sampling plans are not published"}
+
+  - project_id: ERF104527
+    project_name: Cheyenne Soil Carbon Project
+    registry: Australian ACCU Scheme (Clean Energy Regulator)
+    protocol: "Estimation of Soil Organic Carbon Sequestration using Measurement and Models, 2021"
+    developer: Carolyn Blomfield Pty Limited as Trustee for The Blomfield Family Trust
+    in_loam_scope: false
+    scope_note: "OUT OF SCOPE — grazing system, not cropland."
+    disclosure_tier: 4
+    disclosure_note: >-
+      One of only 24 of 999 Australian soil projects that populate the
+      'Estimation or measurement approach or model' field at all. That single
+      populated field is the ENTIRE methodological disclosure.
+    geography: {value: "New South Wales, Walcha local government area", status: stated, source: cer_register_csv, locator: "Project location; Project Area(s)"}
+    practices: {value: "altering stocking rate/duration/intensity of grazing; applying nutrients to the land", status: stated, source: cer_register_csv, locator: "Project activities"}
+    crediting_period: {value: "2016-11-04 to 2041-11-03 (25 years)", status: stated, source: cer_register_csv, locator: "Crediting period start/end date"}
+    credits_issued: {value: 28859, units: ACCUs, status: stated, source: cer_register_csv, locator: "ACCUs Total units issued"}
+    quantification_approach:
+      value: measure_and_model
+      status: stated
+      source: cer_register_csv
+      locator: >-
+        'Estimation or measurement approach or model' — 'Hybrid approach using
+        direct measurements with model predictions to estimate changes in
+        carbon stocks (Schedule 2)'
+      note: "The only project in the Australian sample that names its approach."
+    all_sampling_design_fields: {value: null, status: not_disclosed, source: cer_register_page, locator: "no sampling-design field exists in the register"}
+
+  - project_id: ERF176354
+    project_name: Blewett Carbon Project 5
+    registry: Australian ACCU Scheme (Clean Energy Regulator)
+    protocol: "Estimation of Soil Organic Carbon Sequestration using Measurement and Models, 2021"
+    developer: AGRIPROVE SOLUTIONS CO NO.2
+    in_loam_scope: false
+    scope_note: "OUT OF SCOPE on current evidence — activity not confirmed as cropland."
+    disclosure_tier: 4
+    disclosure_note: >-
+      Included as a representative of the largest single soil-carbon developer
+      in the scheme. Same disclosure as every other ACCU project: none.
+    geography: {value: Queensland, status: stated, source: cer_register_csv, locator: "Project location"}
+    credits_issued: {value: 9253, units: ACCUs, status: stated, source: cer_register_csv, locator: "ACCUs Total units issued"}
+    all_sampling_design_fields: {value: null, status: not_disclosed, source: cer_register_page, locator: "no sampling-design field exists in the register"}
+
+# ---------------------------------------------------------------------------
+# Registries approached and not yet yielding a project record.
+# Logged per the two-attempts rule so the next pass starts from a list.
+# ---------------------------------------------------------------------------
+
+blocked_or_deferred:
+  - target: Verra registry project search and document download (registry.verra.org)
+    attempts: 2
+    outcome: >-
+      Every path tried returns the Angular single-page-application shell rather
+      than JSON or a document — /uiapi/resource/resourceSummary/search,
+      /uiapi/resource/resource/search, /uiapi/asset/asset/search and
+      /app/projectDetail/VCS/<id>. No project document was reached DIRECTLY from
+      Verra. The one Verra project in this corpus was reached through a
+      validation report mirrored on a third-party site.
+    consequence: >-
+      Verra project design documents are public in principle and were not
+      machine-reachable from this environment. A browser session would very
+      likely reach them, which makes this an access wall rather than a
+      disclosure gap, and it must NOT be counted as one in the gap analysis.
+    next_step: "a human with a browser, or a headless browser, can list VM0042 projects and pull PDDs directly"
+  - target: Climate Action Reserve registry pagination beyond the first 50 projects
+    attempts: 2
+    outcome: "the report paginates by CSRF-bound POST; a page-2 POST returned HTTP 302, and a CSV export returned HTTP 411"
+    consequence: >-
+      Only the first page of the CAR project report was enumerated, which
+      contained one Soil Enrichment project (CAR1513). CAR1459 was reached by
+      direct project ID. The count of SEP projects in the Reserve is therefore
+      NOT known and no CAR-wide census appears in this file.
+    next_step: "drive the report form with a session-carrying client, or ask the Reserve for a project export"
+  - target: Gold Standard and Isometric registries
+    attempts: 0
+    outcome: not attempted this session
+    next_step: "both publish project documents; Gold Standard has an SOC framework methodology"
+  - target: Verra VM0042 uncertainty rule as written in the methodology
+    attempts: 0
+    outcome: >-
+      NOT verified. The brief describes VM0042 as using '0.43 SE'; the CAR SEP
+      rule verified here is z(70%) x half-width of the 95% CI, which is a
+      different construct. The VM0042 rule must be read from the methodology
+      before either is quoted alongside the other.
+    next_step: "read VM0042 v2.1/v2.2 section on uncertainty deduction directly"

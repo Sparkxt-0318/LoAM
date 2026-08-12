@@ -77,6 +77,7 @@ That is enforced, not requested: see D-032.
 | D-053 | decided | G3 bounded: 'add cores' is unproven; disagrees with Potash's 4-core composite |
 | **D-054** | **open** | which laboratory error the `analytical` component carries — carried forward from D-036 |
 | D-055 | decided | **FINDING**: inorganic carbon is not the conditioning covariate; D-040 invariance survives, at a ~7% detection limit |
+| D-056 | decided | **FINDING**: registry sampling designs are mostly unpublished — Phase 5 corpus started, gap quantified |
 
 ---
 
@@ -2471,6 +2472,132 @@ carbonate levels, and the place to look is soils above 2% inorganic carbon —
 which NAPESHM has at exactly three sites, all Mexican, all 2-replicate. The
 finding would then be about NAPESHM's coverage rather than about soils.
 
+
+**D-056 — FINDING: the Phase 5 audit cannot be run on most registered soil
+carbon projects, because the sampling designs are not published. The corpus is
+started, the gap is quantified, and the gap is the more publishable half.**
+Corpus `data/registry/projects.yaml`, written up in `docs/registry_corpus.md`,
+schema guarded by `tests/test_registry_corpus.py`. Seven projects, three
+registries, one complete registry census. No variance-table row is touched.
+
+**Why this was started now.** Potash independently named the Phase 5 post-hoc
+audit as the highest-impact direction available (correspondence, August 2026;
+see `docs/sources.md`). It is data collection with a long lead time and no
+upstream dependency, so it is the thing most likely to bottleneck month 5 if
+left until month 5.
+
+**THE CENSUS, which is the part that generalises.** The Australian ACCU Scheme
+register is complete and machine-readable (3025 rows, as at 2026-06-30), so this
+is a count and not an estimate:
+
+* **999** registered soil carbon projects
+* **53** have been issued credits; **439,348 ACCUs** issued in total
+* `Estimation or measurement approach or model` populated for **24 of 999 (2%)**
+* `Model start date(s)` **0/999**; `Supplementary project information` **0/999**
+* **no field exists** for sample count, sampling depth, cores per composite,
+  sampling density, depth convention or remeasurement interval — not blank
+  fields, no fields — and the Regulator's own register page states that
+  project-level sampling plans and measurement reports are not published
+
+> **439,348 credits have been issued against soil carbon measurements whose
+> sampling designs are not public, in any project, anywhere in that scheme.**
+
+The scheme *requires* a sampling plan and regulates it in detail. It is simply
+never published. So this is a disclosure choice, not regulatory laxity — which
+matters, because it means one registry field would fix it.
+
+**`withheld` IS A SEPARATE FINDING FROM `not_disclosed`, and the schema keeps
+them apart.** Two projects name the document that holds their design and do not
+publish it. CAR1513's monitoring plan says twice "See the CAR1513 V4 Soil
+Sampling Memo"; that memo is not among the project's 41 public documents.
+VCS 4022's validation report confirms in detail that PD Appendices 6 and 9 hold
+the sampling design and were found complete, and does not reproduce them — its
+monitored-parameter table even lists "N | Unitless | Number of cores", so the
+parameter's existence is public and its value is not. **A validation report that
+certifies a design without publishing it transfers the entire verification to
+the validator**, which is defensible for a registry and fatal for independent
+post-hoc audit.
+
+**THE GAP THAT CHANGES A NUMBER RATHER THAN BLOCKING A CALCULATION: not one
+project in the corpus states its depth convention.** CAR1459's 102-page
+monitoring plan contains none of "equivalent soil mass", "soil mass", "depth
+increment", "fixed depth", "0-10" or "10-30". That is the parameter our
+component 6 says matters most — fixed depth understates stock change by 17%
+(`VC-BDC-001`), conventions can reverse the sign (16.2%, `VC-BDC-002`), and von
+Haden 2020 puts fixed-depth error at 2.1-23.2% against ESM's 0.2-1.1%. **A
+Phase 5 audit that cannot read the convention has to run twice and report a
+bracket** — a defensible output, and one a project that never stated its
+convention has no standing to object to.
+
+**A DIRECT HIT ON G3 FROM THE ONE AUDITABLE PROJECT.** CAR1459 (Indigo, CAR SEP
+v1.1, 100,371 acres, 175 growers, 16 states) states: *"At each carbon sampling
+location, an individual 30-cm sample was collected."* **Carbon samples are not
+composited — one core per assay.** Compositing is used only for pH and texture.
+D-053 bounded the budget-optimal composite from our variance structure at
+**1.2-3.3 cores per assay against Potash et al.'s 4**, and held the
+disagreement loosely for want of a third opinion. **The third opinion is C = 1,
+at continental scale, from the most completely documented soil carbon project on
+any registry.** It does not settle G3 — different objective, interpolated bulk
+density, and one core per point at 1 point per 8 acres is not one core per
+experimental plot — but it moves the disagreement from "ours versus theirs" to
+"ours and the largest real deployment on one side, theirs on the other".
+
+Two further numbers from CAR1459 that are hard to get anywhere else: **sampling
+density 1 point per 8 acres (3.24 ha)**, and a bulk-density frequency raised
+from 1-in-5 to 1-in-3 carbon points explicitly *"to increase the precision of
+our estimates of SOC stock changes"* — a design change made on variance grounds
+and documented as such, which is a natural validation target for the calculator.
+
+**A CORRECTION TO THE BRIEF, recorded because it would otherwise propagate.**
+The brief describes VM0042 as using "0.43 SE". What is verified here is the
+**CAR SEP** rule, which is a different construct: `UNC = z(70%) x (half-width of
+the 95% CI) / ER`, with z(70%) = 0.5244. VM0042's uncertainty rule was **not**
+read from the methodology this session and is not recorded anywhere in the
+corpus. The two must not be quoted alongside each other until it is.
+
+**TWO ACCESS WALLS, DELIBERATELY NOT COUNTED AS DISCLOSURE GAPS.** Verra's
+registry returned the single-page-application shell on every path tried (four
+endpoints, two attempts); the one Verra project here came via a validation
+report mirrored on a third-party site. **Verra PDDs are public in principle and
+a browser would very likely open them** — the same access-wall-wearing-a-
+paywall's-coat pattern that has now cost us four items. And the Climate Action
+Reserve report paginates by CSRF-bound POST (302 on page 2, 411 on CSV export),
+so only page 1 was enumerated and **no CAR-wide census exists in this file**.
+Conflating "we could not fetch it" with "they did not publish it" would inflate
+the finding, so the schema and the writeup keep them apart.
+
+**THE CONSEQUENCE FOR PHASE 5, and it is a real one.** Phase 5 has a
+**population problem before it has a method problem**. The readable population
+is small and it is not a random subset — it is the projects whose developers
+chose to publish, plausibly the ones with the most defensible designs. **Any
+Phase 5 result will be biased toward finding that projects sample adequately**,
+and that caveat travels with the finding from the start rather than being
+discovered at the end.
+
+**THE STRONGEST IDEA TO COME OUT OF THIS PASS, recorded and not acted on.**
+Invert the question for the undisclosed majority. For a project that published
+only its area, its practice and its credits, ask *what sampling design would
+have been required for this claim to be detectable?* That needs **no design
+disclosure at all** — only area, claimed rate and interval, which the ACCU
+register does publish for all 999 projects. It turns the gap from a blocker into
+the method, and it makes the 999 an asset rather than a dead end. **Scope it
+before building the audit that needs designs.**
+
+**What breaks if wrong.** If Verra's registry turns out to publish PDDs with
+full sampling appendices — likely, and one browser session away — then the
+readable population is much larger than this pass suggests and the bias caveat
+weakens accordingly. The Australian census is unaffected either way: it is a
+complete count of a register that has no such fields. If a Phase 5 audit is ever
+published, **the corpus must be re-pulled and re-dated**, because registries
+change and every source here carries an access date of 2026-08-12 for exactly
+that reason.
+
+**Tone, for the writeup.** Nothing here is a case against any project. CAR1459
+discloses more than most published papers do and should be named for that, not
+used as a foil. The finding is about what registries require to be published.
+
+---
+
 ---
 
 ## Open evidence gaps
@@ -2502,4 +2629,5 @@ finding would then be about NAPESHM's coverage rather than about soils.
 | 2026-08-10 | D-040 extended | Two additions. **(a) Geographic confound recorded**: country and per-treatment support are completely aliased — all 55 two-replicate treatments are Mexican, no USA treatment is below three replicates — so no Mexico/USA difference may ever be read as a climate difference. **(b) The invariance finding elevated from hypothesis to a stated Phase 0 result**: between-plot CV in cropland SOC is approximately invariant across the covariates a spatial MDC surface would be built from (climate moves it 0.2–0.3 pts against a ~4-pt CI; clay shows no monotone signal; the joint model reaches R² = 0.093), with the 75/80-USA caveat attached. **Consequence: Phase 3 Deliverable 3 needs rethinking**, with two possibilities recorded and not resolved — MDC may vary spatially through the *signal*, or through *temporal* variance. Framing recorded: this **strengthens** Potash et al., who assumed `sigma_b` geography-independent "for lack of information" and turn out to have been approximately right. |
 | 2026-08-10 | D-040 | **Three sensitivity checks before Phase 0 closes. No new rows, no scope change, no constant moved.** (1) Leave-out test on the re-admitted Mexican highland sites — 8, not 10 (MXAG01/MXQT02 fall to D-024/D-025 first): concentration 11.948 → 12.248%, stock 11.456 → 11.304%, shifts of **0.300** and **0.152** against CI widths of 3.97 and 3.52, in opposite directions. **Both caveat flags CLOSED**, not deferred. (1b) All **55** two-replicate treatments are Mexican; the USA's 75 have **none** below 3 replicates — so the weak-support flag and the re-admitted-sites flag were one flag, tested once. (2) On the 372-EU intersection, concentration **11.897%** vs stock **11.456%** — gap **+0.441** where the cross-sample headline gives 0.492, so the sample mismatch is 0.051 of it and `stock < concentration` **survives** as a property of the data. (3) Texture terciles show no signal (clay spread 2.611 vs 10.556 CI; sand 3.690 vs 9.834) — **no rows written**; a joint model does find `log(mean SOC)` and sand fraction nominally significant (R² = 0.093) but on a 75/80-USA sample, filed as a hypothesis, not a parameterization. `VC-BPS-005/006` prose updated; no value changed. |
 | 2026-08-12 | **D-036 CLOSED**; D-054 (open), D-055 | **D-036 closed by author correspondence.** Eric Potash confirms the reference soil printed in Potash et al. 2025 is a **typo**: the intended values are 1.5% SOC and 1.0 g cm⁻³, i.e. **45 Mg C/ha** at 0–30 cm, not 90. Their stated 4% + 2% errors then imply **σ_l = 2.0125 Mg/ha** against Table 1's 2 — agreement to 0.6%, and the 2× the previous entry found is explained. The like-for-like gap with our table stands at **1.20×**, all of it attributable to which of Poeplau's two lab errors we tabled. **Consequence beyond σ_l:** every relative expression of their absolute parameters doubles — `σ_n` is **11.11%** of stock, not 5.56%, which moves their relocation term from rough parity with `VC-REL-001` to about **1.7× larger**. Nothing in the live table used 90 Mg/ha; G3's arithmetic is unaffected because it compares ratios. **The half of D-036 that was never about the literature — which lab error the `analytical` component should carry — is carried forward as D-054 (open) rather than allowed to lapse, and G3's gate moves with it.** **D-055: inorganic carbon is NOT the conditioning covariate** for between-plot variability, tested at Potash's own suggestion. `b_ic` is zero at **82.0%** of 1453 EUs and is a **site** property (97.9–99.8% of its variance is between sites). In the `VC-BPS-005/006` scope the test is **not identifiable** — every treatment above 0.05% IC is Mexican and 2-replicate, which is D-040 check 1c's alias biting for the first time. Where it is identifiable the answer is **flat and non-monotone**: all 11 carbonate intervals contain their tier's zero-carbonate estimate, no regression specification is significant in the headline tier, climate conditioning collapses the coefficient by **72%**, and pH (rho **+0.692** with IC) collapses it in every tier. A paired `Var(log SOC)` vs `Var(log total C)` contrast with an exact built-in null control (max |Δ| = 0.0 across 810 zero-carbonate treatments) gives a median inflation of only **2–11% in variance** and is **null at site level in every tier**. **Detection limit stated: ~6.4–7.6% analytical error**, against Potash's 1–10% — so the null covers only the top third of his range and is written that way. Also found: **D-040's own joint-model specification changes sign twice across nested samples** while its debiased counterpart stays flat; its conclusion is unaffected but the estimator should not be reused. **No variance-table row written — reported first, as instructed.** |
+| 2026-08-12 | D-056 | **Phase 5 registry corpus started; the gap is the finding.** `data/registry/projects.yaml` (7 projects, 3 registries, schema-guarded by `tests/test_registry_corpus.py`) and `docs/registry_corpus.md`. **Census, not estimate:** the Australian ACCU register carries **999** soil carbon projects, **53** issued credits, **439,348 ACCUs** — and **no field of any kind** for sample count, depth, cores per composite, sampling density, depth convention or remeasurement interval; `Estimation or measurement approach or model` is populated for **24/999 (2%)**. The schema separates **`withheld`** (the public document names a document holding the parameter, and it is not public — CAR1513's Soil Sampling Memo, VCS 4022's PD Appendices 6 and 9) from **`not_disclosed`**, because those are different findings. **Not one project states its depth convention**, including the 102-page CAR1459 plan — the one undisclosed parameter our component 6 says changes the number (17% understatement, 16.2% sign reversal, von Haden's 2.1–23.2% vs ESM 0.2–1.1%). **G3 gets a third opinion:** CAR1459 collects **one core per assay**, uncomposited, at 1 point per 8 acres across 100,371 acres — against Potash's 4 and our D-053 optimum of 1.2–3.3. **Correction to the brief:** the 0.43-SE rule attributed to VM0042 is not what CAR SEP uses (z(70%) × 95% CI half-width ÷ ER); VM0042's own rule was not read and is not recorded. **Two access walls logged, not counted as disclosure gaps** — Verra's registry served only its SPA shell (4 endpoints, 2 attempts) and the CAR report paginates by CSRF-bound POST, so no CAR-wide census exists here. **Consequence: Phase 5 has a population problem before a method problem** — the readable projects are self-selected, so any audit is biased toward 'adequate'. Strongest idea, recorded not acted on: **invert the question** and ask what design the claim would have required, which needs no design disclosure and makes all 999 usable. No variance-table row touched. |
 | 2026-08-08 | D-031, D-032, D-033; **D-028 still open** | Open-decision guard: decisions and the constants they govern are now machine-readable (`src/loam/decisions.py`), the build prints `<-- PROPOSED, NOT DECIDED`, and two tests refuse to pass while an open decision governs a live constant — **the suite is red on merge, by design** (D-032). Replacing the private climate envelope with IPCC 2006 climate regions was attempted and is **blocked**: MAP:PET and frost-day counts are not derivable from NAPESHM, and no proxy is substituted (D-033). Poeplau ↔ NAPESHM corroboration logged, with a figure correction (D-031). No variance-table values changed. |
