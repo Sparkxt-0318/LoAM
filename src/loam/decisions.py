@@ -64,7 +64,17 @@ OPEN_DECISIONS: dict[str, str] = {
         "which closed on the separate question of whether our figure disagrees "
         "with Potash et al.'s (it does not - 1.20x like for like). Gates G3: "
         "the two candidates put analytical error at 1.4-9.5% or 8.7-59.3% of "
-        "the Wuest residual, on opposite sides of D-053's 0.089 threshold."
+        "the Wuest residual, on opposite sides of D-053's 0.089 threshold. "
+        "EVIDENCE ADDED 2026-08-12 (D-057) WITHOUT CLOSING: VM0042 Sec 8.2.1.4 "
+        "requires the laboratory to report analytical error 'determined by "
+        "repeated analyses of the same sample' - Poeplau's NARROW figure, i.e. "
+        "what VC-ANA-001 already carries. That is evidence for the against-side, "
+        "which previously rested only on D-027's prefer-the-decomposed-term "
+        "logic. It does not settle the question: what a registry asks a lab to "
+        "report is not the error a monitoring programme incurs. Also relevant: "
+        "D-055 returned NULL on whether analytical error varies with soil "
+        "inorganic carbon, at a ~7% detection limit. Held open at the PI's "
+        "instruction, 2026-08-12."
     ),
 }
 
@@ -77,7 +87,8 @@ DECIDED_DECISIONS: tuple[str, ...] = (
     "D-025", "D-026", "D-027", "D-028", "D-029", "D-030", "D-031", "D-032",
     "D-033", "D-034", "D-035", "D-036", "D-037", "D-038", "D-039", "D-040",
     "D-041", "D-042", "D-043", "D-044", "D-045", "D-046", "D-047", "D-048",
-    "D-049", "D-050", "D-051", "D-052", "D-053", "D-055",
+    "D-049", "D-050", "D-051", "D-052", "D-053", "D-055", "D-056",
+    "D-057", "D-058",
 )
 
 ALL_DECISIONS: tuple[str, ...] = tuple(

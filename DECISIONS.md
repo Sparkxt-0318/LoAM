@@ -77,6 +77,9 @@ That is enforced, not requested: see D-032.
 | D-053 | decided | G3 bounded: 'add cores' is unproven; disagrees with Potash's 4-core composite |
 | **D-054** | **open** | which laboratory error the `analytical` component carries — carried forward from D-036 |
 | D-055 | decided | **FINDING**: inorganic carbon is not the conditioning covariate; D-040 invariance survives, at a ~7% detection limit |
+| D-056 | decided | **FINDING**: registry sampling designs are mostly unpublished — Phase 5 corpus started, gap quantified |
+| D-057 | decided | VM0042 read from primary: 0.4307 **confirmed**, version caveat, and VM0042's own Eq. 2 **is** the inverted audit |
+| D-058 | decided | estimator repair: debiased weighted log-variance replaces D-040's unweighted `log(sd)`; conclusion holds |
 
 ---
 
@@ -1145,10 +1148,18 @@ and state four differences plainly.** *To implement next PR.*
    gap.** That reframes our weakest component: closing it is a contribution to
    the literature, not a deficiency in our table.
 4. **Phase 5 audit hook: `z_deduct` = 0.43 standard errors, following Verra
-   VM0042 v2.0.** Published, auditable, and thin — a single constant standing in
+   VM0042.** Published, auditable, and thin — a single constant standing in
    for the entire uncertainty deduction. This is the specific number a Phase 5
    audit can test against, and the obvious place where a better variance model
    changes a real crediting outcome.
+   > **VERIFIED AGAINST PRIMARY 2026-08-12 (D-057).** The figure is correct:
+   > VM0042 v2.2 §8.6.4 Eq. 74 gives `t0.667` "equal to approximately **0.4307**
+   > at large sample sizes", crediting at the 33.3rd percentile. It was cited
+   > here from Potash et al. rather than from the methodology, so it was
+   > unverified — but not misattributed. **Two amendments:** it is a *t*-value,
+   > not a constant, so the deduction grows as `n` falls; and it could not be
+   > located in the v2.0 text, so the version qualifier **"v2.0" is withdrawn**
+   > pending the approved v2.0. See D-057.
 
 ---
 
@@ -2478,6 +2489,436 @@ carbonate levels, and the place to look is soils above 2% inorganic carbon —
 which NAPESHM has at exactly three sites, all Mexican, all 2-replicate. The
 finding would then be about NAPESHM's coverage rather than about soils.
 
+
+**D-056 — FINDING: the Phase 5 audit cannot be run on most registered soil
+carbon projects, because the sampling designs are not published. The corpus is
+started, the gap is quantified, and the gap is the more publishable half.**
+Corpus `data/registry/projects.yaml`, written up in `docs/registry_corpus.md`,
+schema guarded by `tests/test_registry_corpus.py`. Seven projects, three
+registries, one complete registry census. No variance-table row is touched.
+
+**Why this was started now.** Potash independently named the Phase 5 post-hoc
+audit as the highest-impact direction available (correspondence, August 2026;
+see `docs/sources.md`). It is data collection with a long lead time and no
+upstream dependency, so it is the thing most likely to bottleneck month 5 if
+left until month 5.
+
+**THE CENSUS, which is the part that generalises.** The Australian ACCU Scheme
+register is complete and machine-readable (3025 rows, as at 2026-06-30), so this
+is a count and not an estimate:
+
+* **999** registered soil carbon projects
+* **53** have been issued credits; **439,348 ACCUs** issued in total
+* `Estimation or measurement approach or model` populated for **24 of 999 (2%)**
+* `Model start date(s)` **0/999**; `Supplementary project information` **0/999**
+* **no field exists** for sample count, sampling depth, cores per composite,
+  sampling density, depth convention or remeasurement interval — not blank
+  fields, no fields — and the Regulator's own register page states that
+  project-level sampling plans and measurement reports are not published
+
+> **439,348 credits have been issued against soil carbon measurements whose
+> sampling designs are not public, in any project, anywhere in that scheme.**
+
+The scheme *requires* a sampling plan and regulates it in detail. It is simply
+never published. So this is a disclosure choice, not regulatory laxity — which
+matters, because it means one registry field would fix it.
+
+**`withheld` IS A SEPARATE FINDING FROM `not_disclosed`, and the schema keeps
+them apart.** Two projects name the document that holds their design and do not
+publish it. CAR1513's monitoring plan says twice "See the CAR1513 V4 Soil
+Sampling Memo"; that memo is not among the project's 41 public documents.
+VCS 4022's validation report confirms in detail that PD Appendices 6 and 9 hold
+the sampling design and were found complete, and does not reproduce them — its
+monitored-parameter table even lists "N | Unitless | Number of cores", so the
+parameter's existence is public and its value is not. **A validation report that
+certifies a design without publishing it transfers the entire verification to
+the validator**, which is defensible for a registry and fatal for independent
+post-hoc audit.
+
+**THE GAP THAT CHANGES A NUMBER RATHER THAN BLOCKING A CALCULATION: not one
+project in the corpus states its depth convention.** CAR1459's 102-page
+monitoring plan contains none of "equivalent soil mass", "soil mass", "depth
+increment", "fixed depth", "0-10" or "10-30". That is the parameter our
+component 6 says matters most — fixed depth understates stock change by 17%
+(`VC-BDC-001`), conventions can reverse the sign (16.2%, `VC-BDC-002`), and von
+Haden 2020 puts fixed-depth error at 2.1-23.2% against ESM's 0.2-1.1%. **A
+Phase 5 audit that cannot read the convention has to run twice and report a
+bracket** — a defensible output, and one a project that never stated its
+convention has no standing to object to.
+
+**A DIRECT HIT ON G3 FROM THE ONE AUDITABLE PROJECT.** CAR1459 (Indigo, CAR SEP
+v1.1, 100,371 acres, 175 growers, 16 states) states: *"At each carbon sampling
+location, an individual 30-cm sample was collected."* **Carbon samples are not
+composited — one core per assay.** Compositing is used only for pH and texture.
+D-053 bounded the budget-optimal composite from our variance structure at
+**1.2-3.3 cores per assay against Potash et al.'s 4**, and held the
+disagreement loosely for want of a third opinion. **The third opinion is C = 1,
+at continental scale, from the most completely documented soil carbon project on
+any registry.** It does not settle G3 — different objective, interpolated bulk
+density, and one core per point at 1 point per 8 acres is not one core per
+experimental plot — but it moves the disagreement from "ours versus theirs" to
+"ours and the largest real deployment on one side, theirs on the other".
+
+Two further numbers from CAR1459 that are hard to get anywhere else: **sampling
+density 1 point per 8 acres (3.24 ha)**, and a bulk-density frequency raised
+from 1-in-5 to 1-in-3 carbon points explicitly *"to increase the precision of
+our estimates of SOC stock changes"* — a design change made on variance grounds
+and documented as such, which is a natural validation target for the calculator.
+
+**A CORRECTION TO THE BRIEF, recorded because it would otherwise propagate.**
+The brief describes VM0042 as using "0.43 SE". What is verified here is the
+**CAR SEP** rule, which is a different construct: `UNC = z(70%) x (half-width of
+the 95% CI) / ER`, with z(70%) = 0.5244. VM0042's uncertainty rule was **not**
+read from the methodology this session and is not recorded anywhere in the
+corpus. The two must not be quoted alongside each other until it is.
+
+**TWO ACCESS WALLS, DELIBERATELY NOT COUNTED AS DISCLOSURE GAPS.** Verra's
+registry returned the single-page-application shell on every path tried (four
+endpoints, two attempts); the one Verra project here came via a validation
+report mirrored on a third-party site. **Verra PDDs are public in principle and
+a browser would very likely open them** — the same access-wall-wearing-a-
+paywall's-coat pattern that has now cost us four items. And the Climate Action
+Reserve report paginates by CSRF-bound POST (302 on page 2, 411 on CSV export),
+so only page 1 was enumerated and **no CAR-wide census exists in this file**.
+Conflating "we could not fetch it" with "they did not publish it" would inflate
+the finding, so the schema and the writeup keep them apart.
+
+**THE CONSEQUENCE FOR PHASE 5, and it is a real one.** Phase 5 has a
+**population problem before it has a method problem**. The readable population
+is small and it is not a random subset — it is the projects whose developers
+chose to publish, plausibly the ones with the most defensible designs. **Any
+Phase 5 result will be biased toward finding that projects sample adequately**,
+and that caveat travels with the finding from the start rather than being
+discovered at the end.
+
+**THE STRONGEST IDEA TO COME OUT OF THIS PASS, recorded and not acted on.**
+Invert the question for the undisclosed majority. For a project that published
+only its area, its practice and its credits, ask *what sampling design would
+have been required for this claim to be detectable?* That needs **no design
+disclosure at all** — only area, claimed rate and interval, which the ACCU
+register does publish for all 999 projects. It turns the gap from a blocker into
+the method, and it makes the 999 an asset rather than a dead end. **Scope it
+before building the audit that needs designs.**
+
+**What breaks if wrong.** If Verra's registry turns out to publish PDDs with
+full sampling appendices — likely, and one browser session away — then the
+readable population is much larger than this pass suggests and the bias caveat
+weakens accordingly. The Australian census is unaffected either way: it is a
+complete count of a register that has no such fields. If a Phase 5 audit is ever
+published, **the corpus must be re-pulled and re-dated**, because registries
+change and every source here carries an access date of 2026-08-12 for exactly
+that reason.
+
+**Tone, for the writeup.** Nothing here is a case against any project. CAR1459
+discloses more than most published papers do and should be named for that, not
+used as a foil. The finding is about what registries require to be published.
+
+---
+
+
+**D-057 — VM0042 RETRIEVED AND READ. The 0.43 figure is CORRECT and is now
+verified against the primary source — the attribution was never wrong, only
+unverified. Three things were wrong or missing around it, and one of them
+reframes Phase 5 entirely: VM0042 contains the inverted audit's own equation and
+explicitly declines to require it.**
+Sources: VM0042 v2.2 (greenlined, October 2025), 183 pp., and the v2.0
+final-draft-for-public-comment (December 2021), 173 pp. Both retrieved directly
+from verra.org and held. Registered in `docs/sources.md`.
+
+**WHAT THE PRIMARY SAYS, verbatim.** VM0042 v2.2 §8.6.4, Equation 74:
+
+> `t0.667` = "t-value for a one-sided student's t-distribution at 0.667 (66.7%)
+> confidence interval with degrees of freedom appropriate to the sampling design
+> used. **Equal to approximately 0.4307 at large sample sizes** (dimensionless)"
+
+and Figure 4's caption: the value used in calculating VCUs issued "is determined
+by applying an uncertainty deduction based on the **33.3rd percentile** of the
+estimated probability distribution". The method is probability-of-exceedance,
+per VCS Methodology Requirements §2.4.
+
+**So `z_deduct = 0.43` is real, it is VM0042's, and it is 0.4307.** The PI's
+concern was that the figure had been attributed to VM0042 while sourced from
+Potash et al. It had — but the attribution turns out to be right. `z(2/3)` =
+0.4307 to four places, matching the methodology's stated value exactly. **No
+misattribution decision is needed. What was missing was verification, and it is
+now supplied.**
+
+**CORRECTION 1 — it is a t-value, not a constant.** "Approximately 0.4307" is
+the LARGE-SAMPLE LIMIT. At small degrees of freedom the one-sided t at 66.7% is
+larger, so **a project with few samples takes a bigger percentage haircut for the
+same relative standard error.** Recording `z_deduct = 0.43` as a constant loses
+that, and it is not a detail: it couples the deduction to `n`, which is exactly
+the variable the Phase 5 inverted audit solves for. The deduction is a function
+of the design, not a fixed price.
+
+**CORRECTION 2 — the version. 0.4307 CANNOT be attributed to v2.0 on the
+evidence held, and v2.0 is the version this repo cites and the version our one
+Verra corpus project used.** The v2.2 front matter says plainly that "Revisions
+to the uncertainty section were prepared by Dan Kane and Jaclyn Kachelmeyer,
+TerraCarbon LLC" — the uncertainty section is not original to v2.0. The document
+labelled v2.0 is a tracked-changes redline carrying more than one layer of text,
+and **neither layer contains 0.4307**:
+
+* one layer (Equation 46) defines `UNC` as "the extent to which the half width of
+  the 95% confidence interval, as a percentage of the mean, exceeds the threshold
+  of **15%**" — a threshold rule, with no deduction at all below 15%;
+* another layer offers **two pathways** — Pathway A, a relative-uncertainty
+  threshold (15% for case N1, **0%** for case N3, so always a deduction), and
+  Pathway B, probability of exceedance with **B = 55%** for case N1 and **70%**
+  for case N3.
+
+**Consequence for the corpus: `VCS 4022` (AgreenaCarbon) applied VM0042 v2.0, so
+its 31.35% deduction was NOT computed under the 0.4307 rule** and must not be
+described as a 0.43-SE deduction. Its row is corrected accordingly.
+
+**CORRECTION 3 — TO MY OWN STATEMENT, and it is the more useful version.** I
+recorded in D-056 that VM0042's rule and the CAR SEP rule are "a different
+construct". That is wrong in form and right in effect. Both are the same
+construct — deduct `k x` a relative dispersion — with different `k` and different
+dispersion measures. Quantified:
+
+| protocol | rule | multiplies | effective `k` in relative-SE units | credits at |
+|---|---|---|---|---|
+| **ACCU** (per VM0042's own note) | 60% probability of exceedance | SE | **0.253** | 40th pct |
+| **Verra VM0042 v2.2** | `t0.667` = 0.4307 | relative SE | **0.431** | 33.3rd pct |
+| **CAR SEP v1.1** | `z(70%)` = 0.5244 x **95% CI half-width** | 1.96 x SE | **1.028** | 15.2nd pct |
+
+**CAR SEP is 2.38x more conservative than VM0042, and 4.06x more conservative
+than the Australian rule, on identical measured variance.** That is a finding
+worth a paragraph of its own in any Phase 5 writeup: *the same soil, the same
+sampling design and the same variance produce a fourfold different uncertainty
+haircut depending only on which registry the project is listed with.* It is also
+the reason the two rules must never be quoted as though interchangeable. (CAR's
+`s(ER_t)` is explicitly "Margin of error of the 95% confidence interval", i.e.
+1.96 SE, not the SE — that factor is the whole of the difference.)
+
+**AND THE FINDING THAT RESHAPES PHASE 5. VM0042 §8.2.1, item 11, verbatim:**
+
+> "A power analysis **may** be conducted to calculate the number of samples
+> needed to enable accounting of a minimum detectable difference, following
+> Equations (1) and (2) (FAO, 2019). **However, projects are not required to take
+> this number of samples.**"
+
+with Equation (1) `MDD >= (S / sqrt(n)) x (t_alpha,v + t_beta,v)` and Equation
+(2):
+
+> `n >= ( S x (t_alpha + t_beta) / MDD )^2`
+
+where `S` = "Standard deviation of the difference in SOC stocks between t0 and
+t1", `t_alpha` two-sided at a significance level "frequently taken as 0.05", and
+`t_beta` one-sided for type II error "(e.g., 90%)".
+
+**Equation (2) IS the inverted audit.** The method the PI adopted this session —
+*given the claim, solve for the sampling it would have required* — is not an
+external standard we are imposing. It is **the methodology's own calculation,
+written into the methodology, and made optional in the same sentence.**
+
+That changes the posture of Phase 5 in three ways, all of them strengthening:
+
+1. **It answers the registry's strongest objection before it is raised.** "You
+   are asking the wrong question" fails when the question is Equation (2) of the
+   protocol the project registered under.
+2. **The only thing we supply is `S`.** VM0042 expects `S` from the project's own
+   pre-sampling ("A pre-sampling of 5 to 10 soil samples per stratum may provide
+   an estimate of SOC variance where up-to-date soil data are unavailable").
+   Nobody publishes it. **Our variance table is exactly the missing input** — the
+   same role D-038 identified for `sigma_b` against Potash et al., now at
+   protocol level.
+3. **"Projects are not required to take this number of samples" is quotable, and
+   it is the audit's justification in the methodology's own words.**
+
+**OTHER PRIMARY REQUIREMENTS NOW HELD** (v2.2; all previously inferred or
+unknown in the corpus, now sourced):
+
+* **Depth.** Minimum **30 cm** for reporting SOC stock changes; soils "must be
+  sampled deeper than the minimum 30 cm" where extrapolation would otherwise be
+  needed; "Where possible, soils should be sampled to 50 cm depth".
+* **ESM is required, not optional.** "To enable the ESM approach, soil samples at
+  re-sampling **must** be divided into at least two increments." Accepted tools
+  are the Wendt & Hauser (2013) spreadsheet and **the von Haden et al. (2020) R
+  script** — which is *our own component 6 corroborating source*. The methodology
+  and our table are pointing at the same paper.
+* **Remeasurement.** "SOC stocks must be directly remeasured **every five
+  years**"; monitoring at least every five years.
+* **Quantification Approach 2 is measure-and-remeasure, SOC only**, "relevant
+  where models are unavailable or have not yet been validated or parameterized,
+  or where project proponents prefer to use a direct measurement approach".
+* **Stratified random sampling is required.** At least **three control sites**
+  across the project area, "more will decrease uncertainty, particularly where
+  the total number of control sites is less than ten", and **at least one control
+  site per stratum**.
+* **Laboratory.** Dry combustion (Dumas) preferred; NIR, Vis-NIR, MIR, LIBS and
+  INS permitted under Appendix 4 criteria; ISO/IEC 17025 where possible; **all
+  samples across the project lifetime in the same laboratory**.
+
+**A DIRECT INPUT TO D-054, which stays open.** VM0042 requires the laboratory to
+"quantify and report analytical error statistics (**determined by repeated
+analyses of the same sample**)". That is Poeplau's *narrow* analytical error —
+technical replicates of one milled sample — not the subsampling-inclusive one.
+So the registry that governs the largest in-scope project in our corpus defines
+the reportable analytical error exactly as `VC-ANA-001` currently carries it.
+**This is evidence for the against-side of D-054**, which had rested only on
+D-027's prefer-the-decomposed-term logic. It does not settle it: what a registry
+asks a laboratory to report is not the error a monitoring programme incurs, and
+D-054's question is which of those the table should represent. **Logged, not
+acted on. D-054 remains open at the PI's instruction.**
+
+**What breaks if wrong.** The 0.4307 verification is quotation from a held
+primary document and is safe. The version claim is weaker: it rests on a redline
+PDF that renders tracked changes, so the approved v2.0 text may differ from
+either layer I can read. **If the approved v2.0 does contain 0.4307, correction 2
+is withdrawn and VCS 4022's deduction can be read against it.** Obtaining the
+approved v2.0 (not the public-comment draft) would settle it and is a small job.
+The cross-protocol severity table depends on reading CAR's `s(ER_t)` as the 95%
+CI half-width, which the CAR1459 monitoring plan states in two places; if it
+were the standard error instead, CAR's `k` falls to 0.524 and the ratio to
+VM0042 falls from 2.38x to 1.22x — still the same ordering, a smaller gap.
+
+**Access note, contradicting last session's log.** The previous entry recorded
+Verra's registry as machine-unreachable and flagged it as an access wall. That
+holds for the **project registry** (`registry.verra.org`, an Angular SPA) but
+**not** for the **methodology library** (`verra.org/wp-content/uploads/...`),
+which served both PDFs on the first attempt. The two were conflated. Methodology
+documents are directly retrievable; project design documents are not.
+
+---
+
+
+**D-058 — ESTIMATOR REPAIRED. D-040's joint covariate model used an unweighted
+OLS on `log(sd)` restricted to n>=3; it is replaced everywhere by a debiased,
+information-weighted log-variance estimator in `src/loam/logvar.py`, guarded by a
+test that fails if the retired idiom returns. D-040's substantive conclusion
+SURVIVES the repair — and it survived a genuinely harder test than the brief
+anticipated, because the reasoning behind that anticipation runs the other way.**
+
+**The defect.** `log s` is a biased estimator of `log sigma`, and the bias
+depends on the degrees of freedom:
+
+    E[log s^2] = log sigma^2 + psi(nu/2) - log(nu/2)
+
+At `nu = 1` that is **-1.27 in log-variance units — a factor of 3.6 downward** —
+decaying towards zero as `nu` grows. So an unweighted regression on `log(sd)`
+across groups with unequal replicate counts partly fits the replicate count. In
+NAPESHM replicate count is **perfectly aliased with country** (D-040 check 1c),
+which is the aliasing that made the coefficient move. Dropping the
+low-replicate treatments does not fix it — it changes which treatments carry the
+bias, which is precisely why the sign moved when the filter changed.
+
+**Where the instability was actually demonstrated, stated precisely because the
+brief's summary compresses it.** The `t = -0.37, +4.58, -4.53, +0.75` sequence is
+the coefficient on **inorganic carbon** across the four nested tiers of D-055 —
+not a coefficient D-040 itself reported. On **D-040's own two covariates in the
+headline tier**, the retired specification is comparatively well behaved
+(`log_mean_soc` t = +2.25, `sand_frac` t = +2.25). **So D-040's published numbers
+were never the ones flipping.** That distinction matters and is recorded so the
+repair is not oversold.
+
+**The fix**, in one module rather than six unnamed lines inside one function:
+
+* debias — `y = log(s^2) - psi(nu/2) + log(nu/2)`, unbiased at every `nu`;
+* weight by information — `w = 1/psi'(nu/2)`, so a 2-replicate treatment counts
+  for what it is worth instead of being dropped or counted equally;
+* site-clustered standard errors, matching the bootstrap's clustering (D-029).
+
+`psi` and `psi'` are computed in **exact closed form**, not by series: `nu` is
+always a positive integer, so `nu/2` is always an integer or a half-integer, and
+both functions have exact recurrences from `psi(1) = -gamma` and
+`psi(1/2) = -gamma - 2 ln 2`. That keeps `src/loam` standard-library only, so the
+guard runs in CI. Verified against `scipy` to **1.8e-15** worst case across
+`nu = 1..101`, against both recurrences, and by seeded Monte Carlo.
+
+**RESULT — D-040's conclusion holds.**
+
+| | retired spec | **repaired** |
+|---|---|---|
+| treatments | 80 (n>=3 only) | **135 (all with n>=2)** |
+| sites | 19 | **26** |
+| country split | 75 USA / 5 Mexico | **75 USA / 60 Mexico** |
+| `log_mean_soc` | +0.423 (t = +2.25) | **+0.801 (t = +2.37)** |
+| `sand_frac` | +0.915 (t = +2.25) | **+1.720 (t = +3.06)** |
+| R^2 | 0.0935 | **0.0722** |
+
+**The covariates explain LESS under the correct estimator, not more** — weighted
+R^2 = **0.072** against the 0.093 D-040 reported. The invariance finding is
+unchanged and slightly strengthened. Both coefficients remain *nominally*
+significant, exactly as D-040 recorded, so its filing of them as **a hypothesis,
+not a parameterization**, stands verbatim. D-029's log-scale justification also
+reproduces: raw log-log slope **1.223** against the ~1.2 cited.
+
+**THE BRIEF'S REASONING IS BACKWARDS, AND CHECKING IT WAS THE POINT.** The brief
+expected the conclusion to hold because "a noisy estimator makes a null HARDER to
+reach". It is the other way round: excess noise **inflates standard errors** and
+**depresses R^2**, and both of those *favour* a null. A noisy estimator therefore
+makes a null **easier** to reach, and correcting it is a test the null can fail —
+if a covariate signal had been hiding under the noise, the repair is what would
+expose it.
+
+**So the repair was a real test, not a formality, and D-040 passed it.** That is
+a stronger verification than the brief's argument would have licensed, and it is
+the reason the instruction to verify rather than assume was right even though the
+stated reason for it was not.
+
+**ONE CAVEAT OF D-040 IS RETIRED AND REPLACED.** D-040's joint-model caveat reads
+"the joint model's sample is **75 of 80 treatments from the USA**". That is no
+longer true of the repaired model: including the 2-replicate treatments at their
+true weight re-admits Mexico, giving **75 USA / 60 Mexico**. The USA-dominance
+caveat does not apply to the repaired fit.
+
+**It is replaced by a different one, not removed.** The re-admitted Mexican
+treatments are *exactly* the 2-replicate treatments (D-040 check 1c), so country
+and information content remain confounded — differently, but they remain. And the
+`sand_frac` coefficient nearly doubles (0.915 -> 1.720) when Mexico is
+re-admitted, which is what a country effect wearing a texture hat would look
+like. **D-040 check 1c's prohibition still stands: no Mexico/USA difference in
+this table may be read as a climate or texture difference.** The repair fixes a
+statistical bias; it does not fix a design confound, and it must not be described
+as having done so.
+
+**AUDIT OF THE REST OF THE REPO.** Three other sites were examined:
+
+1. `scripts/ic_conditioning.py` — already used the debiased estimator (D-055).
+   **Now routed through `loam.logvar` instead of duplicating the arithmetic**, so
+   there is one definition. Its deliberate reproduction of the retired spec is
+   relabelled `RETIRED`, and it is allowlisted in the guard with a reason.
+2. `scripts/sensitivity_g1.py::joint_covariate_model` — **the one genuine
+   offender. Repaired.** The retired specification is still computed and printed
+   beside the repaired one, so the instability stays inspectable from the same
+   output rather than being quietly deleted.
+3. `scripts/derive_temporal.py` — **examined and NOT the same failure mode.** Its
+   `std(ddof=1)` uses are per-plot residual SDs over ~29 occasions each, so `nu`
+   is large and roughly equal across plots, and the consumers are **Spearman**
+   (rank-based, insensitive to a monotone bias) and a one-way F on those SDs.
+   The D-040 defect is specific to tiny, unequal `nu`. Left unchanged, with the
+   reasoning recorded here rather than in a commit message.
+
+**One thing deliberately NOT changed, flagged for the PI.**
+`sensitivity_g1.d029_raw_slope` fits an unweighted log-log slope of raw SD
+against mean to reproduce D-029's ~1.2. It is unweighted, and it is *not* the
+retired specification: it estimates a **scaling exponent** to justify the log
+parameterisation, not a covariate model of variance, and D-029 — a decided
+decision — already rests on it. Changing it silently would be worse than leaving
+it. **Recommendation: leave as-is; if the PI wants it debiased too, that is a
+re-opening of D-029, not a bug fix.**
+
+**THE GUARD.** `tests/test_logvar_estimator.py` scans `scripts/` for the retired
+idiom — a log taken of a standard deviation or of `sqrt` of a variance — and
+fails if it appears outside a two-file allowlist, each entry carrying a reason. A
+second test requires every allowlisted file to label the reproduction `RETIRED`,
+so an allowlist nobody re-reads cannot become a hole. **That second test caught a
+real gap on its first run**: `ic_conditioning.py` was computing the retired spec
+without labelling it.
+
+**What breaks if wrong.** The pattern guard is textual and therefore defeatable
+by an author who wants to defeat it; it is a reminder, not a proof. The
+behavioural half — that `sensitivity_g1` imports `loam.logvar` and calls
+`prepare` — is harder to fake accidentally. If the Gaussian assumption behind
+`nu*s^2/sigma^2 ~ chi^2_nu` fails badly (heavy tails in log SOC within
+treatment), the debiasing is approximate rather than exact; the direction of that
+error is toward under-correction, which returns us toward the retired
+specification's behaviour rather than past it.
+
+---
+
 ---
 
 ## Open evidence gaps
@@ -2509,4 +2950,8 @@ finding would then be about NAPESHM's coverage rather than about soils.
 | 2026-08-10 | D-040 extended | Two additions. **(a) Geographic confound recorded**: country and per-treatment support are completely aliased — all 55 two-replicate treatments are Mexican, no USA treatment is below three replicates — so no Mexico/USA difference may ever be read as a climate difference. **(b) The invariance finding elevated from hypothesis to a stated Phase 0 result**: between-plot CV in cropland SOC is approximately invariant across the covariates a spatial MDC surface would be built from (climate moves it 0.2–0.3 pts against a ~4-pt CI; clay shows no monotone signal; the joint model reaches R² = 0.093), with the 75/80-USA caveat attached. **Consequence: Phase 3 Deliverable 3 needs rethinking**, with two possibilities recorded and not resolved — MDC may vary spatially through the *signal*, or through *temporal* variance. Framing recorded: this **strengthens** Potash et al., who assumed `sigma_b` geography-independent "for lack of information" and turn out to have been approximately right. |
 | 2026-08-10 | D-040 | **Three sensitivity checks before Phase 0 closes. No new rows, no scope change, no constant moved.** (1) Leave-out test on the re-admitted Mexican highland sites — 8, not 10 (MXAG01/MXQT02 fall to D-024/D-025 first): concentration 11.948 → 12.248%, stock 11.456 → 11.304%, shifts of **0.300** and **0.152** against CI widths of 3.97 and 3.52, in opposite directions. **Both caveat flags CLOSED**, not deferred. (1b) All **55** two-replicate treatments are Mexican; the USA's 75 have **none** below 3 replicates — so the weak-support flag and the re-admitted-sites flag were one flag, tested once. (2) On the 372-EU intersection, concentration **11.897%** vs stock **11.456%** — gap **+0.441** where the cross-sample headline gives 0.492, so the sample mismatch is 0.051 of it and `stock < concentration` **survives** as a property of the data. (3) Texture terciles show no signal (clay spread 2.611 vs 10.556 CI; sand 3.690 vs 9.834) — **no rows written**; a joint model does find `log(mean SOC)` and sand fraction nominally significant (R² = 0.093) but on a 75/80-USA sample, filed as a hypothesis, not a parameterization. `VC-BPS-005/006` prose updated; no value changed. |
 | 2026-08-12 | **D-036 CLOSED**; D-054 (open), D-055 | **D-036 closed by author correspondence.** Eric Potash confirms the reference soil printed in Potash et al. 2025 is a **typo**: the intended values are 1.5% SOC and 1.0 g cm⁻³, i.e. **45 Mg C/ha** at 0–30 cm, not 90. Their stated 4% + 2% errors then imply **σ_l = 2.0125 Mg/ha** against Table 1's 2 — agreement to 0.6%, and the 2× the previous entry found is explained. The like-for-like gap with our table stands at **1.20×**, all of it attributable to which of Poeplau's two lab errors we tabled. **Consequence beyond σ_l:** every relative expression of their absolute parameters doubles — `σ_n` is **11.11%** of stock, not 5.56%, which moves their relocation term from rough parity with `VC-REL-001` to about **1.7× larger**. Nothing in the live table used 90 Mg/ha; G3's arithmetic is unaffected because it compares ratios. **The half of D-036 that was never about the literature — which lab error the `analytical` component should carry — is carried forward as D-054 (open) rather than allowed to lapse, and G3's gate moves with it.** **D-055: inorganic carbon is NOT the conditioning covariate** for between-plot variability, tested at Potash's own suggestion. `b_ic` is zero at **82.0%** of 1453 EUs and is a **site** property (97.9–99.8% of its variance is between sites). In the `VC-BPS-005/006` scope the test is **not identifiable** — every treatment above 0.05% IC is Mexican and 2-replicate, which is D-040 check 1c's alias biting for the first time. Where it is identifiable the answer is **flat and non-monotone**: all 11 carbonate intervals contain their tier's zero-carbonate estimate, no regression specification is significant in the headline tier, climate conditioning collapses the coefficient by **72%**, and pH (rho **+0.692** with IC) collapses it in every tier. A paired `Var(log SOC)` vs `Var(log total C)` contrast with an exact built-in null control (max |Δ| = 0.0 across 810 zero-carbonate treatments) gives a median inflation of only **2–11% in variance** and is **null at site level in every tier**. **Detection limit stated: ~6.4–7.6% analytical error**, against Potash's 1–10% — so the null covers only the top third of his range and is written that way. Also found: **D-040's own joint-model specification changes sign twice across nested samples** while its debiased counterpart stays flat; its conclusion is unaffected but the estimator should not be reused. **No variance-table row written — reported first, as instructed.** |
+| 2026-08-12 | D-056 | **Phase 5 registry corpus started; the gap is the finding.** `data/registry/projects.yaml` (7 projects, 3 registries, schema-guarded by `tests/test_registry_corpus.py`) and `docs/registry_corpus.md`. **Census, not estimate:** the Australian ACCU register carries **999** soil carbon projects, **53** issued credits, **439,348 ACCUs** — and **no field of any kind** for sample count, depth, cores per composite, sampling density, depth convention or remeasurement interval; `Estimation or measurement approach or model` is populated for **24/999 (2%)**. The schema separates **`withheld`** (the public document names a document holding the parameter, and it is not public — CAR1513's Soil Sampling Memo, VCS 4022's PD Appendices 6 and 9) from **`not_disclosed`**, because those are different findings. **Not one project states its depth convention**, including the 102-page CAR1459 plan — the one undisclosed parameter our component 6 says changes the number (17% understatement, 16.2% sign reversal, von Haden's 2.1–23.2% vs ESM 0.2–1.1%). **G3 gets a third opinion:** CAR1459 collects **one core per assay**, uncomposited, at 1 point per 8 acres across 100,371 acres — against Potash's 4 and our D-053 optimum of 1.2–3.3. **Correction to the brief:** the 0.43-SE rule attributed to VM0042 is not what CAR SEP uses (z(70%) × 95% CI half-width ÷ ER); VM0042's own rule was not read and is not recorded. **Two access walls logged, not counted as disclosure gaps** — Verra's registry served only its SPA shell (4 endpoints, 2 attempts) and the CAR report paginates by CSRF-bound POST, so no CAR-wide census exists here. **Consequence: Phase 5 has a population problem before a method problem** — the readable projects are self-selected, so any audit is biased toward 'adequate'. Strongest idea, recorded not acted on: **invert the question** and ask what design the claim would have required, which needs no design disclosure and makes all 999 usable. No variance-table row touched. |
+| 2026-08-12 | D-057; D-054 evidence (still open); D-036/D-055 dated | **VM0042 retrieved and read from primary — the 0.43 figure is CONFIRMED, not misattributed.** v2.2 §8.6.4 Eq. 74 gives `t0.667` "equal to approximately **0.4307** at large sample sizes", crediting at the **33.3rd percentile**; `z(2/3)` = 0.4307 to four places. It had been cited from Potash et al. rather than the methodology — unverified, not wrong. **Three amendments.** (1) It is a **t-value, not a constant**: 0.4307 is the large-sample limit, so a project with fewer samples takes a *larger* haircut — the deduction is a function of the design, which couples it to the inverted audit's unknown. (2) **The "v2.0" qualifier is withdrawn**: 0.4307 is absent from the v2.0 public-comment redline, which carries a 15%-threshold rule in one layer and a two-pathway rule (Pathway B at 55%/70% exceedance) in another. **VCS 4022 applied v2.0, so its 31.35% deduction must not be described as a 0.43-SE deduction.** (3) **Correction to my own D-056 claim** that VM0042 and CAR SEP are "different constructs": they are the same construct at different severity, and quantified it is a large difference — **ACCU 0.253 · VM0042 0.431 · CAR SEP 1.028** relative SE (CAR multiplies the 95% CI *half-width*, = 1.96 SE), i.e. **CAR SEP is 2.38× VM0042 and 4.06× the ACCU rule on identical measured variance.** The same soil, design and variance yield a fourfold different haircut depending only on the registry. **AND THE FINDING THAT RESHAPES PHASE 5:** VM0042 §8.2.1 item 11 Eq. (2) is `n ≥ (S(t_α+t_β)/MDD)²` — **the inverted audit's own equation** — followed by "**However, projects are not required to take this number of samples.**" The method is the methodology's own calculation, made optional in the same sentence, and the only input we supply is `S`, which VM0042 expects from project pre-sampling that nobody publishes. **Also recovered as primary** (all previously unknown or inferred): ESM is **required** (≥2 increments at re-sampling, ≥30 cm, **von Haden 2020's R script** an accepted tool — our own component-6 source), 5-yearly remeasurement, ≥3 control sites and ≥1 per stratum, stratified random sampling mandatory, and the laboratory analytical-error definition ("repeated analyses of the same sample" = Poeplau's narrow figure) which is **direct evidence for D-054's against-side and is logged there without closing it**. Recorded in a new `protocol_requirements` block in `data/registry/projects.yaml`, kept structurally separate from project records so a requirement can never masquerade as a disclosure. **Access-log correction:** last session flagged Verra as an access wall; that holds for `registry.verra.org` (SPA) but **not** for the `verra.org` methodology library, which served both PDFs first try. The two were conflated. |
+| 2026-08-12 | (no new D-NNN) | **Phase 5 inverted-audit design doc written — `docs/phase5_inverted_audit_design.md`. DESIGN ONLY, no code.** Rests on D-057's find that **VM0042 §8.2.1 Eq. (2) `n ≥ (S(t_α+t_β)/MDD)²` IS the inverted audit**, made optional by the methodology in the same sentence, with `S` the one input we supply. **Degeneracy resolved without an arbitrary choice:** density ≡ A/n is an output not a knob, and the remaining `(n, C)` trade-off is removed by reporting the **infimum of cost over all admissible designs** rather than picking a design — the claim "no plausible campaign could have detected this" is a statement about the best case, so the minimum *is* the finding. **Low end of the variance envelope adopted as a hard rule** with an exact `bias_direction` mapping (`inflates`→`value_low`, `deflates`→`value`), so the headline reads "even under the most generous noise assumptions…". **Depth convention: bracket, and the bracket is free** — ESM is the *generous* branch, so it carries the headline and the unknown branch can only strengthen a finding; and for VM0042 projects ESM is a compliance requirement (D-057), not a guess. **"Implausibly large" grounded in the project's own economics:** headline metric is the **break-even carbon price**, so no threshold is chosen by us. **53 credit-issuing projects carry the finding; the 999 give a distribution explicitly conditional on an assumed rate.** Forward audit re-roled as **validation** with three tests, including the Indigo 1-in-5→1-in-3 bulk-density change (a design change made on variance grounds and documented as such) — flagged that `VC-BDC-*` are convention *biases*, not BD measurement variances, so that test may need a new row rather than being runnable. **Six adversarial objections stated against my own design**, the strongest being that VM0042 Eq. (2) is sampling-only while most of the corpus is measure-and-model, so required-`n` overstates for QA1 — conceded, and reframed as a reportable quantity (*how much detectability is the model being asked to supply?*). **THE BLOCKER, listed not assumed (rule 9): there is no 0–30 cm within-plot spatial row.** G2 forbids combining the 0–10 and 10–30 layers, and within-plot variance governs the entire `C` dimension. D-043's compositing contrast offers an indirect ~8–9% estimate; using it is the PI's decision. Six decisions listed in §10. |
+| 2026-08-12 | (PI decision implemented; no new D-NNN) | **DELIVERABLE 3 RETIRED — the spatially explicit MDC surface is withdrawn and the invariance result is restated as a positive claim.** `docs/invariance_finding.md`: *we searched for spatial structure in monitoring noise across climate, texture and soil chemistry, each time against a stated detection limit, and found none; a single set of variance components serves temperate cropland; **MDC varies with DESIGN and INTERVAL, not with PLACE**.* Four nulls, each with its limit: climate shifts **0.300/0.152** against CI widths **3.97/3.52** in opposite directions (~±2 pt limit); texture spreads **2.611/3.690** against widest-bin CIs **11.016/10.464** (~10 pt limit); joint model **R² = 0.0722** under the repaired estimator (D-058), *lower* than the 0.093 first reported; inorganic carbon null at a **~6.4–7.6%** analytical-error limit against Potash's stated 1–10% (D-055). Temporal behaves the same (D-045). **Argued as a stronger product than a map:** "use these numbers anywhere in temperate cropland" is distributable, checkable by anyone with their own data, and cannot manufacture structure from covariates the way an interpolated surface fitted to non-predictive covariates can. **New repo-wide standard adopted: a null is only informative against a stated detection limit** — every null in this project must carry the magnitude it could have detected; three existing instances named as the template. **What would overturn it, stated concretely:** the carbonate channel is the cheapest to close and needs *lab duplicates, not a field campaign* — a few hundred split samples spanning 0 to >2% inorganic carbon would reach the untested lower two-thirds of Potash's range. **Consequence: Phase 5 is the headline, and invariance is what makes it tractable** — if σ varied by location, auditing 999 ACCU projects would need a per-project variance estimate nobody can supply. `docs/phase0_summary.md` Finding 3 rewritten, `docs/phase1_design.md` and `scripts/derive_g1_napeshm.py` annotated where they still promised the surface. No row written, no row promoted. |
 | 2026-08-08 | D-031, D-032, D-033; **D-028 still open** | Open-decision guard: decisions and the constants they govern are now machine-readable (`src/loam/decisions.py`), the build prints `<-- PROPOSED, NOT DECIDED`, and two tests refuse to pass while an open decision governs a live constant — **the suite is red on merge, by design** (D-032). Replacing the private climate envelope with IPCC 2006 climate regions was attempted and is **blocked**: MAP:PET and frost-day counts are not derivable from NAPESHM, and no proxy is substituted (D-033). Poeplau ↔ NAPESHM corroboration logged, with a figure correction (D-031). No variance-table values changed. |

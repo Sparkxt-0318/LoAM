@@ -1,299 +1,375 @@
-# HANDOFF — overnight autonomous run, 2026-08-10
+# HANDOFF — overnight autonomous run, 2026-08-12
 
-Written continuously during the run. Newest task last.
+Written continuously. Newest task last. **Nothing merged. All PRs draft.**
 
-**Hard rules honoured:** no merges to main, every task on its own branch with a
-DRAFT PR, no D-NNN closed that needs judgement, no row promoted to `baseline`,
-no implementation ahead of a decision.
+## Branch stack, and why it is a stack
+
+`origin/main` carries everything through PR #11. Every branch below is cut from
+the previous one rather than from `main`, because each depends on the last
+(D-057 needs the corpus; the design doc needs D-057). **Merge in the order
+listed** and each PR's diff stays readable.
+
+| # | branch | PR | contains |
+|---|---|---|---|
+| 1 | `claude/loam-d036-resolution-keieap` | **#13** | D-036 closed, D-054 opened, D-055 (inorganic carbon), correspondence dated |
+| 2 | `claude/loam-registry-corpus` | **#14** | D-056, Phase 5 corpus, gap analysis |
+| 3 | `claude/loam-vm0042-primary` | **#15** | D-057, VM0042 read from primary |
+| 4 | `claude/loam-inverted-audit-design` | **#16** | Phase 5 inverted-audit design doc |
+| 5 | `claude/loam-estimator-repair` | **#17** | D-058, estimator repair |
+
+## ⚠️ PR #12 must be resolved BEFORE any of the above
+
+PR #12 reverts the D-053/G3 work: it deletes `docs/g3_bounding.md`,
+`scripts/g3_bounding.py`, removes D-053 from `DECISIONS.md` and from
+`DECIDED_DECISIONS`, and restores the older G3 gap-row text. Its base is
+`0ba64fa`, **three merges behind `origin/main`**.
+
+Every branch above references D-053 — D-054's gating text, the G3 gap row,
+D-056, D-057, D-058. If #12 merges, those become dangling references.
+
+**Recommendation: close #12 without merging.** Two reasons.
+1. What #12 appears to object to is already what D-053 *says*. D-053's own
+   recommendation is "retire the flat 'add cores' claim"; it is a bounding
+   analysis, not a claim.
+2. **The registry corpus has since corroborated it.** CAR1459 collects **one core
+   per assay**, uncomposited, at continental scale — against Potash's 4 and
+   D-053's computed optimum of 1.2–3.3. Reverting D-053 would delete the analysis
+   the real world just agreed with.
+
+If the intent is to soften D-053, that is an amendment to D-053, not deletion of
+the script and the doc.
 
 ---
 
-## TASK 1 — D-036 + basis field — **COMPLETE**
-Branch `claude/d036-analytical` · PR: see below · `137 passed`
+## TASK 1 — ESTIMATOR REPAIR — **COMPLETE** (~1h of a 2h box)
+Branch `claude/loam-estimator-repair` · **D-058** · `176 passed`
 
-### D-036: 4x -> 1.20x. STAYS OPEN.
+**New module `src/loam/logvar.py`** — debiased, information-weighted
+log-variance estimation. `psi` and `psi'` in **exact closed form** (nu is always
+an integer, so nu/2 is an integer or half-integer), keeping `src/loam`
+standard-library only so the guard runs in CI. Verified against scipy to
+**1.8e-15** across nu = 1..101, against both recurrences, and by seeded Monte
+Carlo.
 
-> ⚠️ **SUPERSEDED 2026-08-12.** D-036 is now **CLOSED**. The residual described
-> below as "internal to Potash" was a typographical error in their printed
-> reference soil, confirmed by the author: the intended values are 1.5% SOC and
-> 1.0 g/cm3, i.e. **45 Mg C/ha, not 90**, on which their stated errors imply
-> sigma_l = 2.0125 against Table 1's 2. The recommendation below (which lab
-> error `analytical` should carry) is carried forward as **D-054, open**. This
-> section is left as written because it is a dated record of a run. See D-036
-> and D-054 in DECISIONS.md for what is current.
+**D-040's joint model repaired and re-run. The conclusion HOLDS.**
 
-Both primary sources now held. **Potash et al. 2025 is Environmental Research
-Letters, doi:10.1088/1748-9326/ada16c, OPEN ACCESS** — it was never paywalled,
-only unlocated. (Standing assumption contradicted: `docs/sources.md` listed it
-as "to obtain". It took one Crossref query.)
-
-**The gap was ours, not the literature's.** Poeplau reports TWO laboratory
-errors and we tabled the narrower one:
-- analytical, 1.2% MAPE — two technical replicates of the *same milled sample*
-- subsampling, 2.5% MAPE — second aliquot of the same *sieved* sample, re-milled
-  and re-analysed, so it CONTAINS the analytical step
-
-| comparison | ours | Potash | ratio |
-|---|---|---|---|
-| as tabled (analytical only, no BD) vs their concentration term | 1.25% | 4% | **3.2x** |
-| Poeplau subsampling-inclusive vs their concentration term | 3.13% | 4% | **1.28x** |
-| + their 2% bulk-density term, stock basis | 3.72% | 4.47% | **1.20x** |
-
-**Residual is INTERNAL to Potash.** At their own reference soil (0-30 cm, 2%
-SOC, BD 1.5) the stock is 90 Mg C/ha. Their stated 4% + 2% combine to 4.47% =
-**4.02 Mg/ha**, but they adopt **sigma_l = 2**. Their sentence and their
-parameter disagree by 2x. Cannot be resolved from the text.
-
-**Decision NOT made (rule 2). My recommendation:** add a second analytical row
-carrying the subsampling-inclusive error (3.13% SD, concentration) and make it
-the baseline, demoting VC-ANA-001 to a sensitivity row recording the
-instrument-only floor. No monitoring programme re-measures the same milled
-aliquot; the narrow figure understates what a real design incurs, and
-understating analytical error is anti-conservative for the Phase 5 audit
-(D-023). Argument against: VC-ANA-001 is the only row isolating the instrument,
-and D-027 prefers decomposed terms. **PI's call.**
-
-**Also found:** VC-ANA-001 cites Poeplau's Discussion ("~1%", -> SD 1.25%) when
-the Results give the same quantity as 1.2% MAPE (-> SD 1.50%). We took the
-rounded number over the precise one. Not changed — it is inside the same open
-decision.
-
-### basis field: the PR #6 guard did NOT cover it. Gap was real.
-
-`quantity_definition` resolves the AXIS. Basis (concentration / stock /
-stock_change / variance_share / proportion / distance) is orthogonal and
-dimensionally silent. Added as a required enum with `tests/test_basis.py`:
-units-vs-basis consistency, plus the teeth — **all baseline dispersion rows in
-one component must share a basis**.
-
-**Backfill found one live mismatch, a baseline collision:** `VC-BPS-005` is a
-**concentration** CV while `VC-BPS-006` and `VC-BPS-007..011` are **stock** CVs.
-All seven are baselines, all `cv_pct`/`pct`. D-020 forbids treating one as the
-other — in prose, with no enforcement until now. Recorded in
-`MIXED_BASIS_BY_DESIGN` rather than resolved: both are wanted, and choosing is
-the PI's call. D-040 already showed they are not interchangeable even
-approximately (stock 11.456% vs concentration 11.897% on a common sample).
-
-Structural rows (`bias_pct`, `range`, `proportion_pct`) are exempt by design —
-they modify a budget rather than entering one.
-
-
-## TASK 2 — G3 bounding — **COMPLETE**
-Branch `claude/g3-cores-vs-plots` · `136 passed` · analysis only, no rows
-
-`scripts/g3_bounding.py` → `data/processed/g3_bounding.json`, written up in
-`docs/g3_bounding.md`, logged as **D-053**.
-
-**The headline reverses the expected framing.** "Add cores" holds at all five
-Wuest series only if the non-reducible share `f` of the residual is **below
-0.089**; it fails at all five only if `f` > 0.874. The brief expected the flip
-to be hard — it is — but the *useful* constraint is the other one, and it is
-the one likely to fail.
-
-**G3 cannot close while D-036 is open.** Analytical error ALONE is 1.4–9.5% of
-the residual under the instrument-only candidate and **8.7–59.3%** under the
-subsampling-inclusive one. At Adams-tillage the wider candidate eats 59% of the
-residual by itself. This coupling was invisible until both were traced.
-
-**Quantitative disagreement with Potash.** Under their own price list the
-budget-optimal composite is `C* = sqrt((20/15)·v_w/(v_plot+v_nr))` — budget and
-field-visit cost cancel. Ours gives **1.2–3.3 cores per assay at f=0**, ~1 at
-f=0.3. **They use 4.** Justifying 4 needs a variance ratio of 12; ours is
-1.1–8.0. Held loosely — different scales, different constructs (their dominant
-within-field term is relocation, not within-plot spatial), and `f` unidentified.
-Note the scale difference *widens* the gap rather than closing it.
-
-**Decision NOT made (rule 2).** Recommendation: retire the flat "add cores"
-claim; the defensible version is "a single core per plot is likely wrong, but
-the optimum is nearer 1–3 than 4, and cannot be pinned down until D-036 closes".
-
-**What would settle it:** replicate cores per plot per visit, analysed
-separately. One site, one season. No source we hold does this.
-
-### ⚠ MERGE ORDER NOTE
-PR #7 adds **D-052**, this PR adds **D-053**. Both touch the same two places —
-the `DECIDED_DECISIONS` tuple in `src/loam/decisions.py` and the Decision status
-table in `DECISIONS.md`. Expect a small conflict on the second merge; take both
-lines. D-053 deliberately skips 052 rather than renumbering.
-
-
-## TASK 3 — detectability literature — **COMPLETE**
-Branch `claude/sources-detectability` · `136 passed` · no rows written
-
-All five citations confirmed against Crossref. Availability checked via
-Unpaywall. Two retrieval attempts each; **no paywall circumvented**.
-
-| paper | status | outcome |
+| | retired spec | repaired |
 |---|---|---|
-| von Haden et al. 2020, GCB 26:3759 | green OA | **RETRIEVED** and read (OSTI accepted manuscript) |
-| Smith 2004, GCB 10:1878 | bronze OA | **403 from Wiley bot protection** — free to read, a browser will open it |
-| Bradford et al. 2023, Geoderma 440:116719 | **gold OA** | **403** from ScienceDirect and DOAJ — openly licensed, a browser will open it |
-| Saby et al. 2008, GCB 14:2432 | closed | no OA location |
-| de Gruijter et al. 2016, Geoderma 265:120 | closed | no OA location |
+| treatments / sites | 80 / 19 | **135 / 26** |
+| country split | 75 USA / 5 Mexico | **75 USA / 60 Mexico** |
+| `log_mean_soc` | +0.423 (t=+2.25) | +0.801 (t=+2.37) |
+| `sand_frac` | +0.915 (t=+2.25) | +1.720 (t=+3.06) |
+| R² | 0.0935 | **0.0722** |
 
-**The one real find: von Haden Table 1 is stronger than what component 6
-currently rests on.** Mean absolute percentage error in SOC stock, fixed depth
-vs equivalent soil mass, under simulated ±2.5 cm compaction/expansion:
-**ESM 0.2–1.1%, FD 2.1–23.2%.** Our `VC-BDC-001..004` carry 17 / 16.2 / 8 / 6%
-from Fowler 2023 — von Haden's FD range brackets all four, from an independent
-study with an explicit ESM comparison. Also supplies a citation for the
-bulk-density-change mechanism (5–20% after land-use change, tillage, residue
-addition) that our BDC rows currently assert uncited.
+Covariates explain **less** under the correct estimator. Invariance unchanged.
+D-029's log-log slope reproduces at **1.223**.
 
-⚠️ **Table 1's column alignment was recovered from PDF text extraction and needs
-visual confirmation against the typeset version before any number is tabled.**
-The range is unambiguous; the mapping of values to bulk-density rows is not.
+**The brief's reasoning is backwards, and checking it mattered.** Excess noise
+*inflates* SEs and *depresses* R², both of which favour a null — so a noisy
+estimator makes a null **easier** to reach, not harder. Correcting it is a test
+D-040 could have failed. It passed.
 
-**Blockers, logged per rule 6:** Smith 2004 and Bradford 2023 are both *openly
-readable* and both blocked by bot protection, not by a paywall. Two attempts
-each (publisher + alternate legitimate host). **These are one browser click for
-a human** — the highest-value five minutes available to the PI in this whole
-handoff, since Bradford 2023 is the paper Potash et al. are answering and
-therefore the other half of the argument D-037/D-038 position against.
+**A D-040 caveat is retired and replaced.** "75 of 80 treatments from the USA" is
+no longer true of the repaired fit (75/60). It is replaced, not removed: the
+re-admitted Mexican treatments are exactly the 2-replicate ones, and `sand_frac`
+nearly doubles when they enter — which is what a country effect wearing a texture
+hat looks like. D-040 check 1c's prohibition stands.
+
+**Precision on the instability.** The `t = -0.37, +4.58, -4.53, +0.75` sequence is
+the **inorganic-carbon** coefficient across D-055's four tiers, not a coefficient
+D-040 reported. On D-040's own covariates the retired spec is comparatively well
+behaved. **D-040's published numbers were never the ones flipping.**
+
+**Guard:** `tests/test_logvar_estimator.py` fails if the retired idiom returns
+outside a two-file allowlist, and a second test requires allowlisted files to
+label it `RETIRED`. **That second test caught a real gap on its first run.**
+
+**Repo audit:** `ic_conditioning.py` re-routed through the shared module;
+`derive_temporal.py` examined and is **not** the same failure mode (nu ≈ 29 per
+plot, roughly equal, consumed by rank tests). `d029_raw_slope` deliberately left
+alone — different estimator, different purpose, and D-029 rests on it.
+**Recommendation: leave it; debiasing it re-opens D-029.**
 
 
-## TASK 4 — Phase 1 reconnaissance — **COMPLETE**
-Branch `claude/phase1-recon` · `docs/phase1_design.md` · **no implementation**
+## TASK 2 — RETIRE DELIVERABLE 3 — **COMPLETE** (~40min of a 1.5h box)
+Branch `claude/loam-invariance-finding` · `176 passed` · no new D-NNN (PI decision, implemented)
 
-pyRothC installed and smoke-tested **outside the repo**, in a scratch directory.
-Not added to `pyproject.toml`. Nothing executable was written.
+**`docs/invariance_finding.md`** states the positive claim:
 
-**Verdict: it works, it is cleanly licensed, and it is probably not what this
-project needs.** CC0, 240 lines, deps numpy/pandas/scipy only, **last release
-2023-06-22**. Unmaintained — but RothC 26.3 is a frozen published model, so
-there is no upstream to track. If used, **vendor it**.
+> We searched for spatial structure in monitoring noise across climate, texture
+> and soil chemistry, each time against a stated detection limit, and found none.
+> A single set of variance components serves temperate cropland. **MDC varies
+> with DESIGN and INTERVAL, not with PLACE.**
 
-### Three findings that matter more than the install
+Four nulls, each with its limit stated:
 
-**(a) RothC's `evaporation` input is D-039 all over again.** It needs *open-pan
-evaporation*; WorldClim does not publish it. Substituting a computed
-Penman/Hargreaves PET is **exactly the substitution D-033 refuses and D-039
-documents as a finding** — made by us, inside the model this time. Sourceable,
-but it is a decision, not a detail.
+| axis | result | limit |
+|---|---|---|
+| climate (D-040) | 0.300 / 0.152 shifts vs CI widths 3.97 / 3.52, **opposite directions** | ~±2 CV pts |
+| texture (D-040) | spreads 2.611 / 3.690 vs widest-bin CIs 11.016 / 10.464 | ~10 CV pts |
+| joint model (D-058) | weighted **R² = 0.0722** | — |
+| inorganic carbon (D-055) | 8 of 9 intervals contain their reference | **~6.4–7.6%** analytical error |
 
-**(b) The premise is at real risk through ONE channel, and it is cheap to
-close.** Most of our components are relative (`cv_pct`); converting to an
-absolute SD needs a mean stock, and **if that mean comes from RothC's simulated
-trajectory, MDC inherits RothC's level error.** Mitigation: convert using an
-*observed* mean stock (NAPESHM/Wuest site means), never the simulated one, and
-enforce it — *no variance component may read a stock from the truth generator*.
-That is the natural successor to D-032 / D-051 / D-052.
+**Argued as a stronger product than a map**, on four counts — distributable,
+checkable by anyone with their own data, cannot manufacture structure from
+non-predictive covariates, and invariance is the harder claim to make.
 
-**(c) RothC is single-layer, so it cannot generate the truth component 6
-measures error against.** Fixed-depth vs ESM bias has to be imposed as a separate
-observation-model step from our `VC-BDC` rows. Relevant to task 3's von Haden
-find.
+**New repo-wide standard adopted: *a null is only informative against a stated
+detection limit.*** Three existing instances named as the template.
 
-### The uncomfortable conclusion, stated for the PI to rule on
+**What would overturn it, concretely.** The carbonate channel is cheapest and
+needs **lab duplicates, not a field campaign** — a few hundred split samples
+spanning 0 to >2% inorganic carbon would reach the untested lower two-thirds of
+Potash's 1–10% range. Nobody has to dig anything.
 
-If MDC is defined as a pure noise property — which is what our own premise
-says it is — **Phase 1 may not need a carbon model at all.** A stated change
-rate plus the variance structure is sufficient. RothC would then be supplying
-plausible values for one scenario parameter, a much smaller job than "truth
-generator" implies, and one a table of published effect sizes could also do.
+**Why this matters for Phase 5:** invariance is what makes the inverted audit
+tractable. If σ varied by location, auditing 999 ACCU projects would need a
+per-project variance estimate nobody can supply.
 
-Six open questions are listed explicitly at the end of the design doc.
+Updated: `docs/phase0_summary.md` Finding 3 (rewritten), `docs/phase1_design.md`
+and `scripts/derive_g1_napeshm.py` (annotated where they still promised the
+surface).
+
+
+## TASK 3 — ADVERSARIAL REVIEW OF THE INVERTED AUDIT — **COMPLETE**
+Branch `claude/loam-inverted-audit-redteam` · `docs/inverted_audit_redteam.md` · no implementation
+
+The design doc from this session's item 3 exists on `claude/loam-inverted-audit-design`
+(PR #16), so the task ran rather than being skipped.
+
+**REQUIRED CHECK — does the design commit to the LOW END of the variance
+envelope? YES, explicitly.** §2.4 states it as a hard rule with the exact
+`bias_direction` mapping (`inflates`→`value_low`, `deflates`→`value`), worked
+consequences (`VC-BPS-006` enters at 9.6%, not 11.5%), and the required headline
+form. A central-estimate run is required as a sensitivity and **forbidden as the
+headline**. No flag needed — but see C-2 below, which shows the rule is not the
+probabilistic statement its wording implies.
+
+### Two objections that land hard
+
+**B-1 is FATAL to the current framing, and it is the best objection in the
+review.** VM0042's Equation (2) is optional *by design*: the protocol regulates
+precision through the **uncertainty deduction**, not through a minimum sample
+size. Sample less, get fewer credits. That is outcome-based regulation and
+arguably better than a minimum-n rule. The audit currently takes an optional
+planning aid, declares it mandatory, and calls the gap a scandal — **a registry
+would win that exchange in public.**
+
+*The fix makes the method better:* **stop computing required-`n`; compute the
+implied uncertainty deduction and compare it with the one actually applied.**
+It uses the registry's own instrument on the registry's own terms, and it is
+**checkable today** against VCS 4022's published **31.35%** — no waiting on the
+§10 blockers.
+
+**C-3 falsifies a prescription in the doc, and I verified it numerically.** §2.1
+says the fixed point "converges in a handful of iterations". The map is
+*decreasing* in `n`, and naive iteration **cycles**: at σ=3, Δ=3 it oscillates
+12.71 / 12.50 / 12.71 / 12.50 forever, while bisection returns n\*=13 cleanly. It
+cycles at **small n — exactly the regime the audit cares about.** Use bisection.
+
+### Two objections that improve the deliverable rather than defending it
+
+- **A-2 — report the break-even σ**, not just the break-even price. The developer
+  must then assert a variance for their own soil and defend it, which they
+  usually cannot, because they never published their pre-sampling variance
+  either.
+- **B-2 — report the stratification efficiency** that would be needed to bring
+  the claim inside reach. Another quantity nobody published.
+
+Both push the burden one level deeper onto undisclosed quantities, which is the
+inverted audit's own logic applied recursively.
+
+### ⚠️ The independence check FAILED, and the review is weaker for it
+
+Three independent agents were given the design doc cold, one per adversary
+persona, with no access to my reasoning. **All three failed to return usable
+output** — `StructuredOutput retry cap exceeded`, ~373 s, ~191k tokens, a
+mechanical schema failure rather than a substantive one. Logged rather than
+retried, per the two-attempt rule.
+
+**So every objection in the document is mine, and the document says so at the
+top.** That matters because the entire value of a red team is independence. The
+two hardest findings are the ones least dependent on my judgement — **C-3 is
+verified numerically and either reproduces or it does not**, and **B-1 turns on a
+quoted reading of VM0042's own text** — but the rest is argument from a single
+source.
+
+*Cheapest independent pass:* a human reading §1 and §2.1 of the design doc with
+B-1 and C-3 in hand.
+
+### Everything else
+
+10 objections across three adversaries, each stated at its strongest, judged, and
+given a fix. Ten prioritised changes listed at the end of the document. **Nothing
+implemented.**
+
+**Nothing here touches the corpus finding.** These are objections to the audit,
+not to the observation that 999 of 999 Australian soil carbon projects publish no
+sampling design.
+
+
+## TASK 4 — VM0042 PRIMARY RETRIEVAL — **COMPLETE, EARLY**
+Branch `claude/loam-vm0042-primary` · **PR #15** · **D-057**
+
+Done during item 2b of the evening session rather than in the overnight box,
+because item 2b required correcting every `0.43` against the primary source and
+that is the same job. Recorded here so the overnight task list is not left
+looking unfinished.
+
+**The result reverses the premise of the task.** The task was written on the
+assumption that the 0.43 figure was misattributed. **It was not.**
+
+> VM0042 v2.2 §8.6.4, Equation 74: `t0.667` = *"t-value for a one-sided student's
+> t-distribution at 0.667 (66.7%) confidence interval … **Equal to approximately
+> 0.4307 at large sample sizes**"*, crediting at the **33.3rd percentile**.
+
+`z(2/3)` = 0.4307 to four places. **The attribution to VM0042 was right all
+along; what was missing was a primary check, and no misattribution decision was
+needed or logged.**
+
+**Three amendments that do matter:**
+
+1. **It is a *t*-value, not a constant.** 0.4307 is the large-sample limit, so a
+   project with fewer samples takes a *larger* percentage haircut. **The
+   deduction is a function of the design** — which couples it directly to the
+   inverted audit's unknown.
+2. **The "v2.0" qualifier is withdrawn.** 0.4307 is absent from the v2.0 document
+   held (a tracked-changes redline carrying a 15%-threshold rule in one layer and
+   a two-pathway rule in another). **VCS 4022 applied v2.0**, so its 31.35%
+   deduction must not be described as a 0.43-SE deduction.
+3. **A correction to my own earlier claim** that VM0042 and CAR SEP are
+   "different constructs". Same construct, different severity:
+
+| protocol | multiplies | effective `k` (relative SE) | credits at |
+|---|---|---|---|
+| ACCU | SE | **0.253** | 40th pct |
+| VM0042 v2.2 | relative SE | **0.431** | 33.3rd pct |
+| CAR SEP v1.1 | **1.96 × SE** | **1.028** | 15.2nd pct |
+
+**CAR SEP is 2.38× VM0042 and 4.06× the ACCU rule on identical measured
+variance.** The same soil, design and variance produce a fourfold different
+haircut depending only on the registry. That is a Phase 5 finding in its own
+right.
+
+**And the find that reshaped item 3:** §8.2.1 item 11 Equation (2) is
+`n ≥ (S(t_α+t_β)/MDD)²` — **the inverted audit's own equation** — followed by
+*"However, projects are not required to take this number of samples."*
+
+Also recovered as primary: ESM is **required** (≥2 increments at re-sampling,
+≥30 cm, **von Haden 2020's R script** an accepted tool — our own component-6
+source), 5-yearly remeasurement, ≥3 control sites and ≥1 per stratum, stratified
+random sampling mandatory, and the laboratory analytical-error definition
+("repeated analyses of the same sample" = Poeplau's narrow figure), **logged into
+D-054 as evidence without closing it**, per instruction.
+
+**Access-log correction, contradicting last session's entry.** Verra was logged
+as an access wall. That holds for **`registry.verra.org`** (the project registry
+SPA) but **not** for the **`verra.org` methodology library**, which served both
+PDFs on the first attempt. The two were conflated.
 
 ---
 
 # END OF RUN
 
-Four tasks, four branches, four **draft** PRs, all CI green. Nothing merged.
-No D-NNN closed that needed judgement. No row promoted to `baseline`. No
-implementation built ahead of a decision.
-
 | task | branch | PR | status |
 |---|---|---|---|
-| 1 · D-036 + `basis` | `claude/d036-analytical` | **#7** | complete |
-| 2 · G3 bounding | `claude/g3-cores-vs-plots` | **#8** | complete |
-| 3 · detectability literature | `claude/sources-detectability` | **#9** | complete, 2 blocked |
-| 4 · Phase 1 recon | `claude/phase1-recon` | **#10** | complete, design doc only |
-| — · this handoff | `claude/handoff` | **#11** | — |
+| item 2 · housekeeping + VM0042 | `claude/loam-vm0042-primary` | **#15** | complete |
+| item 3 · inverted audit design | `claude/loam-inverted-audit-design` | **#16** | complete, design only |
+| 1 · estimator repair | `claude/loam-estimator-repair` | **#17** | complete |
+| 2 · retire Deliverable 3 | `claude/loam-invariance-finding` | **#18** | complete |
+| 3 · inverted audit red team | `claude/loam-inverted-audit-redteam` | **#19** | complete |
+| 4 · VM0042 primary | (folded into #15) | **#15** | complete, early |
 
-**Nothing was time-boxed out.** All four finished inside their boxes.
+**Nothing merged. All PRs draft. No D-NNN closed that needed judgement. No row
+written or promoted. No implementation built ahead of a decision.**
 
-## ⚠️ Merge mechanics — read before merging anything
-
-1. **`HANDOFF.md` will conflict.** Each task branch was cut from `main` and each
-   carries only its own section, because `>>` created a fresh file on each. **This
-   branch has the superset — take this version on any conflict.**
-2. **PR #7 adds D-052, PR #8 adds D-053.** Both touch the `DECIDED_DECISIONS`
-   tuple in `src/loam/decisions.py` and the Decision status table in
-   `DECISIONS.md`. Take both lines. D-053 deliberately skips 052 rather than
-   renumbering across branches.
-3. **#7 changes the schema** (adds required `basis`, 48 → 49 columns). Merging it
-   after #8/#9/#10 is fine — none of those touch the schema or the YAML rows.
-   Merging **#7 first** is marginally cleaner.
+Decisions logged this run: **D-057** (VM0042 primary), **D-058** (estimator
+repair). **D-054 stays open** with new evidence attached, per instruction.
 
 ## Blockers hit, with evidence
 
 | blocker | evidence | attempts |
 |---|---|---|
-| **Smith 2004** unreachable | HTTP 403, Wiley bot protection. Unpaywall says **bronze OA** — free to read | 2 |
-| **Bradford 2023** unreachable | HTTP 403 from ScienceDirect *and* DOAJ. Unpaywall says **gold OA** — openly licensed | 2 |
-| Saby 2008, de Gruijter 2016 | Unpaywall: closed, no OA location anywhere | 1 each (definitive) |
-| von Haden Table 1 alignment | PDF text extraction garbled column mapping; range recovered, per-row mapping not | flagged, not guessed |
-
-**The two 403s are access walls, not paywalls, and both papers are openly
-readable. A browser opens them in one click — that is the highest-value five
-minutes in this handoff**, because Bradford 2023 is the paper Potash et al. are
-answering and therefore the other half of the argument D-037/D-038 position us
-against.
+| `registry.verra.org` project registry | Angular SPA shell on 4 endpoints | 2 (logged last session) |
+| CAR registry pagination | CSRF-bound POST; 302 on page 2, 411 on CSV export | 2 (logged last session) |
+| approved VM0042 **v2.0** (not the public-comment draft) | the held v2.0 is a tracked-changes redline; 0.4307 absent | 1 — **worth one more try**, it settles whether VCS 4022's 31.35% is a 0.43-SE deduction |
 
 ## Decisions I did NOT make, with recommendations
 
-1. **D-036 — which analytical error should `VC-ANA-001` carry?**
-   *Recommend:* add a subsampling-inclusive row (3.13% SD, concentration) as the
-   baseline, demote `VC-ANA-001` to the instrument-only floor. No monitoring
-   programme re-measures the same milled aliquot, and understating analytical
-   error is anti-conservative for the Phase 5 audit (D-023).
-   *Against:* it is the only row isolating the instrument, and D-027 prefers
-   decomposed terms.
-2. **Potash's internal inconsistency** — `σ_l` = 2 Mg/ha vs the 4.02 their own
-   stated relative errors imply. *Recommend:* raise it with the authors; it is
-   not resolvable from the text and it is worth a footnote either way.
-3. **`VC-BPS-005` vs `VC-BPS-006/007–011`** — concentration and stock CVs
-   coexisting as baselines. *Recommend:* keep both, but make the OSSE declare one
-   basis per run. Recorded in `MIXED_BASIS_BY_DESIGN`, not resolved.
-4. **G3 / add-cores-vs-add-plots.** *Recommend:* retire the flat claim. The
-   defensible version is "a single core per plot is likely wrong, but the optimum
-   is nearer 1–3 cores per assay than Potash's 4, and cannot be pinned down until
-   D-036 closes."
-5. **Phase 1 engine.** *Recommend:* decide what the truth generator is FOR before
-   choosing one. Six explicit questions at the end of `docs/phase1_design.md`.
-6. **`VC-BPS-004`** (an MDC filed as a variance component) — allowlisted in PR #6,
-   still not re-filed. It may deserve its own `use_as`, since an MDC is a project
-   *output*.
+1. **PR #12.** *Recommend: close without merging.* Reasoning at the top of this
+   file. Short version — what it objects to is already what D-053 says, and
+   CAR1459's one-core-per-assay has since corroborated D-053 against Potash's 4.
+2. **D-054** — which lab error `analytical` carries. Held open per instruction.
+   New evidence for the against-side from VM0042 (D-057). Note the low-envelope
+   rule in the audit design would take the narrower figure anyway, so this is
+   **non-blocking for Phase 5** — but it still gates G3.
+3. **The design doc's six §10 decisions**, chief among them **D-a**: there is no
+   0–30 cm within-plot spatial row (G2), and within-plot variance governs the
+   whole compositing dimension. *Recommend:* use D-043's indirect 8–9%, with the
+   caveat stated. The alternative — bound `C ∈ [1,4]` and report the envelope —
+   needs no new assumption and is weaker.
+4. **`d029_raw_slope`** left unweighted deliberately (D-058). *Recommend: leave
+   it.* Debiasing it re-opens D-029.
+5. **Whether to restructure the audit around the implied-vs-applied deduction**
+   (red team B-1). *Recommend: yes.* It defeats the strongest objection, and it
+   is checkable today against VCS 4022's 31.35% without waiting on D-a.
 
 ## Things that contradict a standing assumption
 
-1. **Potash et al. 2025 was never paywalled.** `sources.md` listed it as "to
-   obtain"; it is open-access in ERL and one Crossref query found it. Second time
-   this pattern has cost us — Wuest's dataset was public domain while we queued
-   the PDF. **Check for an open version before queueing a retrieval.**
-2. **The D-036 "4× discrepancy" was largely our own filing choice**, not a
-   disagreement in the literature. Poeplau reports two lab errors; we tabled the
-   narrower one and compared it to Potash's wider one for two rounds.
-3. **"Add cores before adding plots" does not survive contact with the
-   arithmetic.** Holding it at all five series needs the non-reducible share of
-   the residual below 9%; analytical error alone can exceed that.
-4. **G3 and D-036 are coupled** — G3 cannot close while D-036 is open. Neither
-   entry knew about the other before both were traced.
-5. **RothC needs open-pan evaporation, which WorldClim does not publish.** The
-   PET problem that produced D-039 reappears inside the Phase 1 engine.
-6. **Our own premise has a live leak.** If CV-based components are scaled by a
-   *simulated* mean stock, MDC inherits the truth generator's level error. Cheap
-   to close, but it needs an enforced rule.
+1. **The 0.43 figure was never misattributed** — only unverified. The task was
+   written expecting a misattribution finding; the primary says otherwise.
+2. **Verra's methodology library is not blocked.** Only the project registry is.
+   Last session's log conflated them. **Fourth time an "unreachable" item turned
+   out to be reachable** (after Potash, Wuest's dataset, and von Haden).
+3. **VM0042 contains the inverted audit's own equation and declines to require
+   it.** The method is the protocol's, not ours.
+4. **The brief's reasoning about noise and nulls is backwards.** Excess noise
+   inflates SEs *and* depresses R², both of which favour a null — so a noisy
+   estimator makes a null *easier* to reach. Correcting it was a test D-040 could
+   have failed.
+5. **D-040's "75 of 80 from the USA" caveat no longer applies** to the repaired
+   joint model (75 USA / 60 Mexico). Replaced, not removed.
+6. **My own design doc prescribes an algorithm that does not terminate** at small
+   `n` (red team C-3, verified). Fixed-point iteration cycles; use bisection.
 
 ## What I would do next, in priority order
 
-1. **Open Smith 2004 and Bradford 2023 in a browser** (5 minutes, unblocks #9).
-2. **Settle D-036** — it gates G3, and the evidence is now assembled.
-3. **Merge #7 first**, then #8, #9, #10, taking this branch's `HANDOFF.md`.
-4. **Answer question 1 in `docs/phase1_design.md`** — is MDC a pure noise
-   property? Everything else about Phase 1 follows from it.
-5. **Confirm von Haden Table 1 visually** and decide whether component 6 gains a
-   corroborating row.
-6. **Decide `VC-BPS-004`'s home** — an MDC is not a variance component.
-7. Lower priority, unchanged: KBS written permission (needs a human email),
-   external PET for the 87 unclassified NAPESHM sites, the LUCAS report (G6).
+1. **Resolve PR #12**, then merge #13 → #19 in stack order.
+2. **Restructure the audit design around implied-vs-applied deduction** (B-1),
+   and fix the iteration to bisection (C-3). Both are cheap.
+3. **Validate against VCS 4022's 31.35%** — the one thing testable today.
+4. **Decide D-a** (the 0–30 cm within-plot gap). Everything in Phase 5 waits on it.
+5. **One more attempt at the approved VM0042 v2.0.**
+6. **Reply to Potash** — the IC result is a bounded null and he asked to hear
+   either way. `docs/ic_conditioning.md` is written to be quotable.
+
+
+---
+
+## POST-MERGE CORRECTION, 2026-08-12
+
+**The stacked merge did not reach `main`.** All six PRs (#13–#19) were merged,
+but each merged into its **base branch** rather than into `main`, because GitHub
+did not retarget the stack when #13 landed. Content cascaded *down* the chain and
+`main` was left with #13 only — missing all six deliverables.
+
+**No work was lost.** `claude/loam-invariance-finding` accumulated everything
+(6/6 deliverables, content-identical to `claude/loam-inverted-audit-redteam`,
+merges clean against `main`, 176 tests pass). One PR from it to `main` completes
+what #14–#19 were supposed to do.
+
+**Two corrections were made to `docs/phase5_inverted_audit_design.md` before that
+PR**, so `main` never carries a document that contradicts its own companion:
+
+1. **§2.1's algorithm is fixed.** It prescribed fixed-point iteration and claimed
+   convergence; red-team C-3 demonstrated it **cycles** at small `n` (σ=3, Δ=3
+   oscillates 12.71/12.50 indefinitely). Replaced with **bisection**, with the
+   demonstration table inline and the correction marked as a correction.
+2. **B-1 is flagged at the top of the document**, pointing at the red team. The
+   design is left standing rather than rewritten, because the restructuring it
+   recommends — implied vs applied uncertainty deduction — **is a decision the PI
+   has not made**, and rewriting ahead of it would be exactly the
+   build-ahead-of-a-decision failure rule 4 exists to prevent.
+
+**PR #12 remains open and still should not be merged.** It would now delete D-053
+out from under D-054, D-056, D-057 and D-058.

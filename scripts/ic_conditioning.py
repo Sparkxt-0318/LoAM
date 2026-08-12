@@ -314,7 +314,7 @@ def identifiability_audit(d: pd.DataFrame) -> dict:
 
 def treatment_table(d: pd.DataFrame, col: str = "log_soc") -> pd.DataFrame:
     """One row per treatment: debiased log within-treatment variance + covariates."""
-    from scipy.special import digamma, polygamma
+    from loam import logvar
 
     sub = g1._with_replicates(d[d[col].notna()])
     g = sub.groupby("treatmentid")
@@ -334,12 +334,13 @@ def treatment_table(d: pd.DataFrame, col: str = "log_soc") -> pd.DataFrame:
         "hargreave_cmd": g["hargreave_cmd"].first(),
         "ecoregion": g["na_l1name"].first(),
     })
-    t = t[(t.s2 > 0) & t.s2.notna()]
-    nu = (t.n - 1).astype(float)
-    # Unbiased for log(sigma^2) at every replicate count; weight by information.
-    t["y"] = np.log(t.s2) - digamma(nu / 2) + np.log(nu / 2)
-    t["w"] = 1.0 / polygamma(1, nu / 2)
-    t["nu"] = nu
+    # Debias and weight through the shared estimator (D-058): one definition,
+    # not two. loam.logvar computes psi and psi' in exact closed form, because
+    # nu is always an integer so nu/2 is always an integer or a half-integer.
+    y, w, kept = logvar.prepare(t.s2.tolist(), t.n.tolist())
+    t = t.iloc[kept].copy()
+    t["y"], t["w"] = y, w
+    t["nu"] = (t.n - 1).astype(float)
     return t
 
 
@@ -432,14 +433,17 @@ def regression_block(d: pd.DataFrame) -> dict:
         if r:
             out["models"].append(r)
 
-    # D-040's own specification, for comparability: unweighted OLS on log(sd),
-    # n>=3 only, no debiasing.
+    # D-040's own specification, RETIRED by D-058 and reproduced here for
+    # comparability ONLY: unweighted OLS on log(sd), n>=3 only, no debiasing.
+    # This is the estimator that returned t = -0.37, +4.58, -4.53, +0.75 on the
+    # same coefficient across the four tiers below. Never a basis for a
+    # conclusion - see src/loam/logvar.py.
     t3 = t[t.n >= 3]
     if len(t3) > 6 and t3.site.nunique() >= 3:
         t3 = t3.assign(y=np.log(np.sqrt(t3.s2)), w=1.0)
         out["d040_specification"] = wls_cluster(
             t3, ["ic", "log_mean_soc", "sand_frac"],
-            "D-040 spec: unweighted OLS on log(SD), n>=3 only")
+            "RETIRED (D-058) D-040 spec: unweighted OLS on log(SD), n>=3 only")
 
     # How much IC variation is WITHIN site? If none, no within-site model exists.
     if len(t):
