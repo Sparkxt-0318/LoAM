@@ -176,6 +176,11 @@ every reviewer. A parametric design has to defend only the range of change rates
 it scans — and that range is directly citable.
 
 **This is not a recommendation to abandon RothC.** It is a recommendation to
+> **UPDATED 2026-08-12: Deliverable 3 is RETIRED** (see
+> `docs/invariance_finding.md`). The paragraph below was written while it
+> was still live; the question it poses is unchanged, but the branch that
+> depends on a spatially explicit surface is now closed.
+
 decide *what the truth generator is for* first. If Phase 3's spatially explicit
 surface needs mechanistic climate response — and D-040 has already put that
 deliverable in question — RothC earns its place. If Phase 1 only needs a signal

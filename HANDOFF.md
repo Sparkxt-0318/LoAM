@@ -89,3 +89,43 @@ label it `RETIRED`. **That second test caught a real gap on its first run.**
 plot, roughly equal, consumed by rank tests). `d029_raw_slope` deliberately left
 alone — different estimator, different purpose, and D-029 rests on it.
 **Recommendation: leave it; debiasing it re-opens D-029.**
+
+
+## TASK 2 — RETIRE DELIVERABLE 3 — **COMPLETE** (~40min of a 1.5h box)
+Branch `claude/loam-invariance-finding` · `176 passed` · no new D-NNN (PI decision, implemented)
+
+**`docs/invariance_finding.md`** states the positive claim:
+
+> We searched for spatial structure in monitoring noise across climate, texture
+> and soil chemistry, each time against a stated detection limit, and found none.
+> A single set of variance components serves temperate cropland. **MDC varies
+> with DESIGN and INTERVAL, not with PLACE.**
+
+Four nulls, each with its limit stated:
+
+| axis | result | limit |
+|---|---|---|
+| climate (D-040) | 0.300 / 0.152 shifts vs CI widths 3.97 / 3.52, **opposite directions** | ~±2 CV pts |
+| texture (D-040) | spreads 2.611 / 3.690 vs widest-bin CIs 11.016 / 10.464 | ~10 CV pts |
+| joint model (D-058) | weighted **R² = 0.0722** | — |
+| inorganic carbon (D-055) | 8 of 9 intervals contain their reference | **~6.4–7.6%** analytical error |
+
+**Argued as a stronger product than a map**, on four counts — distributable,
+checkable by anyone with their own data, cannot manufacture structure from
+non-predictive covariates, and invariance is the harder claim to make.
+
+**New repo-wide standard adopted: *a null is only informative against a stated
+detection limit.*** Three existing instances named as the template.
+
+**What would overturn it, concretely.** The carbonate channel is cheapest and
+needs **lab duplicates, not a field campaign** — a few hundred split samples
+spanning 0 to >2% inorganic carbon would reach the untested lower two-thirds of
+Potash's 1–10% range. Nobody has to dig anything.
+
+**Why this matters for Phase 5:** invariance is what makes the inverted audit
+tractable. If σ varied by location, auditing 999 ACCU projects would need a
+per-project variance estimate nobody can supply.
+
+Updated: `docs/phase0_summary.md` Finding 3 (rewritten), `docs/phase1_design.md`
+and `scripts/derive_g1_napeshm.py` (annotated where they still promised the
+surface).
