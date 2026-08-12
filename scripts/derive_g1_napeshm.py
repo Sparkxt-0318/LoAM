@@ -282,7 +282,14 @@ def estimate(d: pd.DataFrame, col: str, n_boot: int) -> dict:
 
 
 def texture_strata(d: pd.DataFrame, col: str, n_boot: int) -> dict:
-    """CV by clay tercile - the seed of the Phase 3 spatially explicit surface."""
+    """CV by clay tercile.
+
+    Was the seed of the Phase 3 spatially explicit MDC surface. That deliverable
+    is RETIRED (2026-08-12, docs/invariance_finding.md) because this scan and
+    three others returned nulls against stated detection limits. Kept as a
+    diagnostic - it is the evidence for the retirement, not a step toward the
+    thing retired.
+    """
     if "b_clay" not in d.columns or d.b_clay.notna().sum() < 30:
         return {"note": "b_clay unavailable"}
     sub = d[d.b_clay.notna()].copy()
@@ -391,7 +398,7 @@ def main() -> int:
               f"conc CV={est['cv_pct']}%")
 
     # texture stratification
-    print("\n--- texture stratification (seed of Phase 3 MDC surface) ---")
+    print("\n--- texture stratification (evidence for the D-040 invariance finding) ---")
     result["texture_strata_concentration"] = texture_strata(dh, "log_soc", 0)
     result["texture_strata_stock"] = texture_strata(dh, "log_stock", 0)
     for k, v in result["texture_strata_concentration"].items():

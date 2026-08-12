@@ -186,38 +186,60 @@ This belongs in the methods or discussion as a short subsection, not as a
 limitations bullet — it is a reusability finding about a flagship open dataset,
 and the fix is entirely within the provider's power.
 
-### Finding 3 — between-plot CV is approximately invariant across the covariates an MDC surface would use (D-040, D-045)
+### Finding 3 — one set of variance components serves temperate cropland (D-040, D-045, D-055, D-058)
 
-> Climate region moves the estimate **0.2–0.3 points against a ~4-point
-> confidence interval**. Binned clay shows **no monotone signal**. A joint model
-> given both texture and carbon level reaches **R² = 0.093**.
+> **UPDATED 2026-08-12. Deliverable 3 is RETIRED and this finding is now stated
+> as a positive claim rather than as an obstacle.** Full treatment, with every
+> detection limit attached, in [`docs/invariance_finding.md`](invariance_finding.md).
 
-Three independent attempts to make this quantity depend on where you are, and it
-does not. **And temporal variance behaves the same way** — no consistent
-dependence between sites, within sites, by treatment, or by rotation phase
-(D-045).
+**The claim:** we searched for spatial structure in monitoring noise across
+climate, texture and soil chemistry, each time against a stated detection limit,
+and found none. **A single set of variance components serves temperate cropland.
+MDC varies with DESIGN and INTERVAL, not with PLACE.**
 
-**The caveat travels with the finding everywhere it appears:** excluding
-two-replicate treatments leaves the joint model's sample **75 of 80 from the
-USA**, because all 55 two-replicate treatments are Mexican and no USA treatment
-has fewer than three replicates. Country and per-treatment support are therefore
-**completely aliased**, and no Mexico-versus-USA difference in this table may be
-read as a climate difference.
+Four independent conditioning attempts, all null:
 
-**Consequence: Phase 3 Deliverable 3 — the spatially explicit MDC surface —
-needs rethinking before we build toward it.** A surface is worth drawing when
-the thing it maps varies over space. On this evidence the noise term does not,
-or varies far less than the interpolation error of any surface we could fit.
-One possibility remains open and is deliberately unresolved: **MDC may vary
-spatially through the signal** — treatment effect size, SOC level, depth
-distribution of change — **rather than through the noise.** The other candidate,
-that the signal lives in temporal variance, is now closed negatively.
+| axis | result | detection limit |
+|---|---|---|
+| climate region (D-040) | shifts of **0.300** and **0.152** against CI widths of **3.97** and **3.52**, in *opposite* directions | ~±2 CV points |
+| texture (D-040) | clay not monotone; spreads of **2.611** and **3.690** against widest-bin CIs of **11.016** and **10.464** | ~10 CV points |
+| joint model (D-040, D-058) | weighted **R² = 0.0722** on 135 treatments / 26 sites | — |
+| soil inorganic carbon (D-055) | 8 of 9 carbonate intervals contain their reference; the exception runs the *wrong way* | **~6.4–7.6%** analytical error, against Potash's stated 1–10% |
+
+**And temporal variance behaves the same way** — no consistent dependence between
+sites, within sites, by treatment, or by rotation phase (D-045).
+
+**The joint model's R² is now 0.0722, not the 0.093 originally reported**, because
+the estimator was repaired (D-058): D-040 used an unweighted OLS on `log(sd)`
+restricted to n≥3, and `log s` is biased by an amount that depends on the degrees
+of freedom. The covariates explain **less** under the correct estimator. That
+repair was a test the null could have failed — excess noise inflates SEs and
+depresses R², both of which favour a null — and it passed.
+
+**The caveat changed shape with the repair.** D-040's caveat read "75 of 80
+treatments from the USA"; the repaired fit is **75 USA / 60 Mexico**, so that
+caveat no longer applies to it. It is replaced rather than removed: the
+re-admitted Mexican treatments are exactly the 2-replicate ones (D-040 check 1c),
+and `sand_frac` nearly doubles when they enter. **No Mexico/USA difference in this
+table may be read as a climate or texture difference.**
+
+**A repo-wide standard comes out of this: a null is only informative against a
+stated detection limit.** Every null in this project carries the magnitude it
+could have detected. A null without a limit is an absence of evidence passed off
+as evidence of absence.
+
+**Consequence: Deliverable 3 is retired, and Phase 5 is the headline.** Invariance
+is what makes the inverted audit tractable — if σ varied by location, auditing
+999 Australian projects would need a per-project variance estimate nobody can
+supply. Because it does not, one component set audits the whole register.
 
 **Framing for the writeup: this strengthens the nearest prior art.** Potash et
-al. 2025 held `sigma_b` fixed and geography-independent, and said plainly that
-they did so *for lack of information*. We now have the information, and it says
-the assumption was approximately right. That is a load-bearing simplification in
-the closest published work being independently vindicated.
+al. 2025 held `sigma_b` fixed and geography-independent *"for lack of
+information"*, and held `sigma_l` soil-independent. We went looking for both, and
+neither varies detectably. **Two load-bearing simplifications in the closest
+published work surviving independent test** is a contribution, not a gap we
+caught them in.
+
 
 ### Finding 4 — the derivation pipeline reproduces a published statistic, and the G1 code path reproduces an independent implementation (D-050)
 
