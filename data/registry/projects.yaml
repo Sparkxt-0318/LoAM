@@ -106,6 +106,21 @@ sources:
     pages: 151
     url: https://terrapass.com/wp-content/uploads/2025/02/AgreenaCarbon-Project-VCS-Validation-Report.pdf
     accessed: 2026-08-12
+  vm0042_v22:
+    title: "VCS Methodology VM0042 Improved Agricultural Land Management, v2.2 (greenlined)"
+    document_date: 2025-10-21
+    pages: 183
+    url: https://verra.org/wp-content/uploads/2025/10/VM0042v2.2_greenlined.pdf
+    accessed: 2026-08-12
+  vm0042_v20_draft:
+    title: "VCS Methodology VM0042, v2.0 final draft for public comment (tracked-changes redline)"
+    document_date: 2021-12-01
+    pages: 173
+    url: https://verra.org/wp-content/uploads/2021/12/VM0042_v2.0_FinalDraft_PublicComment.pdf
+    accessed: 2026-08-12
+    note: >-
+      A redline carrying more than one layer of text. Does NOT contain 0.4307.
+      Not a substitute for the approved v2.0.
   cer_register_csv:
     title: "ACCU Scheme project register (CSV), Clean Energy Regulator, updates as at 30 June 2026"
     url: https://cer.gov.au/document/accu-scheme-project-register-0
@@ -274,12 +289,17 @@ projects:
       source: car1459_mp_rp1
       locator: "Tables 5.11 and 5.12, citing SEP v1.1 Equation 5.1"
       note: >-
-        z(70%) = 0.5244. So the deduction is 0.524 x (95% CI half-width) / ER.
-        Three error sources are named as entering it: sample error, measurement
-        error of model inputs, and model prediction error from calibration and
-        validation residuals. NOTE this is NOT the 0.43-SE rule the brief
-        attributed to VM0042 — CAR SEP and Verra VM0042 use different rules and
-        the corpus must not blur them.
+        z(70%) = 0.5244, and s(ER_t) is the 95% CI HALF-WIDTH (= 1.96 SE), so
+        the deduction is 0.5244 x 1.96 = **1.028 relative standard errors**,
+        crediting at the 15.2nd percentile. Three error sources are named as
+        entering it: sample error, measurement error of model inputs, and model
+        prediction error from calibration and validation residuals.
+        CROSS-PROTOCOL (D-057, both verified from primary): VM0042 v2.2 deducts
+        0.4307 relative SE (33.3rd percentile) and the Australian rule 0.253
+        (40th percentile). CAR SEP is therefore **2.38x more conservative than
+        VM0042 and 4.06x more conservative than the ACCU rule on identical
+        measured variance.** Same construct, very different severity - the corpus
+        must not treat them as interchangeable.
     uncertainty_deduction_applied_pct:
       value: null
       status: not_disclosed
@@ -518,6 +538,12 @@ projects:
         Table 4-17 while the calculation sheet gave a different figure; 31.35%
         is the resolved value. Worth keeping: a nearly one-third deduction, and
         an internal inconsistency the validator had to catch.
+        VERSION CAVEAT (D-057): this project applied VM0042 **v2.0**, and the
+        0.4307 / 33.3rd-percentile rule is verified only in **v2.2**. The v2.0
+        text held is a tracked-changes redline carrying a 15%-threshold rule in
+        one layer and a two-pathway rule (Pathway B at 55% / 70% probability of
+        exceedance) in another. **This 31.35% must NOT be described as a 0.43-SE
+        deduction** - the rule that produced it is not established.
 
   # =========================================================================
   # Australian ACCU projects. Everything below the administrative block is
@@ -609,6 +635,132 @@ projects:
     all_sampling_design_fields: {value: null, status: not_disclosed, source: cer_register_page, locator: "no sampling-design field exists in the register"}
 
 # ---------------------------------------------------------------------------
+# Protocol-level requirements, read from the methodologies themselves.
+#
+# Kept SEPARATE from `projects` on purpose. A methodology requirement is what a
+# project OUGHT to do; a project field is what it DID. Merging them would let a
+# requirement masquerade as a disclosure, which is the single easiest way to
+# overstate this corpus. Nothing here may be copied into a project record.
+#
+# Added 2026-08-12 (D-057) after VM0042 was retrieved and read.
+# ---------------------------------------------------------------------------
+
+protocol_requirements:
+
+  - protocol: Verra VM0042 Improved Agricultural Land Management
+    version_read: "v2.2 (greenlined, October 2025), 183 pp."
+    also_held: "v2.0 final-draft-for-public-comment (December 2021), 173 pp. - a tracked-changes redline"
+    source: vm0042_v22
+    uncertainty_deduction:
+      rule: "UNC = (sqrt(s^2)/mean x 100) x t_0.667"
+      locator: "Section 8.6.4, Equation 74"
+      k_value: 0.4307
+      k_definition: >-
+        VERBATIM: "t-value for a one-sided student's t-distribution at 0.667
+        (66.7%) confidence interval with degrees of freedom appropriate to the
+        sampling design used. Equal to approximately 0.4307 at large sample
+        sizes (dimensionless)". Figure 4: the deduction is based on the 33.3rd
+        percentile of the estimated probability distribution.
+      status: stated
+      caveats: >-
+        (a) It is a t-value, NOT a constant: 0.4307 is the large-sample limit, so
+        a project with few samples takes a LARGER percentage deduction for the
+        same relative standard error. The haircut is a function of the design.
+        (b) Verified in v2.2 only. Absent from the v2.0 document held.
+    minimum_detectable_difference:
+      locator: "Section 8.2.1, item 11, Equations (1) and (2), citing FAO (2019)"
+      equation_1: "MDD >= (S / sqrt(n)) x (t_alpha,v + t_beta,v)"
+      equation_2: "n >= ( S x (t_alpha + t_beta) / MDD )^2"
+      parameters: >-
+        S = standard deviation of the DIFFERENCE in SOC stocks between t0 and t1;
+        t_alpha two-sided at a significance level "frequently taken as 0.05";
+        t_beta one-sided for type II error "(e.g., 90%)".
+      optionality: >-
+        VERBATIM: "A power analysis MAY be conducted to calculate the number of
+        samples needed to enable accounting of a minimum detectable difference,
+        following Equations (1) and (2) (FAO, 2019). HOWEVER, PROJECTS ARE NOT
+        REQUIRED TO TAKE THIS NUMBER OF SAMPLES."
+      status: stated
+      significance_for_loam: >-
+        Equation (2) IS the Phase 5 inverted audit. The method is the
+        methodology's own calculation, made optional in the same sentence. The
+        only input we supply is S, which VM0042 expects from the project's own
+        pre-sampling ("5 to 10 soil samples per stratum") and which no project
+        publishes. See D-057 and docs/phase5_inverted_audit_design.md.
+    depth_requirements:
+      minimum_depth_cm: 30
+      esm_required: true
+      locator: "Section 8.2.1, items (b)-(e)"
+      detail: >-
+        VERBATIM: "To enable the ESM approach, soil samples at re-sampling must be
+        divided into at least two increments." Soils "must be sampled deeper than
+        the minimum 30 cm required for reporting SOC stock changes" where
+        extrapolation would otherwise be needed, and "Where possible, soils should
+        be sampled to 50 cm depth". Accepted ESM tools: the Wendt and Hauser
+        (2013) spreadsheet, and the von Haden et al. (2020) R script - which is
+        also LoAM's own corroborating source for component 6.
+      status: stated
+    remeasurement:
+      interval_years: 5
+      locator: "Sections 8.3 and 9; 'SOC stocks must be directly remeasured every five years'"
+      status: stated
+    sampling_design:
+      required_strategy: stratified random sampling
+      min_control_sites_project: 3
+      min_control_sites_per_stratum: 1
+      locator: "Sections 8.2.1 and the Quantification Approach 2 requirements"
+      detail: >-
+        "at least three control sites are required across the entire project
+        area, but more will decrease uncertainty, particularly where the total
+        number of control sites is less than ten"; "there must be at least one
+        control site per stratum". Pre-sampling of 5 to 10 samples per stratum
+        may estimate SOC variance where soil data are unavailable.
+      status: stated
+    quantification_approaches:
+      QA1: measure and model
+      QA2: >-
+        measure and remeasure, SOC ONLY - "relevant where models are unavailable
+        or have not yet been validated or parameterized, or where project
+        proponents prefer to use a direct measurement approach"
+      QA3: default factors
+      status: stated
+      locator: "Section 8.1"
+    laboratory:
+      preferred_method: dry combustion (Dumas)
+      also_permitted: "NIR, Vis-NIR, MIR, LIBS, INS - under Appendix 4 criteria"
+      accreditation: "ISO/IEC 17025 where possible; same laboratory for the entire project lifetime"
+      analytical_error_definition: >-
+        VERBATIM: the laboratory "should quantify and report analytical error
+        statistics (determined by REPEATED ANALYSES OF THE SAME SAMPLE)". That is
+        Poeplau's NARROW analytical error - technical replicates of one milled
+        sample - not the subsampling-inclusive figure. Direct input to D-054,
+        which remains OPEN.
+      locator: "Section 8.2.1.4"
+      status: stated
+
+  - protocol: Climate Action Reserve Soil Enrichment Protocol
+    version_read: "v1.1 - read indirectly, through CAR1459's monitoring plan"
+    source: car1459_mp_rp1
+    uncertainty_deduction:
+      rule: "UNC_t = z(70%) x s(ER_t) / ER_t, where s(ER_t) is the 95% CI HALF-WIDTH"
+      locator: "CAR1459 monitoring plan Tables 5.11 and 5.12, citing SEP v1.1 Equation 5.1"
+      k_value_relative_se: 1.028
+      status: inferred
+      note: >-
+        INFERRED effective k: z(70%) = 0.5244 multiplies the 95% CI half-width,
+        which is 1.96 SE, giving 1.028 relative standard errors and crediting at
+        the 15.2nd percentile. The DERIVATION is ours; the rule and the
+        half-width definition are stated in the project document. The SEP itself
+        has not been read directly - that is the remaining gap here.
+
+# Cross-protocol severity, all three on identical measured variance (D-057):
+#   ACCU (60% exceedance, per VM0042's own footnote)  k = 0.253  -> 40th pct
+#   Verra VM0042 v2.2                                k = 0.431  -> 33.3rd pct
+#   CAR SEP v1.1                                     k = 1.028  -> 15.2nd pct
+# CAR SEP is 2.38x VM0042 and 4.06x the ACCU rule. The same soil, design and
+# variance yield a fourfold different haircut depending only on the registry.
+
+# ---------------------------------------------------------------------------
 # Registries approached and not yet yielding a project record.
 # Logged per the two-attempts rule so the next pass starts from a list.
 # ---------------------------------------------------------------------------
@@ -643,10 +795,19 @@ blocked_or_deferred:
     outcome: not attempted this session
     next_step: "both publish project documents; Gold Standard has an SOC framework methodology"
   - target: Verra VM0042 uncertainty rule as written in the methodology
-    attempts: 0
+    attempts: 1
     outcome: >-
-      NOT verified. The brief describes VM0042 as using '0.43 SE'; the CAR SEP
-      rule verified here is z(70%) x half-width of the 95% CI, which is a
-      different construct. The VM0042 rule must be read from the methodology
-      before either is quoted alongside the other.
-    next_step: "read VM0042 v2.1/v2.2 section on uncertainty deduction directly"
+      RESOLVED 2026-08-12 (D-057). Both VM0042 v2.2 (greenlined, Oct 2025) and
+      the v2.0 public-comment final draft were retrieved from verra.org on the
+      first attempt and are held. 0.4307 is CONFIRMED in v2.2 Sec 8.6.4 Eq 74
+      (33.3rd percentile) - the attribution to VM0042 was correct, only
+      unverified. It is a t-value not a constant, and it is NOT present in the
+      v2.0 text held. Also recovered: the ESM requirement, 5-yearly
+      remeasurement, control-site minimums, the laboratory analytical-error
+      definition, and Eq (2) `n >= (S(t_a+t_b)/MDD)^2` - the inverted audit's own
+      equation, which the methodology declines to require.
+    next_step: >-
+      obtain the APPROVED v2.0 (not the public-comment draft) to settle whether
+      0.4307 applies to VCS 4022's crediting. Note the access distinction: the
+      verra.org METHODOLOGY library is directly retrievable; only the
+      registry.verra.org PROJECT registry is SPA-blocked."

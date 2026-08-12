@@ -197,3 +197,30 @@ def test_blocked_targets_record_their_attempt_count(corpus):
             f"{entry['target']!r} records {entry['attempts']} attempts; the rule "
             "is two, then log and move on"
         )
+
+def test_protocol_requirements_are_kept_separate_from_projects(corpus):
+    """A methodology requirement is what a project OUGHT to do; a project field
+    is what it DID. Merging them is the easiest way to overstate this corpus, so
+    the two live in different blocks and the requirement block may not carry a
+    `project_id`."""
+    for block in corpus.get("protocol_requirements", []):
+        assert block.get("protocol"), "a protocol_requirements entry does not name its protocol"
+        assert block.get("version_read"), f"{block['protocol']} does not say which version was read"
+        assert block.get("source") in corpus["sources"], (
+            f"{block['protocol']} cites source {block.get('source')!r}, which is not registered"
+        )
+        assert "project_id" not in block, (
+            f"{block['protocol']} carries a project_id - requirements are not project records"
+        )
+
+
+def test_protocol_requirement_fields_declare_status_and_locator(corpus):
+    bad = []
+    for block in corpus.get("protocol_requirements", []):
+        for name, sub in block.items():
+            if isinstance(sub, dict) and "status" in sub:
+                if sub["status"] not in STATUSES:
+                    bad.append(f"{block['protocol']}.{name}: {sub['status']!r}")
+                if not sub.get("locator"):
+                    bad.append(f"{block['protocol']}.{name}: no locator")
+    assert not bad, "\n  - ".join(["protocol requirement problems:"] + bad)
