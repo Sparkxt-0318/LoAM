@@ -129,3 +129,62 @@ per-project variance estimate nobody can supply.
 Updated: `docs/phase0_summary.md` Finding 3 (rewritten), `docs/phase1_design.md`
 and `scripts/derive_g1_napeshm.py` (annotated where they still promised the
 surface).
+
+
+## TASK 3 — ADVERSARIAL REVIEW OF THE INVERTED AUDIT — **COMPLETE**
+Branch `claude/loam-inverted-audit-redteam` · `docs/inverted_audit_redteam.md` · no implementation
+
+The design doc from this session's item 3 exists on `claude/loam-inverted-audit-design`
+(PR #16), so the task ran rather than being skipped.
+
+**REQUIRED CHECK — does the design commit to the LOW END of the variance
+envelope? YES, explicitly.** §2.4 states it as a hard rule with the exact
+`bias_direction` mapping (`inflates`→`value_low`, `deflates`→`value`), worked
+consequences (`VC-BPS-006` enters at 9.6%, not 11.5%), and the required headline
+form. A central-estimate run is required as a sensitivity and **forbidden as the
+headline**. No flag needed — but see C-2 below, which shows the rule is not the
+probabilistic statement its wording implies.
+
+### Two objections that land hard
+
+**B-1 is FATAL to the current framing, and it is the best objection in the
+review.** VM0042's Equation (2) is optional *by design*: the protocol regulates
+precision through the **uncertainty deduction**, not through a minimum sample
+size. Sample less, get fewer credits. That is outcome-based regulation and
+arguably better than a minimum-n rule. The audit currently takes an optional
+planning aid, declares it mandatory, and calls the gap a scandal — **a registry
+would win that exchange in public.**
+
+*The fix makes the method better:* **stop computing required-`n`; compute the
+implied uncertainty deduction and compare it with the one actually applied.**
+It uses the registry's own instrument on the registry's own terms, and it is
+**checkable today** against VCS 4022's published **31.35%** — no waiting on the
+§10 blockers.
+
+**C-3 falsifies a prescription in the doc, and I verified it numerically.** §2.1
+says the fixed point "converges in a handful of iterations". The map is
+*decreasing* in `n`, and naive iteration **cycles**: at σ=3, Δ=3 it oscillates
+12.71 / 12.50 / 12.71 / 12.50 forever, while bisection returns n\*=13 cleanly. It
+cycles at **small n — exactly the regime the audit cares about.** Use bisection.
+
+### Two objections that improve the deliverable rather than defending it
+
+- **A-2 — report the break-even σ**, not just the break-even price. The developer
+  must then assert a variance for their own soil and defend it, which they
+  usually cannot, because they never published their pre-sampling variance
+  either.
+- **B-2 — report the stratification efficiency** that would be needed to bring
+  the claim inside reach. Another quantity nobody published.
+
+Both push the burden one level deeper onto undisclosed quantities, which is the
+inverted audit's own logic applied recursively.
+
+### Everything else
+
+10 objections across three adversaries, each stated at its strongest, judged, and
+given a fix. Ten prioritised changes listed at the end of the document. **Nothing
+implemented.**
+
+**Nothing here touches the corpus finding.** These are objections to the audit,
+not to the observation that 999 of 999 Australian soil carbon projects publish no
+sampling design.
