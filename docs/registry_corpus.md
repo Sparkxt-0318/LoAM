@@ -236,12 +236,31 @@ projects) was enumerated; a page-2 POST returned 302 and a CSV export returned
 CAR1459 was reached by direct ID. **No CAR-wide census appears in this file**,
 and none should be inferred.
 
-**One thing in the brief did not survive checking.** The brief describes VM0042
-as using "0.43 SE". The rule verified here is the **CAR SEP** rule, which is
-different: `UNC = z(70%) × (half-width of the 95% CI) / ER`, with z(70%) =
-0.5244. The VM0042 uncertainty rule was **not** read from the methodology this
-session and is not recorded. The two must not be quoted alongside each other
-until it is.
+**The 0.43 figure is now verified, and it was never wrong** (D-057). VM0042 v2.2
+§8.6.4 Eq. 74 gives `t₀.₆₆₇` "equal to approximately **0.4307** at large sample
+sizes", crediting at the 33.3rd percentile. It had been cited from Potash et al.
+rather than from the methodology — unverified, not misattributed.
+
+**But it is not interchangeable with the CAR SEP rule, and the earlier claim here
+that they are "different constructs" was the wrong way to say so.** They are the
+same construct with different severity, and the severity difference is large:
+
+| protocol | multiplies | effective `k` in relative-SE units | credits at |
+|---|---|---|---|
+| ACCU (per VM0042's own footnote) | SE | **0.253** | 40th pct |
+| Verra VM0042 v2.2 | relative SE | **0.431** | 33.3rd pct |
+| CAR SEP v1.1 | **1.96 × SE** (95% CI half-width) | **1.028** | 15.2nd pct |
+
+**CAR SEP is 2.38× more conservative than VM0042 and 4.06× more conservative than
+the Australian rule, on identical measured variance.** The same soil, the same
+design and the same variance produce a fourfold different haircut depending only
+on which registry the project listed with. That belongs in the Phase 5 writeup in
+its own right.
+
+**Version caveat:** 0.4307 is verified in **v2.2**. It is absent from the v2.0
+document held (a tracked-changes redline), and **VCS 4022 applied v2.0** — so its
+31.35% deduction was not computed under the 0.4307 rule and is not described as
+such in `projects.yaml`.
 
 ---
 
