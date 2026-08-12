@@ -330,7 +330,8 @@ def main() -> int:
     print("\n  Joint model - are texture and SOC level entangled?")
     jm = joint_covariate_model(dh)
     result["joint_covariate_model"] = jm
-    print(f"    {jm['n_treatments']} treatments with >=3 reps {jm['by_country']}")
+    print(f"    {jm['n_treatments']} treatments (n>=2, debiased+weighted) "
+          f"{jm['by_country']}  reps {jm['replicate_hist']}")
     for v, s in jm["spearman"].items():
         print(f"    spearman {v:9} rho={s['rho']:+.3f} p={s['p']:.3f}")
     if "retired_unweighted_specification" in jm:
