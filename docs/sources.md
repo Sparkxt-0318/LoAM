@@ -453,15 +453,15 @@ paraphrased into a number without saying where it came from. Unpublished
 correspondence cannot be checked by a reader, so anything resting on it says so
 explicitly.
 
-### Eric Potash (University of Illinois) — August 2026, three messages
+### Eric Potash (University of Illinois) — three messages, concluding 2026-08-11
 
 Corresponding author of **Potash, Bradford, Oldfield & Guan (2025)**,
 *Environ. Res. Lett.* **20** 024025, doi:10.1088/1748-9326/ada16c
 (open access; data doi:10.6084/m9.figshare.28083182).
 
-⚠️ **Exact dates to be filled in from the PI's mail client before any of this is
-cited externally.** Month precision is what is recorded here, and it is not
-enough for a citation.
+The reply confirming the reference-soil typo (item 1 below) arrived
+**2026-08-11 at 13:35 UTC** — the third of the three messages. Date supplied by
+the PI on 2026-08-12 and recorded here as the citable locator.
 
 Three things came out of it, in descending order of how much they change:
 

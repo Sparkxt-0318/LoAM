@@ -2217,8 +2217,8 @@ their lab term doubles again; the like-for-like 1.20× is untouched either way,
 because it uses their relative errors and not their stock.
 
 **Locator.** E. Potash (University of Illinois), personal communication to the
-PI, August 2026 — third of three exchanged messages. ⚠️ **Exact date to be
-filled in from the PI's mail client before this is cited anywhere external.**
+PI, **2026-08-11, 13:35 UTC** — third of three exchanged messages, the reply
+confirming the reference-soil typo. Date supplied by the PI 2026-08-12.
 
 ---
 
@@ -2282,7 +2282,7 @@ every way a row can depend on an open question.
 between-plot variability. D-040's invariance result survives a fourth
 independent attempt — but the test has a detection limit of about 7% analytical
 error, and Potash's stated range starts at 1%, so the null is bounded and the
-bound is part of the finding.** Prompted by author correspondence (August 2026);
+bound is part of the finding.** Prompted by author correspondence (2026-08-11);
 script `scripts/ic_conditioning.py`, results `data/processed/ic_conditioning.json`,
 written up in `docs/ic_conditioning.md`. **No variance-table row written — the
 brief said report first, and this is the report.**
@@ -2351,11 +2351,18 @@ weighted by `1/psi'(nu/2)`), site-clustered SEs. **Not one specification in the
 headline tier is significant**; Spearman rho = +0.079, p = 0.37 over 135
 treatments. Two readings worth keeping:
 
-* **Conditioning on climate collapses the headline coefficient by 72%**, from
-  +0.227 to +0.064. That is what a confound looks like from the inside. In the
-  wider tiers it does not shrink — stated because it is the honest
-  counter-observation, and the reason this is written as "consistent with"
-  rather than "demonstrates".
+* **Conditioning on climate shrinks the headline coefficient by 72%**, +0.227 to
+  +0.064 — and this must NOT be reported as the confound seen from the inside.
+  The shrinkage does not replicate: in T2 and T4 climate conditioning *raises*
+  it (+0.345 → +0.452, +0.236 → +0.335). One tier of four, on a coefficient
+  never distinguishable from zero, is not evidence of confounding any more than
+  the raw coefficient was evidence of an effect. **What the conditioning tests
+  DO establish is that the confound is structurally unresolvable here**:
+  inorganic carbon, aridity, pH and country are collinear at site level, and the
+  headline tier contains FOUR carbonate sites (nine in the widest). Conditioning
+  on climate with four carbonate sites cannot separate a carbonate effect from an
+  aridity effect even in principle. **There is no effect to adjudicate, and this
+  design could never have adjudicated one.**
 * **Conditioning on pH collapses it in every tier.** Inorganic carbon and pH
   correlate at **rho = +0.692** across 93 sites; they are two measurements of one
   soil-chemical axis and cannot both carry a mechanism.

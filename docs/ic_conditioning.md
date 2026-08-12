@@ -2,7 +2,7 @@
 
 **Question.** D-040 found between-plot CV in cropland SOC approximately
 invariant across every covariate a spatially explicit MDC surface would be built
-from. Eric Potash, in correspondence (August 2026), named a candidate the table
+from. Eric Potash, in correspondence (2026-08-11), named a candidate the table
 had never tested:
 
 > "those 4% and 2% error numbers are representative but can vary quite a lot
@@ -142,13 +142,22 @@ rho over all 135 treatments is +0.079 (p = 0.37).
 
 Two things are worth reading off this table rather than skipping past.
 
-**Conditioning on climate collapses the coefficient in the headline tier** —
-from +0.227 to +0.064, a **72% reduction**. That is what a confound looks like
-from the inside: the raw association is mostly aridity, and once aridity is in
-the model the carbonate term has almost nothing left to explain. In the wider
-tiers climate conditioning does *not* shrink it, which is the honest
-counter-observation and the reason this is stated as "consistent with" rather
-than "demonstrates".
+**Conditioning on climate shrinks the headline coefficient by 72%** — +0.227 to
++0.064. It is tempting to read that as the confound seen from the inside, and
+**it should not be reported that way.** The shrinkage does not replicate: in T2
+and T4 climate conditioning *raises* the coefficient (+0.345 → +0.452 and
++0.236 → +0.335). One tier of four, in a coefficient that was never
+distinguishable from zero to begin with, is not evidence of confounding any more
+than the raw coefficient was evidence of an effect.
+
+**What the conditioning tests do establish is that the confound is structurally
+unresolvable in NAPESHM.** Inorganic carbon, aridity, pH and country are
+collinear at the site level (see the confound table below), and the headline tier
+contains **four** carbonate sites — nine in the widest. Conditioning on climate
+with four carbonate sites cannot separate a carbonate effect from an aridity
+effect *even in principle*. So the honest statement is not "the effect is
+climate in disguise" and not "the effect is real"; it is **there is no effect to
+adjudicate, and this design could never have adjudicated it.**
 
 **Conditioning on pH also collapses it**, in every tier (t = +0.41 to +0.63).
 Inorganic carbon and pH correlate at rho = **+0.692** across the 93 sites, so
