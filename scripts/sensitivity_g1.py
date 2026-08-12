@@ -74,6 +74,53 @@ def fmt(e: dict) -> str:
             f"n={e['n_eus']:>4} EU / {e['n_treatments']:>3} trt / {e['n_sites']:>2} sites")
 
 
+def _wls_cluster(t, terms, label):
+    """Weighted least squares with SITE-clustered standard errors.
+
+    Clustering matches the bootstrap in ``derive_g1_napeshm`` - sites are the
+    top-level independent unit, and treatments within a site are not
+    independent. Unclustered SEs here would be too narrow for the same reason
+    bootstrapping rows rather than sites would be (D-029).
+    """
+    cols = list(terms)
+    sub = t.dropna(subset=cols + ["y", "w"])
+    if len(sub) <= len(cols) + 2 or sub.site.nunique() < 3:
+        return {"model": label, "not_estimable": True,
+                "n_treatments": int(len(sub)), "n_sites": int(sub.site.nunique())}
+    X = np.column_stack([np.ones(len(sub))] + [sub[c].to_numpy(float) for c in cols])
+    names = ["intercept"] + cols
+    wv, y = sub.w.to_numpy(float), sub.y.to_numpy(float)
+    XtW = X.T * wv
+    try:
+        bread = np.linalg.inv(XtW @ X)
+    except np.linalg.LinAlgError:
+        return {"model": label, "not_estimable": True, "reason": "singular design"}
+    beta = bread @ (XtW @ y)
+    r = y - X @ beta
+    meat = np.zeros((X.shape[1], X.shape[1]))
+    for _, idx in sub.groupby("site").groups.items():
+        pos = sub.index.get_indexer(idx)
+        u = (X[pos].T @ (wv[pos] * r[pos])).reshape(-1, 1)
+        meat += u @ u.T
+    G = sub.site.nunique()
+    V = bread @ meat @ bread * (G / max(G - 1, 1))
+    se = np.sqrt(np.clip(np.diag(V), 0, None))
+    ss_tot = float((((y - np.average(y, weights=wv)) ** 2) * wv).sum())
+    ss_res = float(((r ** 2) * wv).sum())
+    return {
+        "model": label,
+        "n_treatments": int(len(sub)),
+        "n_sites": int(G),
+        "min_replicates_included": int(sub.n.min()),
+        "weighted_r2": round(1 - ss_res / ss_tot, 4) if ss_tot > 0 else None,
+        "coefficients": {
+            nm: {"beta": round(float(b), 4), "se_cluster_site": round(float(s), 4),
+                 "t": round(float(b / s), 2) if s > 0 else None}
+            for nm, b, s in zip(names, beta, se)
+        },
+    }
+
+
 def joint_covariate_model(dh: pd.DataFrame) -> dict:
     """Do texture and SOC level jointly predict between-plot variability?
 
@@ -82,52 +129,89 @@ def joint_covariate_model(dh: pd.DataFrame) -> dict:
     on either one partly cancels the other's effect. A joint model separates
     them.
 
-    Response is log(within-treatment SD of log SOC) - i.e. log CV - per
-    treatment. Treatments with only 2 replicates are excluded: an SD on one
-    degree of freedom carries almost no information and they are all from the
-    same 8 sites, so including them would let one country drive the fit.
+    ESTIMATOR REPAIRED 2026-08-12 (D-058). This function previously regressed
+    ``log(sd)`` on covariates by UNWEIGHTED OLS, restricted to treatments with
+    at least three replicates. That specification returned t = -0.37, +4.58,
+    -4.53 and +0.75 on the same coefficient across four nested NAPESHM samples -
+    changing sign twice - because ``log s`` is biased by an amount that depends
+    on the degrees of freedom, and replicate count is perfectly aliased with
+    country in this dataset (D-040 check 1c). Dropping the 2-replicate
+    treatments does not fix that; it only changes which treatments carry the
+    bias, which is why the sign moved when the filter changed.
+
+    The response is now the DEBIASED log within-treatment variance from
+    ``loam.logvar``, weighted by ``1/psi'(nu/2)``, with site-clustered standard
+    errors. Every treatment with at least two replicates contributes, at its
+    true information content. The retired specification is still computed, and
+    reported beside the repaired one, so the instability stays visible rather
+    than being quietly deleted.
     """
     from scipy import stats
+
+    from loam import logvar
 
     d = g1._with_replicates(dh[dh.log_soc.notna()])
     g = d.groupby("treatmentid")
     tr = pd.DataFrame({
-        "sd_log": g.log_soc.std(ddof=1), "mean_soc": g.b_soc.mean(),
+        "s2": g.log_soc.var(ddof=1), "mean_soc": g.b_soc.mean(),
         "clay": g.b_clay.mean(), "sand": g.b_sand.mean(),
-        "n": g.size(), "country": g.country.first(),
-    }).dropna()
-    tr = tr[(tr.n >= 3) & (tr.sd_log > 0)]
+        "n": g.size(), "country": g.country.first(), "site": g.sitecode.first(),
+    }).dropna(subset=["s2", "mean_soc", "n"])
 
-    out = {"n_treatments": int(len(tr)),
-           "by_country": {k: int(v) for k, v in tr.country.value_counts().items()},
-           "spearman": {}}
+    y, w, kept = logvar.prepare(tr.s2.tolist(), tr.n.tolist())
+    tr = tr.iloc[kept].copy()
+    tr["y"], tr["w"] = y, w
+    tr["log_mean_soc"] = np.log(tr.mean_soc)
+    tr["sand_frac"] = tr.sand / 100.0
+
+    out = {
+        "estimator": ("debiased log within-treatment variance "
+                      "(E[log s^2] = log sigma^2 + psi(nu/2) - log(nu/2)), "
+                      "weighted by 1/psi'(nu/2), site-clustered SEs; "
+                      "see src/loam/logvar.py and D-058"),
+        "n_treatments": int(len(tr)),
+        "n_sites": int(tr.site.nunique()),
+        "by_country": {k: int(v) for k, v in tr.country.value_counts().items()},
+        "replicate_hist": {int(k): int(v) for k, v in tr.n.value_counts().sort_index().items()},
+        "spearman": {},
+    }
     for v in ("mean_soc", "clay", "sand"):
-        rho, p = stats.spearmanr(tr[v], tr.sd_log)
+        sub = tr.dropna(subset=[v])
+        rho, p = stats.spearmanr(sub[v], sub.y)
         out["spearman"][v] = {"rho": round(float(rho), 3), "p": round(float(p), 4)}
 
-    X = np.column_stack([np.ones(len(tr)), np.log(tr.mean_soc.values),
-                         tr.sand.values / 100])
-    y = np.log(tr.sd_log.values)
-    beta, *_ = np.linalg.lstsq(X, y, rcond=None)
-    resid = y - X @ beta
-    s2 = float(resid @ resid) / (len(tr) - X.shape[1])
-    se = np.sqrt(np.diag(np.linalg.inv(X.T @ X)) * s2)
-    out["ols_log_cv"] = {
-        name: {"beta": round(float(b), 3), "se": round(float(s), 3),
-               "t": round(float(b / s), 2)}
-        for name, b, s in zip(["intercept", "log_mean_soc", "sand_frac"], beta, se)
-    }
-    out["r2"] = round(1 - float(resid @ resid)
-                      / float(((y - y.mean()) ** 2).sum()), 3)
+    fit = _wls_cluster(tr, ["log_mean_soc", "sand_frac"],
+                       "D-040 joint model, REPAIRED (debiased + weighted)")
+    out["repaired"] = fit
+    out["ols_log_cv"] = fit.get("coefficients", {})
+    out["r2"] = fit.get("weighted_r2")
+
+    # The retired specification, kept and reported so the instability that
+    # motivated D-058 remains inspectable from the same output.
+    old = tr[tr.n >= 3].copy()
+    if len(old) > 6 and old.site.nunique() >= 3:
+        old["y"] = np.log(np.sqrt(old.s2))
+        old["w"] = 1.0
+        out["retired_unweighted_specification"] = _wls_cluster(
+            old, ["log_mean_soc", "sand_frac"],
+            "RETIRED (D-058): unweighted OLS on log(SD), n>=3 only")
+        out["retired_specification_warning"] = (
+            "Reported for comparison ONLY. This is the estimator D-058 retired; "
+            "it must never be the basis of a conclusion. See src/loam/logvar.py."
+        )
 
     # D-029 cites a log-log slope of ~1.2 for raw SD vs mean. Reproduce it here
     # so the log-scale justification is checked against the current scope rather
     # than inherited from the retired one. 0 = constant SD, 1 = constant CV.
+    # NOT the retired specification: this estimates a SCALING EXPONENT to justify
+    # the log parameterisation, not a covariate model of variance, and D-029
+    # already rests on it. Left as-is by decision, flagged in D-058.
     raw = pd.DataFrame({"sd": g.b_soc.std(ddof=1), "mean": g.b_soc.mean()}).dropna()
     raw = raw[(raw.sd > 0) & (raw["mean"] > 0)]
     out["d029_raw_slope"] = round(
         float(np.polyfit(np.log(raw["mean"].values), np.log(raw.sd.values), 1)[0]), 3)
     return out
+
 
 
 def main() -> int:
@@ -249,6 +333,11 @@ def main() -> int:
     print(f"    {jm['n_treatments']} treatments with >=3 reps {jm['by_country']}")
     for v, s in jm["spearman"].items():
         print(f"    spearman {v:9} rho={s['rho']:+.3f} p={s['p']:.3f}")
+    if "retired_unweighted_specification" in jm:
+        rc = jm["retired_unweighted_specification"].get("coefficients", {})
+        bits = "  ".join(f"{k}: beta={v['beta']:+.3f} t={v['t']:+.2f}"
+                          for k, v in rc.items() if k != "intercept")
+        print(f"    RETIRED spec (D-058, comparison only): {bits}")
     for name, c in jm["ols_log_cv"].items():
         if name == "intercept":
             continue

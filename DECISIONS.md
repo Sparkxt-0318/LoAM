@@ -79,6 +79,7 @@ That is enforced, not requested: see D-032.
 | D-055 | decided | **FINDING**: inorganic carbon is not the conditioning covariate; D-040 invariance survives, at a ~7% detection limit |
 | D-056 | decided | **FINDING**: registry sampling designs are mostly unpublished — Phase 5 corpus started, gap quantified |
 | D-057 | decided | VM0042 read from primary: 0.4307 **confirmed**, version caveat, and VM0042's own Eq. 2 **is** the inverted audit |
+| D-058 | decided | estimator repair: debiased weighted log-variance replaces D-040's unweighted `log(sd)`; conclusion holds |
 
 ---
 
@@ -2779,6 +2780,142 @@ holds for the **project registry** (`registry.verra.org`, an Angular SPA) but
 **not** for the **methodology library** (`verra.org/wp-content/uploads/...`),
 which served both PDFs on the first attempt. The two were conflated. Methodology
 documents are directly retrievable; project design documents are not.
+
+---
+
+
+**D-058 — ESTIMATOR REPAIRED. D-040's joint covariate model used an unweighted
+OLS on `log(sd)` restricted to n>=3; it is replaced everywhere by a debiased,
+information-weighted log-variance estimator in `src/loam/logvar.py`, guarded by a
+test that fails if the retired idiom returns. D-040's substantive conclusion
+SURVIVES the repair — and it survived a genuinely harder test than the brief
+anticipated, because the reasoning behind that anticipation runs the other way.**
+
+**The defect.** `log s` is a biased estimator of `log sigma`, and the bias
+depends on the degrees of freedom:
+
+    E[log s^2] = log sigma^2 + psi(nu/2) - log(nu/2)
+
+At `nu = 1` that is **-1.27 in log-variance units — a factor of 3.6 downward** —
+decaying towards zero as `nu` grows. So an unweighted regression on `log(sd)`
+across groups with unequal replicate counts partly fits the replicate count. In
+NAPESHM replicate count is **perfectly aliased with country** (D-040 check 1c),
+which is the aliasing that made the coefficient move. Dropping the
+low-replicate treatments does not fix it — it changes which treatments carry the
+bias, which is precisely why the sign moved when the filter changed.
+
+**Where the instability was actually demonstrated, stated precisely because the
+brief's summary compresses it.** The `t = -0.37, +4.58, -4.53, +0.75` sequence is
+the coefficient on **inorganic carbon** across the four nested tiers of D-055 —
+not a coefficient D-040 itself reported. On **D-040's own two covariates in the
+headline tier**, the retired specification is comparatively well behaved
+(`log_mean_soc` t = +2.25, `sand_frac` t = +2.25). **So D-040's published numbers
+were never the ones flipping.** That distinction matters and is recorded so the
+repair is not oversold.
+
+**The fix**, in one module rather than six unnamed lines inside one function:
+
+* debias — `y = log(s^2) - psi(nu/2) + log(nu/2)`, unbiased at every `nu`;
+* weight by information — `w = 1/psi'(nu/2)`, so a 2-replicate treatment counts
+  for what it is worth instead of being dropped or counted equally;
+* site-clustered standard errors, matching the bootstrap's clustering (D-029).
+
+`psi` and `psi'` are computed in **exact closed form**, not by series: `nu` is
+always a positive integer, so `nu/2` is always an integer or a half-integer, and
+both functions have exact recurrences from `psi(1) = -gamma` and
+`psi(1/2) = -gamma - 2 ln 2`. That keeps `src/loam` standard-library only, so the
+guard runs in CI. Verified against `scipy` to **1.8e-15** worst case across
+`nu = 1..101`, against both recurrences, and by seeded Monte Carlo.
+
+**RESULT — D-040's conclusion holds.**
+
+| | retired spec | **repaired** |
+|---|---|---|
+| treatments | 80 (n>=3 only) | **135 (all with n>=2)** |
+| sites | 19 | **26** |
+| country split | 75 USA / 5 Mexico | **75 USA / 60 Mexico** |
+| `log_mean_soc` | +0.423 (t = +2.25) | **+0.801 (t = +2.37)** |
+| `sand_frac` | +0.915 (t = +2.25) | **+1.720 (t = +3.06)** |
+| R^2 | 0.0935 | **0.0722** |
+
+**The covariates explain LESS under the correct estimator, not more** — weighted
+R^2 = **0.072** against the 0.093 D-040 reported. The invariance finding is
+unchanged and slightly strengthened. Both coefficients remain *nominally*
+significant, exactly as D-040 recorded, so its filing of them as **a hypothesis,
+not a parameterization**, stands verbatim. D-029's log-scale justification also
+reproduces: raw log-log slope **1.223** against the ~1.2 cited.
+
+**THE BRIEF'S REASONING IS BACKWARDS, AND CHECKING IT WAS THE POINT.** The brief
+expected the conclusion to hold because "a noisy estimator makes a null HARDER to
+reach". It is the other way round: excess noise **inflates standard errors** and
+**depresses R^2**, and both of those *favour* a null. A noisy estimator therefore
+makes a null **easier** to reach, and correcting it is a test the null can fail —
+if a covariate signal had been hiding under the noise, the repair is what would
+expose it.
+
+**So the repair was a real test, not a formality, and D-040 passed it.** That is
+a stronger verification than the brief's argument would have licensed, and it is
+the reason the instruction to verify rather than assume was right even though the
+stated reason for it was not.
+
+**ONE CAVEAT OF D-040 IS RETIRED AND REPLACED.** D-040's joint-model caveat reads
+"the joint model's sample is **75 of 80 treatments from the USA**". That is no
+longer true of the repaired model: including the 2-replicate treatments at their
+true weight re-admits Mexico, giving **75 USA / 60 Mexico**. The USA-dominance
+caveat does not apply to the repaired fit.
+
+**It is replaced by a different one, not removed.** The re-admitted Mexican
+treatments are *exactly* the 2-replicate treatments (D-040 check 1c), so country
+and information content remain confounded — differently, but they remain. And the
+`sand_frac` coefficient nearly doubles (0.915 -> 1.720) when Mexico is
+re-admitted, which is what a country effect wearing a texture hat would look
+like. **D-040 check 1c's prohibition still stands: no Mexico/USA difference in
+this table may be read as a climate or texture difference.** The repair fixes a
+statistical bias; it does not fix a design confound, and it must not be described
+as having done so.
+
+**AUDIT OF THE REST OF THE REPO.** Three other sites were examined:
+
+1. `scripts/ic_conditioning.py` — already used the debiased estimator (D-055).
+   **Now routed through `loam.logvar` instead of duplicating the arithmetic**, so
+   there is one definition. Its deliberate reproduction of the retired spec is
+   relabelled `RETIRED`, and it is allowlisted in the guard with a reason.
+2. `scripts/sensitivity_g1.py::joint_covariate_model` — **the one genuine
+   offender. Repaired.** The retired specification is still computed and printed
+   beside the repaired one, so the instability stays inspectable from the same
+   output rather than being quietly deleted.
+3. `scripts/derive_temporal.py` — **examined and NOT the same failure mode.** Its
+   `std(ddof=1)` uses are per-plot residual SDs over ~29 occasions each, so `nu`
+   is large and roughly equal across plots, and the consumers are **Spearman**
+   (rank-based, insensitive to a monotone bias) and a one-way F on those SDs.
+   The D-040 defect is specific to tiny, unequal `nu`. Left unchanged, with the
+   reasoning recorded here rather than in a commit message.
+
+**One thing deliberately NOT changed, flagged for the PI.**
+`sensitivity_g1.d029_raw_slope` fits an unweighted log-log slope of raw SD
+against mean to reproduce D-029's ~1.2. It is unweighted, and it is *not* the
+retired specification: it estimates a **scaling exponent** to justify the log
+parameterisation, not a covariate model of variance, and D-029 — a decided
+decision — already rests on it. Changing it silently would be worse than leaving
+it. **Recommendation: leave as-is; if the PI wants it debiased too, that is a
+re-opening of D-029, not a bug fix.**
+
+**THE GUARD.** `tests/test_logvar_estimator.py` scans `scripts/` for the retired
+idiom — a log taken of a standard deviation or of `sqrt` of a variance — and
+fails if it appears outside a two-file allowlist, each entry carrying a reason. A
+second test requires every allowlisted file to label the reproduction `RETIRED`,
+so an allowlist nobody re-reads cannot become a hole. **That second test caught a
+real gap on its first run**: `ic_conditioning.py` was computing the retired spec
+without labelling it.
+
+**What breaks if wrong.** The pattern guard is textual and therefore defeatable
+by an author who wants to defeat it; it is a reminder, not a proof. The
+behavioural half — that `sensitivity_g1` imports `loam.logvar` and calls
+`prepare` — is harder to fake accidentally. If the Gaussian assumption behind
+`nu*s^2/sigma^2 ~ chi^2_nu` fails badly (heavy tails in log SOC within
+treatment), the debiasing is approximate rather than exact; the direction of that
+error is toward under-correction, which returns us toward the retired
+specification's behaviour rather than past it.
 
 ---
 
