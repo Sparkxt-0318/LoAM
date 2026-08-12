@@ -179,6 +179,24 @@ cycles at **small n — exactly the regime the audit cares about.** Use bisectio
 Both push the burden one level deeper onto undisclosed quantities, which is the
 inverted audit's own logic applied recursively.
 
+### ⚠️ The independence check FAILED, and the review is weaker for it
+
+Three independent agents were given the design doc cold, one per adversary
+persona, with no access to my reasoning. **All three failed to return usable
+output** — `StructuredOutput retry cap exceeded`, ~373 s, ~191k tokens, a
+mechanical schema failure rather than a substantive one. Logged rather than
+retried, per the two-attempt rule.
+
+**So every objection in the document is mine, and the document says so at the
+top.** That matters because the entire value of a red team is independence. The
+two hardest findings are the ones least dependent on my judgement — **C-3 is
+verified numerically and either reproduces or it does not**, and **B-1 turns on a
+quoted reading of VM0042's own text** — but the rest is argument from a single
+source.
+
+*Cheapest independent pass:* a human reading §1 and §2.1 of the design doc with
+B-1 and C-3 in hand.
+
 ### Everything else
 
 10 objections across three adversaries, each stated at its strongest, judged, and

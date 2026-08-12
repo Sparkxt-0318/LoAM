@@ -11,6 +11,36 @@ them **falsifies a prescription in my own design doc**.
 
 ---
 
+## Provenance of this review — read before weighting it
+
+**Every objection below is mine.** That is a limitation, and it is disclosed
+rather than glossed, because the value of a red team is independence and this one
+does not have it.
+
+An independent cross-check **was attempted and failed.** Three separate agents
+were given the design document cold, one per adversary persona, with no access to
+my reasoning. All three read the document and produced analysis, and all three
+failed to return it in the required structured form — the run aborted with
+`StructuredOutput retry cap exceeded` on all three, after ~373 s and ~191k tokens.
+The failure is mechanical (schema serialisation), not substantive, but the output
+is unrecoverable in usable form and **no independent finding is incorporated
+here.**
+
+Per the two-attempt rule this is logged rather than retried, and it is logged in
+the document rather than only in the handoff, because a reader assessing these
+objections should know that nobody checked them but me.
+
+**What that means for how to read this.** The two hardest findings are the ones
+least dependent on my judgement: **C-3 is verified numerically** and either
+reproduces or it does not, and **B-1 turns on a reading of VM0042's own text**,
+which is quoted and can be checked in one minute against the primary. The rest are
+argument, and argument from a single source.
+
+**If an independent pass is wanted, the cheapest version is a human reading §1 and
+§2.1 of the design doc with B-1 and C-3 in hand.**
+
+---
+
 ## Required check — does the design commit to the low end of the envelope?
 
 **Yes, explicitly, and it is load-bearing rather than decorative.**
