@@ -342,3 +342,34 @@ repair). **D-054 stays open** with new evidence attached, per instruction.
 5. **One more attempt at the approved VM0042 v2.0.**
 6. **Reply to Potash** — the IC result is a bounded null and he asked to hear
    either way. `docs/ic_conditioning.md` is written to be quotable.
+
+
+---
+
+## POST-MERGE CORRECTION, 2026-08-12
+
+**The stacked merge did not reach `main`.** All six PRs (#13–#19) were merged,
+but each merged into its **base branch** rather than into `main`, because GitHub
+did not retarget the stack when #13 landed. Content cascaded *down* the chain and
+`main` was left with #13 only — missing all six deliverables.
+
+**No work was lost.** `claude/loam-invariance-finding` accumulated everything
+(6/6 deliverables, content-identical to `claude/loam-inverted-audit-redteam`,
+merges clean against `main`, 176 tests pass). One PR from it to `main` completes
+what #14–#19 were supposed to do.
+
+**Two corrections were made to `docs/phase5_inverted_audit_design.md` before that
+PR**, so `main` never carries a document that contradicts its own companion:
+
+1. **§2.1's algorithm is fixed.** It prescribed fixed-point iteration and claimed
+   convergence; red-team C-3 demonstrated it **cycles** at small `n` (σ=3, Δ=3
+   oscillates 12.71/12.50 indefinitely). Replaced with **bisection**, with the
+   demonstration table inline and the correction marked as a correction.
+2. **B-1 is flagged at the top of the document**, pointing at the red team. The
+   design is left standing rather than rewritten, because the restructuring it
+   recommends — implied vs applied uncertainty deduction — **is a decision the PI
+   has not made**, and rewriting ahead of it would be exactly the
+   build-ahead-of-a-decision failure rule 4 exists to prevent.
+
+**PR #12 remains open and still should not be merged.** It would now delete D-053
+out from under D-054, D-056, D-057 and D-058.

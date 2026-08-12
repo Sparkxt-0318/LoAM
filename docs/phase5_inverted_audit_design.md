@@ -5,6 +5,23 @@ nothing should be built from it until the decisions listed in
 [§10](#10--decisions-the-pi-owes-before-this-can-be-built) are made. Rule 4
 applies: the 393-line unfed classifier is the precedent.
 
+> ⚠️ **READ [`inverted_audit_redteam.md`](inverted_audit_redteam.md) ALONGSIDE
+> THIS.** It attacks this design and lands two hits that change what should be
+> built:
+>
+> * **B-1 — the framing in §1 is the weak point.** VM0042's Equation (2) is
+>   optional *by design*: the protocol regulates precision through the
+>   **uncertainty deduction**, not through a minimum sample size. Treating an
+>   optional planning aid as a mandatory standard is an argument a registry wins.
+>   **The recommended restructuring — compute the implied uncertainty deduction
+>   and compare it with the one actually applied — is better than what is written
+>   here, and it is checkable today against VCS 4022's published 31.35%.**
+> * **C-3 — §2.1's algorithm was wrong** and is corrected in place below.
+>
+> This document is left standing rather than rewritten because the red team is
+> the record of where it is weak, and B-1's restructuring is a decision the PI
+> has not yet made.
+
 ---
 
 ## 0. The one-paragraph version
@@ -77,11 +94,28 @@ and given a variance structure from `data/variance_table.csv`, solve
 n_req(C) = ⌈ ( σ_d(C) · (t_α,ν + t_β,ν) / Δ )² ⌉        [VM0042 Eq. 2]
 ```
 
-`t` depends on `ν = ν(n)`, so this is a **fixed point**, not a closed form. It is
-monotone and converges in a handful of iterations from `n = 2`. Stating it as a
-fixed point rather than plugging in a large-sample `z` matters: at small `n` the
-t-multiplier is materially larger, and small `n` is exactly the regime the audit
-is interested in.
+`t` depends on `ν = ν(n)`, so this is a **fixed point**, not a closed form.
+Stating it as a fixed point rather than plugging in a large-sample `z` matters: at
+small `n` the t-multiplier is materially larger, and small `n` is exactly the
+regime the audit is interested in.
+
+> **CORRECTED 2026-08-12 — solve it by BISECTION, not by iteration.** An earlier
+> version of this section claimed the fixed point "is monotone and converges in a
+> handful of iterations from `n = 2`". **That is wrong, and the red team
+> demonstrated it** (`docs/inverted_audit_redteam.md`, C-3). The map is
+> *decreasing* in `n` — more degrees of freedom means a smaller `t` means a
+> smaller right-hand side — and naive iteration on a decreasing map can cycle:
+>
+> | σ | Δ | naive iteration, last 6 values | bisection |
+> |---|---|---|---|
+> | 4.0 | 2.0 | 44.04 ×6 | 45 |
+> | **3.0** | **3.0** | **12.71, 12.50, 12.71, 12.50, 12.71, 12.50** | **13** |
+> | 10.0 | 1.0 | 1052.73 ×6 | 1053 |
+>
+> **It cycles at small `n`** — the regime this audit exists to examine. Solve
+> instead by **bisection on `g(n) = n_req(n) − n`**, which is monotone and returns
+> the unique integer solution directly. Anyone implementing the sentence as
+> originally written would have got a non-terminating loop.
 
 ### 2.2 `σ_d` — the standard deviation of the *difference*, and it depends on a design choice nobody discloses
 
