@@ -55,13 +55,16 @@ DECISION_REF = re.compile(r"\bD-\d{3}\b")
 #: Keep in sync with the "Decision status" table in DECISIONS.md - a test
 #: compares the two and fails if they drift.
 OPEN_DECISIONS: dict[str, str] = {
-    "D-036": (
-        "Traced to both primary sources (D-036 update): the 4x collapses to "
-        "~1.2x once Poeplau's subsampling-inclusive lab error is compared with "
-        "Potash's whole-pathway sig_l. What remains is a CHOICE - should "
-        "VC-ANA-001 carry the instrument-only error or the whole-lab-pathway "
-        "error? - plus an inconsistency internal to Potash (sig_l = 2 Mg/ha vs "
-        "the 4.02 their own stated relative errors imply)."
+    "D-054": (
+        "Which laboratory error should the `analytical` component carry? "
+        "Poeplau et al. 2022 report two nested figures - 1.2% MAPE for two "
+        "technical replicates of the same milled sample, and 2.5% MAPE for a "
+        "second aliquot of the same sieved sample, which contains the first. "
+        "VC-ANA-001 carries the narrower one. Carried forward from D-036, "
+        "which closed on the separate question of whether our figure disagrees "
+        "with Potash et al.'s (it does not - 1.20x like for like). Gates G3: "
+        "the two candidates put analytical error at 1.4-9.5% or 8.7-59.3% of "
+        "the Wuest residual, on opposite sides of D-053's 0.089 threshold."
     ),
 }
 
@@ -72,9 +75,9 @@ DECIDED_DECISIONS: tuple[str, ...] = (
     "D-009", "D-010", "D-011", "D-012", "D-013", "D-014", "D-015", "D-016",
     "D-017", "D-018", "D-019", "D-020", "D-021", "D-022", "D-023", "D-024",
     "D-025", "D-026", "D-027", "D-028", "D-029", "D-030", "D-031", "D-032",
-    "D-033", "D-034", "D-035", "D-037", "D-038", "D-039", "D-040", "D-041",
-    "D-042", "D-043", "D-044", "D-045", "D-046", "D-047", "D-048",
-    "D-049", "D-050", "D-051", "D-052", "D-053",
+    "D-033", "D-034", "D-035", "D-036", "D-037", "D-038", "D-039", "D-040",
+    "D-041", "D-042", "D-043", "D-044", "D-045", "D-046", "D-047", "D-048",
+    "D-049", "D-050", "D-051", "D-052", "D-053", "D-055",
 )
 
 ALL_DECISIONS: tuple[str, ...] = tuple(

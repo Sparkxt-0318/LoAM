@@ -57,7 +57,7 @@ That is enforced, not requested: see D-032.
 | D-033 | decided | IPCC climate regions are not derivable from NAPESHM; no proxy |
 | D-034 | decided | `ipcc_climate.py` — classifier committed, deliberately unfed |
 | D-035 | decided | schema gains `scales_with_interval` — next PR |
-| **D-036** | **open** | analytical error vs Potash's — traced to source, 4× → **1.2×**; residual is internal to Potash |
+| D-036 | decided | analytical error vs Potash's — **1.20× like-for-like**; the residual was a typo in their reference soil, confirmed by the author |
 | D-037 | decided | Potash parameters are candidate cross-checks, never merged |
 | D-038 | decided | positioning vs Potash et al. 2025 in any writeup |
 | D-039 | decided | **FINDING**: NAPESHM is not fully IPCC-classifiable — for the paper |
@@ -75,6 +75,8 @@ That is enforced, not requested: see D-032.
 | D-051 | decided | **FINDING**: components are conflated by adjacency in sources — `quantity_definition` + guard |
 | D-052 | decided | every row declares a `basis`; D-020 gets mechanical teeth |
 | D-053 | decided | G3 bounded: 'add cores' is unproven; disagrees with Potash's 4-core composite |
+| **D-054** | **open** | which laboratory error the `analytical` component carries — carried forward from D-036 |
+| D-055 | decided | **FINDING**: inorganic carbon is not the conditioning covariate; D-040 invariance survives, at a ~7% detection limit |
 
 ---
 
@@ -2122,6 +2124,360 @@ scale while ours stays right for a research plot, and the "disagreement" is
 really a scale difference. That check is the first thing to do before this
 becomes a claim in a paper.
 
+
+**D-036 — CLOSED 2026-08-12 by correspondence with the author. The residual was
+a typographical error in the printed reference soil. Confirmed intended values
+reconcile Potash et al.'s sentence with their own Table 1 to within rounding,
+and nothing is left to resolve between the two studies.**
+
+Eric Potash (University of Illinois), corresponding author of Potash et al.
+2025, was asked directly about the inconsistency the previous entry recorded.
+His answer: **the reference soil as printed is a typo.** The intended values are
+**1.5% SOC and 1.0 g cm⁻³**, not the 2% and 1.5 g cm⁻³ in the published
+sentence.
+
+**The arithmetic closes exactly.** At 0–30 cm,
+
+| | as printed (typo) | as intended |
+|---|---|---|
+| reference soil | 2% SOC, BD 1.5 | **1.5% SOC, BD 1.0** |
+| stock | 90 Mg C/ha | **45 Mg C/ha** |
+| 4% concentration ⊕ 2% bulk density | 4.4721% | 4.4721% |
+| implied `σ_l` | 4.025 Mg/ha | **2.0125 Mg/ha** |
+| Table 1 states | 2 | **2** |
+| agreement | off by **2.01×** | off by **0.6%** — i.e. rounding |
+
+So the 2× the previous entry found was real arithmetic on a mis-set number, and
+its cause is now known. **Their sentence and their parameter agree.**
+
+**One reading in the previous entry is WITHDRAWN.** It recorded the discrepancy
+as sitting "in the conservative direction (they use the smaller value)". There
+was never a smaller value. `σ_l = 2` is precisely what their stated relative
+errors imply on the soil they meant, and their lab error is **4.47% of stock**,
+not the 2.22% that the printed soil made it look like.
+
+**The like-for-like comparison is unchanged and now unqualified.** It never
+depended on the reference stock, because it compares *relative* errors:
+
+| comparison | ours | Potash | ratio |
+|---|---|---|---|
+| Poeplau subsampling-inclusive lab error vs their concentration term | 3.13% | 4% | 1.28× |
+| the same, plus their 2% bulk-density term, on a stock basis | 3.72% | 4.47% | **1.20×** |
+
+**D-036 as posed — "our analytical error and theirs differ by 4×, resolve by
+tracing both to primary sources" — is answered.** The gap is 1.20×, all of it
+attributable to which of Poeplau's two laboratory errors our table picked, and
+the apparent internal contradiction in the nearer source is a typesetting
+error. There is no disagreement in the literature to adjudicate.
+
+**A CONSEQUENCE THAT REACHES BEYOND `σ_l`, AND IT IS THE MORE USEFUL HALF.**
+Every other parameter in Potash's Table 1 is given in **absolute Mg C/ha only**.
+Expressing any of them as a relative error requires the reference stock — and
+that stock is **45 Mg/ha, not 90**. Every relative expression of their
+parameters therefore **doubles**:
+
+| symbol | value | quantity | % of 90 (wrong) | **% of 45 (right)** |
+|---|---|---|---|---|
+| `σ_n` | 5 Mg/ha | relocation SD | 5.56% | **11.11%** |
+| `σ_l` | 2 Mg/ha | lab SD | 2.22% | **4.44%** |
+| `σ_w` | 1 Mg/ha/y | within-field SD of *rate* | 1.11%/y | **2.22%/y** |
+| `σ_b` | 0.5 Mg/ha/y | between-field SD of *rate* | 0.56%/y | **1.11%/y** |
+| `τ` | 0.3 Mg/ha/y | treatment effect | 0.33%/y | **0.67%/y** |
+
+**This changes the direction of one of our comparisons with them.** `VC-REL-001`
+carries a relocation MAE of 5.1 Mg C/ha → SD 6.39 on a *difference* scale
+(CV 9.4%), or 4.52 Mg/ha per observation (CV 6.65%) under the √2 caveat the row
+itself states. Against the printed reference stock their `σ_n` read 5.56% — just
+below our per-observation figure, i.e. rough parity. Against the corrected one
+it reads **11.11%, about 1.7× ours**. Their relocation term is the larger, not
+the smaller. Logged as a candidate cross-check under D-037; **not merged**, and
+no row changes.
+
+**Nothing in the live table used the 90 Mg/ha figure** — checked across
+`data/variance_components.yaml`, `src/`, `scripts/` and `tests/`. It appeared
+only in the D-036 update's prose and in `HANDOFF.md`, both of which now carry a
+pointer here. **G3's arithmetic is unaffected**: `scripts/g3_bounding.py`
+compares *ratios* of Potash's parameters, and a common reference stock cancels.
+
+**WHAT THIS DOES NOT CLOSE.** The previous entry gave two reasons for staying
+open. This settles the first. The second — *which* laboratory error the
+`analytical` component should carry — is a choice about our own table, not a
+fact about theirs, and it is carried forward unchanged as **D-054**. G3's gate
+moves with it: `G3 cannot close while D-054 is open` now replaces the reference
+to D-036.
+
+**What breaks if wrong.** The correspondence is private and there is no
+published erratum. Anyone reading Table 1 against the printed sentence will
+reach the same 2× we did, so any writeup that leans on their parameters must
+state the corrected reference soil explicitly and attribute it — a footnote, not
+a silent substitution. If the published sentence is ever the one that is right
+and the correspondence misremembered, `σ_l` should be ~4 Mg/ha rather than 2 and
+their lab term doubles again; the like-for-like 1.20× is untouched either way,
+because it uses their relative errors and not their stock.
+
+**Locator.** E. Potash (University of Illinois), personal communication to the
+PI, **2026-08-11, 13:35 UTC** — third of three exchanged messages, the reply
+confirming the reference-soil typo. Date supplied by the PI 2026-08-12.
+
+---
+
+**D-054 — OPEN. Which laboratory error should the `analytical` component carry:
+the instrument-only floor, or the whole-lab-pathway error?** ⚠️ *Unresolved —
+carried forward from D-036, which closed on a different question.*
+
+D-036 was posed as a discrepancy with the literature and it is answered as one.
+This is the part of it that was never about the literature, separated out rather
+than allowed to lapse when its parent closed. Recording it as its own decision
+is the point: an open question that disappears because the entry containing it
+was closed is exactly the failure mode D-032 exists to make impossible.
+
+**The question.** Poeplau et al. 2022 report **two** nested laboratory errors:
+
+* **analytical**, 1.2% MAPE — two technical replicates of the *same milled
+  sample*. The innermost step only.
+* **subsampling**, 2.5% MAPE — a second aliquot of the same *sieved* sample,
+  re-milled and re-analysed. Contains the analytical step and adds within-sample
+  heterogeneity.
+
+`VC-ANA-001` carries the first (converted to SD 1.25%). Potash's `σ_l` is a
+whole-pathway per-assay error covering everything from composite to reported
+stock, bulk density included.
+
+**Recommendation, unchanged from the D-036 update, and still the PI's call:**
+add a second analytical row carrying the subsampling-inclusive error
+(2.5% MAPE → **3.13% SD**, concentration basis) and make it the baseline,
+demoting `VC-ANA-001` to a sensitivity row recording the instrument-only floor.
+No monitoring programme re-measures the same milled aliquot; it subsamples a
+composite. Understating analytical error is anti-conservative for the Phase 5
+audit (D-023).
+**Against:** `VC-ANA-001` is the only row in the table isolating the instrument,
+and D-027's logic — prefer the decomposed term where one exists — cuts the other
+way.
+
+**A smaller correction bundled in, so it is not lost either.** `VC-ANA-001`'s
+`harmonization_note` quotes *"about 1%"* from Poeplau's **Discussion** and
+converts to SD 1.25%. The **Results** give the same quantity as **1.2% MAPE**,
+which converts to **1.50%**. We took the rounded figure over the precise one.
+Fix it in whichever PR settles this.
+
+**What this gates.** G3 (D-053): 'add cores before adding plots' holds at all
+five Wuest series only if the non-reducible share of the residual is below
+0.089, and analytical error alone is **1.4–9.5%** of the residual under the
+instrument-only candidate but **8.7–59.3%** under the subsampling-inclusive one.
+The two candidates land on opposite sides of the threshold, so **G3 cannot close
+while this is open.**
+
+**Why no constant is registered against it.** The exposure is through a row's
+prose, not through a derivation script, so `rows_exposed_to_open_decisions` will
+now catch `VC-ANA-001` if and only if the row cites D-054. It does not yet, and
+citing it means editing a row — which is what this decision is *about*, and
+therefore out of scope for a log-only entry. **This is the same hole D-036
+recorded and did not close.** It is recorded again rather than quietly dropped,
+and it is a second piece of evidence that the guard's two routes do not cover
+every way a row can depend on an open question.
+
+
+**D-055 — FINDING: inorganic carbon is NOT the conditioning covariate for
+between-plot variability. D-040's invariance result survives a fourth
+independent attempt — but the test has a detection limit of about 7% analytical
+error, and Potash's stated range starts at 1%, so the null is bounded and the
+bound is part of the finding.** Prompted by author correspondence (2026-08-11);
+script `scripts/ic_conditioning.py`, results `data/processed/ic_conditioning.json`,
+written up in `docs/ic_conditioning.md`. **No variance-table row written — the
+brief said report first, and this is the report.**
+
+**The hypothesis, in the author's words:** *"soils with high inorganic carbon
+have higher variability in their organic carbon measurements. I wouldn't be
+surprised if the total variability can vary as low as 1% or as high as 10%."*
+The mechanism is analytical: NAPESHM reports `b_soc` as `b_total_c - b_ic`, so
+organic carbon is measured **by difference** and the subtracted term carries its
+own error. This was a live and specific candidate answer to D-040's invariance
+problem, and it is directly testable in data we already hold.
+
+**WHAT THE RESPONSE ACTUALLY IS, because the temptation is to overclaim.** The
+same quantity as `VC-BPS-005`: within-treatment, within-site residual CV among
+replicate EUs, which per D-027 bundles between-plot spatial + within-plot
+spatial + analytical with no way to separate them. **The mechanism is
+analytical; the measurement is not.** Nothing here may be described as an
+analytical-error result.
+
+**1a — the distribution, reported before anything was fitted.** 1453 EUs,
+`b_ic` reported for **all** of them. **1192 (82.0%) are exactly zero**; 261
+(18.0%) positive, median of positives 0.31%, max 3.16%. 25 of 93 sites carry any
+carbonate; 68 are entirely zero. `b_soc == b_total_c - b_ic` holds to 1e-6 on
+1449 of 1450 — an identity, which is what licenses the paired test below.
+**Inorganic carbon is a site property**: 97.9-99.8% of its variance is between
+sites, so the honest unit is the site and the effective sample size is the
+number of carbonate sites — 25 before filters, as few as 6 after.
+
+**THE HEADLINE TIER CANNOT RUN THE TEST, AND THAT IS THE FIRST RESULT.** Under
+D-024 + D-025 + D-028 — the exact cascade behind `VC-BPS-005/006` — 27 of 135
+treatments carry any carbonate, **25 of them Mexican**, the other two at trace
+levels (0.022%, 0.014%). **Every treatment above 0.05% has exactly two
+replicates.** Inorganic carbon is aliased with country, and country is aliased
+with replicate support.
+
+**That is D-040 check 1c coming true.** It recorded the country/support alias as
+a caution for future analyses. This is the first analysis it bites, and it bites
+completely: three variables mutually aliased, which no estimator repairs. Two of
+four carbonate strata are **not estimable at all** (2 and 6 treatments across 2
+sites each); the one that is sits at 14.384% against the zero-carbonate 11.575%,
+with a **95% interval 11.7 points wide** that contains the reference.
+
+**WHERE THE TEST IS IDENTIFIABLE, THE ANSWER IS FLAT.** Dropping D-024 admits 22
+more carbonate treatments with 3+ replicates (all USA). This is **not** the
+`VC-BPS-005/006` quantity and must never be compared with it. On it:
+
+| stratum (treatment-mean IC) | T2 [95% CI] | T3 [95% CI] | T4 [95% CI] |
+|---|---|---|---|
+| zero | 14.303% [12.62, 15.54] | 11.627% [10.06, 13.55] | 14.553% [12.89, 15.59] |
+| 0–0.1% | 13.280% [9.71, 16.78] | not estimable | 17.267% [11.60, 22.97] |
+| 0.1–0.5% | 14.894% [5.84, 16.59] | **6.820%** [6.16, 7.31] | 18.286% [11.63, 25.94] |
+| > 0.5% | 14.131% [6.04, 17.66] | 13.997% [5.49, 18.80] | **13.293%** [5.64, 16.97] |
+
+**Eight of the nine estimable carbonate intervals contain their own tier's
+zero-carbonate estimate.** The single exception runs the **wrong way for the
+hypothesis**: T3's 0.1–0.5% bin sits at 6.82% with an interval of [6.16, 7.31],
+entirely *below* its 11.63% reference. And the ordering is **not monotone in any
+tier** — in T4 the highest CV is in the **middle** carbonate bin and the lowest
+is in the **top** one, also below the reference.
+
+A dose-response that runs down as often as up is not a dose-response.
+
+**The regression agrees, and shows the confound working.** Debiased
+log-variance per treatment (`E[log s^2] = log sigma^2 + psi(nu/2) - log(nu/2)`,
+weighted by `1/psi'(nu/2)`), site-clustered SEs. **Not one specification in the
+headline tier is significant**; Spearman rho = +0.079, p = 0.37 over 135
+treatments. Two readings worth keeping:
+
+* **Conditioning on climate shrinks the headline coefficient by 72%**, +0.227 to
+  +0.064 — and this must NOT be reported as the confound seen from the inside.
+  The shrinkage does not replicate: in T2 and T4 climate conditioning *raises*
+  it (+0.345 → +0.452, +0.236 → +0.335). One tier of four, on a coefficient
+  never distinguishable from zero, is not evidence of confounding any more than
+  the raw coefficient was evidence of an effect. **What the conditioning tests
+  DO establish is that the confound is structurally unresolvable here**:
+  inorganic carbon, aridity, pH and country are collinear at site level, and the
+  headline tier contains FOUR carbonate sites (nine in the widest). Conditioning
+  on climate with four carbonate sites cannot separate a carbonate effect from an
+  aridity effect even in principle. **There is no effect to adjudicate, and this
+  design could never have adjudicated one.**
+* **Conditioning on pH collapses it in every tier.** Inorganic carbon and pH
+  correlate at **rho = +0.692** across 93 sites; they are two measurements of one
+  soil-chemical axis and cannot both carry a mechanism.
+
+**A methodological result about our own past specification.** D-040's joint
+model — unweighted OLS on log(SD), 3+ replicates only — returns t = -0.37,
+**+4.58** and +0.75 across three nested tiers, **changing sign twice**. The
+debiased, weighted version of the same contrast is flat in all of them. The one
+"significant" carbonate result in this entire analysis comes from that
+specification, in one tier. **When a specification flips sign across nested
+samples while its debiased counterpart does not, the specification is talking,
+not the soil.** D-040's substantive conclusion is unaffected — it was a null,
+and a noisy estimator makes a null harder to reach, not easier — but the
+estimator should not be reused as it stands.
+
+**THE PAIRED SUBTRACTION TEST — the sharpest instrument available, with a
+built-in null control.** For each treatment, across the same replicate EUs,
+`Delta = log Var(log b_soc) - log Var(log b_total_c)`. Degrees of freedom are
+identical, so the `E[log s^2]` bias **cancels exactly**; and every zero-carbonate
+treatment has `b_soc` identical to `b_total_c`, so `Delta == 0` **by
+construction**. **The null control passes exactly in all four tiers** — max
+|Delta| = 0.0 across 108, 255, 124 and 323 treatments.
+
+Being a within-treatment paired contrast, it is immune to every site-level
+confound: climate, parent material, country, management, laboratory.
+
+Median variance ratio SOC:total-C is **1.02-1.11** — a 1-5% inflation in CV.
+Spearman(IC, Delta) at **treatment** level is significant in the three narrower
+tiers (+0.29 to +0.43, p = 0.027-0.044) and **not** in the widest one (+0.110,
+p = 0.33). At **site** level — the honest unit, since carbonate is a site
+property — it is positive in every tier and **significant in none** (p = 0.20 to
+0.65, n = 6 to 19 sites). Per-site ratios run from **0.092 to 14.77**, scattered
+either side of 1. The single site that looks like the mechanism, `MXOA01`
+(IC 2.94%, ratio 14.8), consists of two-replicate treatments — one degree of
+freedom per variance.
+
+**Site level (1c) points the other way.** The df-weighted CV is 0.4-3.1 points
+higher for carbonate sites in every tier, but the **rank correlation is negative
+in every tier** (-0.101 to -0.215) and the one-sided test for "high exceeds low"
+returns p = 0.56 to 0.95. The binned difference is about which sites land in a
+bin of 4-9, not about carbonate content.
+
+**THE CONFOUND, MEASURED.** Site-level Spearman against mean inorganic carbon,
+n = 93: pH **+0.692** (p < 1e-10), clay +0.359 (0.0004), Hargreaves moisture
+deficit +0.337 (0.0009), Thornthwaite MI **-0.311** (0.0024), MAP -0.289
+(0.0050), MAT +0.096 (ns), **SOC concentration -0.030 (ns)**. Carbonate soils
+here are drier, higher-pH and finer-textured; Mexican sites carry **15x** the
+mean inorganic carbon of USA sites. So the aridity confound the brief named is
+real and measurable — and it is not a temperature effect and not an SOC-level
+effect. (`mi` and `hargreave_cmd` are used **only** as aridity covariates; D-033
+forbids treating either as an IPCC MAP:PET ratio and nothing here does.)
+
+**WHAT THIS COULD HAVE DETECTED — the project's own logic, turned inward.** A
+null is only informative against a stated detection limit, and detectability is
+what this project claims to measure. Under D-027 the reference CV is
+`sqrt(spatial^2 + analytical^2)`; an analytical term `a` replacing the
+`a0 = 3.13%` already inside it gives `sqrt(cv0^2 + a^2 - a0^2)`. The smallest
+`a` clearing the upper end of the reference interval:
+
+| tier | reference CV | 95% CI | minimum detectable analytical error |
+|---|---|---|---|
+| T1 headline | 11.575% | [9.66, 13.45] | **7.54%** |
+| T2 | 14.303% | [12.62, 15.54] | **6.83%** |
+| T3 | 11.627% | [10.06, 13.55] | **7.62%** |
+| T4 widest | 14.553% | [12.89, 15.59] | **6.41%** |
+
+**Potash's range is 1-10%. This design could only ever have detected the top
+third of it**, in every tier. The finding is therefore stated with its limit
+attached:
+
+> Between-plot CV in NAPESHM cropland is not detectably higher in
+> carbonate-bearing soils, **at a detection limit of about 7% analytical error**.
+> An inflation in the lower two-thirds of the range the author named would not
+> have shown up, and this test does not rule it out.
+
+Two contrasts show that the surviving "effects" are noise. In the headline tier
+the implied added error in the one estimable carbonate stratum is **8.54%** —
+inside Potash's range and above the limit, and resting entirely on 4 Mexican
+sites of 2-replicate treatments with an interval 11.7 points wide. And in the
+widest tier the implied added errors are **mutually incoherent**: **9.29%** for
+the 0–0.1% bin, **11.07%** for the 0.1–0.5% bin, and **none at all** for the
+> 0.5% bin, which is *less* variable than zero-carbonate. **No mechanism driven
+by carbonate content can produce that ordering.** These are what a detection
+limit looks like when strata are estimated on almost no information.
+
+**CONSEQUENCE FOR PHASE 3.** D-040 left two possibilities open. The one this
+tested — that the conditioning signal sits in the analytical term rather than
+the spatial one — is **not supported**, subject to the limit above. Both of
+D-040's original possibilities stay open: MDC may vary spatially through the
+**signal**, or the conditioning may live somewhere none of our data can see.
+Deliverable 3 still needs rethinking and this does not rescue it.
+
+**WHAT WOULD SETTLE IT.** A dataset with (a) replicate EUs under identical
+management, (b) 3+ replicates, (c) carbonate spanning 0 to >2%, and (d) that
+variation occurring **within** climate zone and **within** country. NAPESHM has
+(a) and (c) and fails (b) and (d) exactly where it matters. Lab duplicates on
+carbonate soils would be better still — they would test the analytical mechanism
+directly instead of through a bundled between-plot residual.
+
+**FRAMING, and it cuts the friendly way (D-038).** Potash et al. held `sigma_l`
+fixed and soil-independent in the published model, and the author's own view in
+correspondence is that it should vary. We went looking for that variation in the
+largest suitable open dataset and could not find it above a 7% limit. **That is
+a second load-bearing simplification in the nearest prior art surviving an
+independent test**, after `sigma_b` geography-independence (D-040). Any writeup
+says it that way round.
+
+**What breaks if wrong.** If the calcimeter error is proportional to carbonate
+content with a small coefficient — say 5% of `b_ic` — then at the median
+positive carbonate of 0.31% it contributes 0.016% absolute to a soil averaging
+~1.5% SOC, i.e. about 1% relative, far below anything this design resolves. In
+that case the mechanism is real, our test is simply blind to it at NAPESHM's
+carbonate levels, and the place to look is soils above 2% inorganic carbon —
+which NAPESHM has at exactly three sites, all Mexican, all 2-replicate. The
+finding would then be about NAPESHM's coverage rather than about soils.
+
 ---
 
 ## Open evidence gaps
@@ -2130,7 +2486,7 @@ becomes a claim in a paper.
 |----|-----|-------------|--------|
 | ~~**G1**~~ | ~~No in-scope **between-plot** cropland variance. Only forest (Buchkowski).~~ | — | ✅ **CLOSED** 2026-08-08 by `VC-BPS-005/006`, derived from NAPESHM (D-024…D-030). Scoped to 0-15 cm; upper bound. |
 | **G2** | No 0–30 cm within-plot CV; only 0–10 and 10–30 separately, without inter-layer covariance. | Component 2 baseline is per-layer only. | open — needs Poeplau supplementary data |
-| **G3** | The within-plot / between-plot **ratio** is unknown for cropland. | Determines whether to add plots or add cores. | open — **BOUNDED 2026-08-10 (D-053), not closed**. 'Add cores' holds at all five Wuest series only if the non-reducible share of the residual is below **9%**; analytical error alone is 1.4–9.5% or 8.7–59.3% depending on which D-036 candidate is right, so **G3 cannot close while D-036 is open**. Budget-optimal compositing from our numbers is **1.2–3.3 cores per assay against Potash's 4**. Settling it needs replicate cores per plot per visit — an experiment nobody we hold has run. |
+| **G3** | The within-plot / between-plot **ratio** is unknown for cropland. | Determines whether to add plots or add cores. | open — **BOUNDED 2026-08-10 (D-053), not closed**. 'Add cores' holds at all five Wuest series only if the non-reducible share of the residual is below **9%**; analytical error alone is 1.4–9.5% or 8.7–59.3% depending on which candidate is right, so **G3 cannot close while D-054 is open** (the gate moved from D-036, which closed 2026-08-12 on a different question). Budget-optimal compositing from our numbers is **1.2–3.3 cores per assay against Potash's 4**. Settling it needs replicate cores per plot per visit — an experiment nobody we hold has run. |
 | ~~**G4**~~ | ~~Only temporal source is dryland Pacific Northwest, paywalled, depth unconfirmed.~~ | — | ✅ **CLOSED** 2026-08-10 by `VC-TMP-003/005/007/009/011`, derived from the Wuest & Durfee public-domain dataset (D-041…D-044). The paywall was never the blocker: the data behind the paper was open. Depth is now fact, not assumption, and heterogeneous (D-042). **One region remains a real limitation** — see G8. |
 | **G5** | No variance-versus-distance function for offsets of 10–100 m. | Relocation error at LUCAS scale is unquantified; components 3 and 5 not orthogonal there. | open |
 | **G6** | The two LUCAS rows are unverified against the primary report. | Locked out of use by rule R6. | open — needs LUCAS PDF |
@@ -2152,4 +2508,5 @@ becomes a claim in a paper.
 | 2026-08-10 | D-041 … D-048; **D-021 CLOSED**; D-040 extended | **The temporal component is derived from primary data.** The Wuest & Durfee dataset behind the paywalled paper is **public domain on Ag Data Commons** — 2195 plot-months, 76 plots, five monthly series, four PNW dryland sites — so the abstract's variance *shares* are replaced by a derivation (D-041: crossed plot × occasion, REML cross-checked against closed-form moments; our shares 18.3%/22.8% reproduce the published 20%/17% without reading them off the paper). **The assumed 0–30 cm depth is wrong for four of five series** (D-042): those are 250 kg m⁻² equivalent-soil-mass stocks, ≈20 cm. The residual is not separable, so temporal is reported as a **bounded pair — separable 3.75% (3.02–4.85), combined 8.00% (5.25–11.73)** — and the compositing contrast (3-core vs 1-core sites, ratio 1.785 against √3 = 1.732) says the residual is dominated by within-plot spatial variance, so the truth sits near the **lower** bound (D-043). **FINDING: anniversary sampling buys nothing** — same-calendar-month revisits are no less variable than off-month ones at any site (D-044). **Temporal variance shows no consistent covariate dependence either** (D-045), which closes the second of D-040's two open possibilities, negatively. Wuest independently corroborates the G1 between-plot baseline: like-for-like `plot + residual` spans 5.3–11.3% against `VC-BPS-006`'s 11.46% (D-046). KBS LTER corroborates in the **opposite direction to the usual objection** — humid temperate is *more* variable than PNW dryland — but carries method drift between years and a **written-permission licence** (D-047). NEON path retired (D-048). **D-021 closed**: all four sites classify Temperate on sourced inputs. **No variance-table row written — reported first, as instructed.** |
 | 2026-08-10 | D-040 extended | Two additions. **(a) Geographic confound recorded**: country and per-treatment support are completely aliased — all 55 two-replicate treatments are Mexican, no USA treatment is below three replicates — so no Mexico/USA difference may ever be read as a climate difference. **(b) The invariance finding elevated from hypothesis to a stated Phase 0 result**: between-plot CV in cropland SOC is approximately invariant across the covariates a spatial MDC surface would be built from (climate moves it 0.2–0.3 pts against a ~4-pt CI; clay shows no monotone signal; the joint model reaches R² = 0.093), with the 75/80-USA caveat attached. **Consequence: Phase 3 Deliverable 3 needs rethinking**, with two possibilities recorded and not resolved — MDC may vary spatially through the *signal*, or through *temporal* variance. Framing recorded: this **strengthens** Potash et al., who assumed `sigma_b` geography-independent "for lack of information" and turn out to have been approximately right. |
 | 2026-08-10 | D-040 | **Three sensitivity checks before Phase 0 closes. No new rows, no scope change, no constant moved.** (1) Leave-out test on the re-admitted Mexican highland sites — 8, not 10 (MXAG01/MXQT02 fall to D-024/D-025 first): concentration 11.948 → 12.248%, stock 11.456 → 11.304%, shifts of **0.300** and **0.152** against CI widths of 3.97 and 3.52, in opposite directions. **Both caveat flags CLOSED**, not deferred. (1b) All **55** two-replicate treatments are Mexican; the USA's 75 have **none** below 3 replicates — so the weak-support flag and the re-admitted-sites flag were one flag, tested once. (2) On the 372-EU intersection, concentration **11.897%** vs stock **11.456%** — gap **+0.441** where the cross-sample headline gives 0.492, so the sample mismatch is 0.051 of it and `stock < concentration` **survives** as a property of the data. (3) Texture terciles show no signal (clay spread 2.611 vs 10.556 CI; sand 3.690 vs 9.834) — **no rows written**; a joint model does find `log(mean SOC)` and sand fraction nominally significant (R² = 0.093) but on a 75/80-USA sample, filed as a hypothesis, not a parameterization. `VC-BPS-005/006` prose updated; no value changed. |
+| 2026-08-12 | **D-036 CLOSED**; D-054 (open), D-055 | **D-036 closed by author correspondence.** Eric Potash confirms the reference soil printed in Potash et al. 2025 is a **typo**: the intended values are 1.5% SOC and 1.0 g cm⁻³, i.e. **45 Mg C/ha** at 0–30 cm, not 90. Their stated 4% + 2% errors then imply **σ_l = 2.0125 Mg/ha** against Table 1's 2 — agreement to 0.6%, and the 2× the previous entry found is explained. The like-for-like gap with our table stands at **1.20×**, all of it attributable to which of Poeplau's two lab errors we tabled. **Consequence beyond σ_l:** every relative expression of their absolute parameters doubles — `σ_n` is **11.11%** of stock, not 5.56%, which moves their relocation term from rough parity with `VC-REL-001` to about **1.7× larger**. Nothing in the live table used 90 Mg/ha; G3's arithmetic is unaffected because it compares ratios. **The half of D-036 that was never about the literature — which lab error the `analytical` component should carry — is carried forward as D-054 (open) rather than allowed to lapse, and G3's gate moves with it.** **D-055: inorganic carbon is NOT the conditioning covariate** for between-plot variability, tested at Potash's own suggestion. `b_ic` is zero at **82.0%** of 1453 EUs and is a **site** property (97.9–99.8% of its variance is between sites). In the `VC-BPS-005/006` scope the test is **not identifiable** — every treatment above 0.05% IC is Mexican and 2-replicate, which is D-040 check 1c's alias biting for the first time. Where it is identifiable the answer is **flat and non-monotone**: all 11 carbonate intervals contain their tier's zero-carbonate estimate, no regression specification is significant in the headline tier, climate conditioning collapses the coefficient by **72%**, and pH (rho **+0.692** with IC) collapses it in every tier. A paired `Var(log SOC)` vs `Var(log total C)` contrast with an exact built-in null control (max |Δ| = 0.0 across 810 zero-carbonate treatments) gives a median inflation of only **2–11% in variance** and is **null at site level in every tier**. **Detection limit stated: ~6.4–7.6% analytical error**, against Potash's 1–10% — so the null covers only the top third of his range and is written that way. Also found: **D-040's own joint-model specification changes sign twice across nested samples** while its debiased counterpart stays flat; its conclusion is unaffected but the estimator should not be reused. **No variance-table row written — reported first, as instructed.** |
 | 2026-08-08 | D-031, D-032, D-033; **D-028 still open** | Open-decision guard: decisions and the constants they govern are now machine-readable (`src/loam/decisions.py`), the build prints `<-- PROPOSED, NOT DECIDED`, and two tests refuse to pass while an open decision governs a live constant — **the suite is red on merge, by design** (D-032). Replacing the private climate envelope with IPCC 2006 climate regions was attempted and is **blocked**: MAP:PET and frost-day counts are not derivable from NAPESHM, and no proxy is substituted (D-033). Poeplau ↔ NAPESHM corroboration logged, with a figure correction (D-031). No variance-table values changed. |
