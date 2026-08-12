@@ -13,6 +13,15 @@ Branch `claude/d036-analytical` · PR: see below · `137 passed`
 
 ### D-036: 4x -> 1.20x. STAYS OPEN.
 
+> ⚠️ **SUPERSEDED 2026-08-12.** D-036 is now **CLOSED**. The residual described
+> below as "internal to Potash" was a typographical error in their printed
+> reference soil, confirmed by the author: the intended values are 1.5% SOC and
+> 1.0 g/cm3, i.e. **45 Mg C/ha, not 90**, on which their stated errors imply
+> sigma_l = 2.0125 against Table 1's 2. The recommendation below (which lab
+> error `analytical` should carry) is carried forward as **D-054, open**. This
+> section is left as written because it is a dated record of a run. See D-036
+> and D-054 in DECISIONS.md for what is current.
+
 Both primary sources now held. **Potash et al. 2025 is Environmental Research
 Letters, doi:10.1088/1748-9326/ada16c, OPEN ACCESS** — it was never paywalled,
 only unlocated. (Standing assumption contradicted: `docs/sources.md` listed it

@@ -445,6 +445,56 @@ opinion.
 
 ---
 
+## ✉️ Correspondence — primary, unpublished, and citable as such
+
+Direct exchanges with the authors of sources we hold. Treated with the same
+discipline as any other source: quoted verbatim, given a locator, and never
+paraphrased into a number without saying where it came from. Unpublished
+correspondence cannot be checked by a reader, so anything resting on it says so
+explicitly.
+
+### Eric Potash (University of Illinois) — August 2026, three messages
+
+Corresponding author of **Potash, Bradford, Oldfield & Guan (2025)**,
+*Environ. Res. Lett.* **20** 024025, doi:10.1088/1748-9326/ada16c
+(open access; data doi:10.6084/m9.figshare.28083182).
+
+⚠️ **Exact dates to be filled in from the PI's mail client before any of this is
+cited externally.** Month precision is what is recorded here, and it is not
+enough for a citation.
+
+Three things came out of it, in descending order of how much they change:
+
+1. **The reference soil in the paper is a typographical error.** The printed
+   sentence gives 2% SOC and 1.5 g cm⁻³; the intended values are **1.5% SOC and
+   1.0 g cm⁻³**, i.e. **45 Mg C/ha** at 0–30 cm rather than 90. This reconciles
+   their stated 4% concentration and 2% bulk-density errors with their own
+   Table 1 `σ_l = 2 Mg ha⁻¹` to within rounding (2.0125 against 2). **Closes
+   D-036.** There is no published erratum, so the correction travels only with
+   this note.
+
+2. **Their 4% and 2% are representative, not fixed** — verbatim: *"those 4% and
+   2% error numbers are representative but can vary quite a lot depending on the
+   soil. For example, soils with high inorganic carbon have higher variability
+   in their organic carbon measurements. I wouldn't be surprised if the total
+   variability can vary as low as 1% or as high as 10%."* Tested against NAPESHM
+   in **D-055**; the mechanism is not detectable in that dataset, and the reason
+   is recorded there.
+
+3. **They independently name the Phase 5 audit as the highest-impact
+   direction** — verbatim: *"apply it post hoc to existing carbon projects. It
+   would be interesting to know if existing projects collect sufficient samples
+   to detect the differences they aim to."* Recorded because an independent
+   author converging on our Phase 5 without prompting is evidence about what the
+   work is for, and belongs in the framing (D-038).
+
+**Standing caution.** Correspondence is not peer-reviewed and not public. It may
+settle what a published number *meant*; it may not substitute for a published
+number. Item 1 is used to interpret a printed figure and is safe on that
+footing. Items 2 and 3 are used as hypotheses and framing, never as values.
+
+---
+
 ## 📥 To obtain
 
 Not yet held. Logged so the next literature pass starts from a list rather than
