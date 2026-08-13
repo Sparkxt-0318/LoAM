@@ -112,6 +112,33 @@ sources:
     pages: 183
     url: https://verra.org/wp-content/uploads/2025/10/VM0042v2.2_greenlined.pdf
     accessed: 2026-08-12
+  vm0042_v20:
+    title: "VCS Methodology VM0042 Improved Agricultural Land Management, v2.0 (APPROVED)"
+    document_date: 2023-05-01
+    pages: 157
+    url: https://verra.org/wp-content/uploads/2023/05/VM0042-Improved-ALM-v2.0.pdf
+    accessed: 2026-08-13
+    note: >-
+      The rule in force for VCS 4022. Section 8.6.4 Equation (65), t ~= 0.4307.
+      Obtained 2026-08-13, closing the blocked item logged under D-059.
+  vm0042_v21:
+    title: "VCS Methodology VM0042 Improved Agricultural Land Management, v2.1 (corrected 21 Jan 2025)"
+    pages: 168
+    url: https://verra.org/wp-content/uploads/2024/09/VM0042v2.1_ImprovedALM_corrected_21Jan2025.pdf
+    accessed: 2026-08-13
+  vm0042_v20_cc:
+    title: "Corrections and Clarifications to VM0042, v2.0 (22 Jan 2024, updated 14 Mar 2024)"
+    pages: 40
+    url: https://verra.org/wp-content/uploads/2024/01/CC_VM0042_v2.0_22Jan2024_update14Mar2024.pdf
+    accessed: 2026-08-13
+  vm0042_v30_draft:
+    title: "Draft VM0042, v3.0 Section 8 (public consultation, 10 Feb 2026)"
+    pages: 75
+    url: https://verra.org/wp-content/uploads/2026/02/2_VM0042v3_main_8_clean-draft_10FEB2026.pdf
+    accessed: 2026-08-13
+    note: >-
+      Consultation ran 11 Feb - 31 Mar 2026. Also carries t ~= 0.4307, so the
+      constant is unchanged from v2.0 through the current draft.
   vm0042_v20_draft:
     title: "VCS Methodology VM0042, v2.0 final draft for public comment (tracked-changes redline)"
     document_date: 2021-12-01
@@ -119,8 +146,13 @@ sources:
     url: https://verra.org/wp-content/uploads/2021/12/VM0042_v2.0_FinalDraft_PublicComment.pdf
     accessed: 2026-08-12
     note: >-
-      A redline carrying more than one layer of text. Does NOT contain 0.4307.
-      Not a substitute for the approved v2.0.
+      SUPERSEDED — NOT THE RULE IN FORCE. Does not contain 0.4307. Its Section
+      8.6.4 sets out a two-pathway / two-case construction (Equations 83-86,
+      cases N1/N3, threshold A, t_0.975) that Verra REMOVED before approving
+      v2.0 in May 2023. D-059 read this document's Section 8.6.4 as v2.0's rule;
+      D-060 corrects that. Retained in the corpus only as the provenance record
+      for the D-059 error and as evidence of what Verra considered and dropped.
+      Never cite for a rule in force.
   cer_register_csv:
     title: "ACCU Scheme project register (CSV), Clean Energy Regulator, updates as at 30 June 2026"
     url: https://cer.gov.au/document/accu-scheme-project-register-0
@@ -537,67 +569,63 @@ projects:
         The VVB raised CAR#60 because the PD reported 23.97% in Table 4-17 and
         14.53% in Section 4.4.4; 31.35% is the resolved value. Worth keeping:
         a nearly one-third figure, and an internal inconsistency the validator
-        had to catch. VERSION: this project applied VM0042 **v2.0**, whose rule
-        is structurally different from v2.2's, so this must NOT be described as
-        a 0.43-SE deduction (0.4307 is a v2.2 figure and is absent from v2.0).
-        See `uncertainty_rule_in_force` below and docs/vcs4022_inversion.md.
+        had to catch. CORRECTED 2026-08-13 (D-060): an earlier note here claimed
+        0.4307 is 'a v2.2 figure absent from v2.0'. That is FALSE. VM0042 v2.0
+        Sec 8.6.4 Equation (65) uses t_alpha=0.666 ~= 0.4307, identically to
+        v2.2 Equation (74). This IS a 0.43-SE deduction. See
+        docs/vm0042_s2_verification.md. NOT RE-VERIFIED IN THIS CONTAINER: that
+        31.35% is the Equation 65 deduction for SOC specifically — confirm
+        against the PD before the derived fields below are used externally.
         SEE ALSO `effective_deduction_on_gross_pct`: 31.35% is an uncertainty
         STATISTIC, not the fraction of credits withheld.
     uncertainty_rule_in_force:
-      value: "VM0042 v2.0 Sec 8.6.4 Pathway A (Equation 83), case N3, threshold A = 0%"
-      status: inferred
-      source: agreena_val_v4
-      locator: >-
-        Sec 3.3.6 states v2.0 was applied and that 'The project is using
-        quantification approach 1 and 3'; CAR ID 01 item V names EF_Ndirect and
-        the other N2O factors as 'the Tier 1 value from Chapter 11, Volume 4 in
-        IPCC (2019)'
+      value: "VM0042 v2.0 Sec 8.6.4 Equation (65): UNC = (sqrt(s2)/mean * 100) * t_alpha=0.666, t ~= 0.4307"
+      status: stated
+      source: vm0042_v20
+      locator: "VM0042 v2.0 Sec 8.6.4, printed pp. 74-76, Equation (65)"
       note: >-
-        INFERRED, AND LOAD-BEARING — logged as D-059. Neither the PD nor the
-        validation report names a pathway or a case. Case selection turns on one
-        thing only: which Quantification Approach was used for DIRECT N2O.
-        VM0042 v2.0 Sec 8.2.8 makes that test mechanical — QA1 uses Equation 11
-        (modelled flux), QA3 uses Equation 12 (default emission factors). The
-        validation report's own finding records IPCC 2019 Tier 1 defaults for
-        EF_Ndirect, which is QA3, hence CASE N3 and A = 0%. The counterfactual
-        matters: reading this as case N1 (A = 15%) would put the implied
-        relative SE at 23.65% rather than 15.99%, a 48% error. Pathway A rather
-        than B is inferred from the deduction being reported as a percentage
-        applied multiplicatively (Equations 36/37), which is Pathway A's form;
-        Pathway B yields a retained fraction. NOT stated by either document.
+        CORRECTED 2026-08-13 (D-060), and the status changed from `inferred` to
+        `stated` because it is now read directly off the methodology rather than
+        inferred. The previous value here — 'Pathway A (Equation 83), case N3,
+        threshold A = 0%' — DESCRIBED A RULE THAT DOES NOT EXIST. Verbatim
+        searches of VM0042 v2.0, v2.1, v2.2, the v2.2 greenlined text, the
+        Corrections and Clarifications to v2.0, and the v3.0 consultation draft
+        return ZERO hits for 'Pathway A', 'Case N1' and 'Case N3', and no
+        Equation 83 or 84. All versions carry t ~= 0.4307. There are no cases,
+        no pathways, no threshold A, and no cap. The IPCC 2019 Tier 1 defaults
+        for EF_Ndirect recorded in CAR ID 01 item V remain a true fact about the
+        project but select nothing. See docs/vm0042_s2_verification.md.
     implied_relative_se_pct:
-      value: 16.0
+      value: 72.79
       status: inferred
-      source: agreena_val_v4
-      locator: "derived from the stated 31.35% by inverting VM0042 v2.0 Equation 83 with A = 0"
+      source: vm0042_v20
+      locator: "derived from the stated 31.35% by inverting VM0042 v2.0 Equation (65): 31.35 / 0.4307"
       note: >-
-        DERIVED BY US. Under case N3 the threshold A is 0%, so Equation 83
-        reduces to the relative half-width of the 95% CI, and Equation 84 makes
-        that half-width t_0.975 * SE. Dividing out t gives the project's own
-        implied relative standard error: 15.99% at large df, 15.33% at df = 29,
-        13.86% at df = 9, 7.29% at df = 2. The only inferred input is df, and
-        the sensitivity is one-sided and bounded — fewer samples give a SMALLER
-        implied SE, so 16% is a ceiling. Value recorded at large-sample limit.
-        This is the ONLY quantity in this record that inverts with no
-        undisclosed parameter. See docs/vcs4022_inversion.md Sec 5.1.
+        DERIVED BY US. CORRECTED 2026-08-13 (D-060) from 16.0, which was
+        computed by dividing by t_0.975 = 1.960 under the nonexistent Equation
+        83. The rule actually in force divides by t_alpha=0.666 ~= 0.4307,
+        giving 72.79% at large df. Note this is a LOWER BOUND in df: 0.4307 is
+        the large-sample limit and the t-value rises as df falls, so smaller
+        samples imply a smaller SE. Depends entirely on 31.35% being the
+        Equation 65 deduction for SOC, which has NOT been re-verified in this
+        container. See docs/vm0042_s2_verification.md Sec 7.
     claimed_change_in_mdd_units:
-      value: 3.19
+      value: 0.70
       status: inferred
-      source: agreena_val_v4
-      locator: "derived from the stated 31.35% via VM0042 v2.0 Equations 83/84 and 88"
+      source: vm0042_v20
+      locator: "derived from the stated 31.35% via VM0042 Equation (65) and Equation (2)"
       note: >-
-        DERIVED BY US, and the reason this project is a Phase 5 result rather
-        than an anecdote. Under case N3, Equation 83's numerator is
-        t_0.975 * SE(delta); VM0042's OWN minimum-detectable-difference
-        equation (v2.0 Sec 9.3.1 Eq 88, MDD >= (S/sqrt(n))(t_alpha + t_beta))
-        reduces to exactly the same quantity at 50% power, where t_beta = 0.
-        Therefore UNC = MDD / delta identically. The published 31.35% thus
-        states that the claimed SOC change is 1/0.3135 = 3.19x the project's own
-        minimum detectable difference at 50% power, or 2.23x at 80% power. No
-        assumption and no LoAM input: it follows from two equations in the same
-        methodology. Where a case-N3 project publishes a deduction, its
-        detectability ratio is a republication of a number the registry already
-        accepted. See docs/vcs4022_inversion.md Sec 4.
+        DERIVED BY US. CORRECTED 2026-08-13 (D-060) from 3.19, which INVERTED
+        THE DIRECTION OF THE FINDING. The general identity holds —
+        delta/MDD = k / ((t_alpha + t_beta) * UNC) — but k for VM0042 is 0.4307,
+        not 1.960. With MDD from Sec 8.2.1.3 Equation (2),
+        MDD >= (S/sqrt(n))(t_alpha + t_beta) (NOT 'Sec 9.3.1 Eq 88', which does
+        not exist), the claimed SOC change is 0.70x the project's own minimum
+        detectable difference at 50% power and 0.49x at 80% power. That is, the
+        claimed change is SMALLER than what the design can detect. This is a
+        stronger finding than the one it replaces, and it is correspondingly
+        more important that 31.35% be re-verified before it is used externally.
+        See docs/vm0042_s2_verification.md Sec 7.
     effective_deduction_on_gross_pct:
       value: 18.48
       status: inferred
@@ -808,8 +836,11 @@ protocol_requirements:
   - protocol: Verra VM0042 Improved Agricultural Land Management
     version_read: "v2.2 (greenlined, October 2025), 183 pp."
     also_held: >-
-      v2.0 - recorded as a SEPARATE requirement entry below, not as a caveat on
-      this one. Its uncertainty rule is structurally different (D-059).
+      v2.0, v2.1 and the v3.0 draft. CORRECTED 2026-08-13 (D-060): v2.0's rule
+      is NOT structurally different, as D-059 claimed. Every version from v2.0
+      through the v3.0 draft uses the same construction and the same 0.4307.
+      The separate v2.0 entry below is retained for its locators, not because
+      the rule differs.
     source: vm0042_v22
     uncertainty_deduction:
       rule: "UNC = (sqrt(s^2)/mean x 100) x t_0.667"
@@ -826,9 +857,10 @@ protocol_requirements:
         (a) It is a t-value, NOT a constant: 0.4307 is the large-sample limit, so
         a project with few samples takes a LARGER percentage deduction for the
         same relative standard error. The haircut is a function of the design.
-        (b) Verified in v2.2 only, and ABSENT from v2.0 — whose rule is a
-        different construction, not a different constant. Any project validated
-        under v2.0 must be read against the v2.0 entry below (D-059).
+        (b) CORRECTED 2026-08-13 (D-060). This previously read "Verified in v2.2
+        only, and ABSENT from v2.0". That is FALSE: 0.4307 appears verbatim in
+        approved v2.0 (Equation 65), v2.1, v2.2 and the v3.0 draft. There is no
+        version dependence to carry.
     minimum_detectable_difference:
       locator: "Section 8.2.1, item 11, Equations (1) and (2), citing FAO (2019)"
       equation_1: "MDD >= (S / sqrt(n)) x (t_alpha,v + t_beta,v)"
@@ -901,48 +933,52 @@ protocol_requirements:
       status: stated
 
   # -------------------------------------------------------------------------
-  # VM0042 v2.0 is a SEPARATE requirement record, not a footnote to v2.2. Its
-  # uncertainty rule is structurally different — two pathways and two cases,
-  # not one formula with a t-value — so treating v2.2 as "the methodology" and
-  # v2.0 as a version caveat would have produced the wrong number for every
-  # project validated before October 2025. Added 2026-08-13 (D-059).
+  # VM0042 v2.0 — REWRITTEN 2026-08-13 (D-060) from the APPROVED v2.0.
+  # The previous entry described the December 2021 public-comment draft's
+  # two-pathway/two-case Section 8.6.4 and asserted it was v2.0's rule. It is
+  # not: Verra replaced that construction before approving v2.0 in May 2023.
+  # The approved rule is one formula with the SAME 0.4307 constant as v2.2, so
+  # the version dimension collapses. See docs/vm0042_s2_verification.md.
   # -------------------------------------------------------------------------
   - protocol: Verra VM0042 Improved Agricultural Land Management
-    version_read: >-
-      v2.0 final-draft-for-public-comment (December 2021), 173 pp., tracked-
-      changes redline. The header 'Version 21.0 19 October 202021 December 2021'
-      shows the redline runs v1.0 -> v2.0, so the INSERTED layer is v2.0.
-    source: vm0042_v20_draft
-    caveat: >-
-      The APPROVED v2.0 has not been obtained; Section 8.6.4 is read from the
-      public-comment draft's inserted layer. Logged in `blocked_or_deferred`.
+    version_read: "v2.0 APPROVED (May 2023), 157 pp."
+    source: vm0042_v20
     uncertainty_deduction:
       rule: >-
-        TWO PATHWAYS x TWO CASES, not a single formula. Pathway A (relative
-        uncertainty): UNC_t = MIN{100%, MAX[0, (dF_t,0.975 - dF_t,0.025) /
-        (2 dF_t) x 100% - A]}. Pathway B (probability of exceedance):
-        UNC_t = dF_t,(100-B)/100 / dF_t.
-      locator: "Section 8.6.4, printed pages 82-85; Equations 83, 84, 85, 86"
-      cases: >-
-        VERBATIM: "1. Case N1 is when Quantification Approach 1 is used for
-        estimating direct N2O emissions... 2. Case N3 is when Quantification
-        Approach 3 is used for N2O emission estimates." Thresholds: Pathway A,
-        "For case N1, the defined threshold is 15%. When the relative
-        uncertainty is lower than 15%, no uncertainty deduction comes into
-        effect. For case N3, A is defined as 0%, so that there is always a
-        deduction for uncertainty." Pathway B, "for case N1 B is set to be 55%
-        while for case N3, B is set to 70%. Note, The Australian Carbon Credits
-        Methodology uses 60%".
-      no_0_4307: >-
-        The t_0.667 / 0.4307 rule of v2.2 Section 8.6.4 Equation 74 is ABSENT
-        from v2.0. A v2.0 project's deduction must never be described in those
-        terms.
-      drafting_defects: >-
-        Recorded so a reader reproducing this is not derailed. (a) Equation 84
-        omits the '+ dF_t' term that Equation 86 carries; harmless, because
-        Equation 83's numerator is a difference and the mean cancels.
-        (b) Equation 85 labels a RETAINED FRACTION as an "uncertainty
-        deduction", so Pathway B's UNC runs opposite to Pathway A's.
+        ONE FORMULA, identical in construction to v2.2 Equation 74.
+        Equation (65): UNC_dot,t = Uncertainty x t_alpha=0.666, where
+        Uncertainty = (sqrt(s2_dot,t) / mean_dot,t) x 100.
+      locator: "Section 8.6.4, printed pages 74-76; Equation (65)"
+      k_value: 0.4307
+      k_quote: >-
+        VERBATIM: "Critical value of a one-sided student's t-distribution at
+        significance level alpha = 0.666 (66.6%) with degrees of freedom
+        appropriate to the sampling design used. Equal to approximately 0.4307
+        at large sample sizes (dimensionless)".
+      no_cases_no_pathways: >-
+        There are NO cases, NO pathways, NO threshold A, and NO cap. Verbatim
+        searches for 'Pathway A', 'Case N1' and 'Case N3' return zero hits in
+        approved v2.0, v2.1, v2.2, the v2.2 greenlined text, the Corrections
+        and Clarifications to v2.0, and the v3.0 consultation draft. They
+        appear ONLY in the December 2021 public-comment draft (vm0042_v20_draft).
+      s2_identical_to_v22: >-
+        VERIFIED at three levels. (a) Same definition and units. (b) Same
+        Section 8.6 subsection tree, heading for heading, the only difference
+        being 8.6.1.3 retitled 'Cumulative Crediting' -> 'Cumulative Modeling'.
+        (c) Same equations: v2.0 Eq (54) s2 = s2_sampling/A^2 + s2_model and
+        Eq (55) s2_model = sum (A_h^2/A^2) s2_model,h are identical symbol for
+        symbol to v2.2 Eq (63) and Eq (64), including the Cochran 1977 Eq 13.39
+        and Som 1995 Eq 25.10 citations. Equation maps differ by a uniform +9.
+      mdd_equation: >-
+        Section 8.2.1.3, printed p. 29, Equation (2): MDD >= (S/sqrt(n)) x
+        (t_alpha,nu + t_beta,nu); Equation (3) inverts it for n. There is no
+        'Section 9.3.1' and no 'Equation 88'. Section 9.2's monitored-parameter
+        table lists MDD against 'Equations (2), (3)'.
+      sample_size_optional: >-
+        VERBATIM, Section 8.2.1.3 item 10: "A power analysis may be conducted to
+        calculate the number of samples needed to enable accounting of a minimum
+        detectable difference, following Equations (2) and (3) (FAO, 2019).
+        However, projects are not required to take this number of samples."
       status: stated
     minimum_detectable_difference:
       locator: "Section 9.3.1, Equations 88 and 89, citing FAO (2019)"
@@ -953,17 +989,25 @@ protocol_requirements:
         difference is OPTIONAL for projects."
       status: stated
       significance_for_loam: >-
-        THE IDENTITY. Under case N3 (A = 0) Equation 83 reduces to
-        t_0.975 * SE(delta) / delta, and Equation 88 at 50% power (t_beta = 0)
-        reduces to MDD = t_0.975 * SE(delta). Hence UNC = MDD / delta
-        identically. VM0042's uncertainty deduction IS the ratio of a project's
-        minimum detectable difference to the change it claims — computed
-        annually, under another name, by every case-N3 project, while the MDD
-        calculation itself is optional. This is a much harder finding to dismiss
-        than one built on LoAM's variance table, because the registry has
-        already accepted the number. See docs/vcs4022_inversion.md Sec 4.
+        THE IDENTITY, RESTATED 2026-08-13 (D-060). The previous text derived
+        UNC = MDD/delta from "Equation 83 under case N3" and "Equation 88",
+        neither of which exists in approved VM0042. The identity survives in
+        general form and still needs no undisclosed parameter, but it is NOT an
+        equality — it carries the constant k:
+        delta/MDD = k / ((t_alpha + t_beta) * UNC), with k = 0.4307 for every
+        version of VM0042 and MDD from Section 8.2.1.3 Equation (2). A project's
+        published deduction still fixes its detectability ratio exactly, and the
+        MDD calculation that would have exposed it is still optional. The
+        screening line is UNC > 21.97% at 50% power, UNC > 15.37% at 80%: above
+        it, the project claims a change smaller than it can detect. See
+        docs/vm0042_s2_verification.md Sec 6.
     n2o_quantification_approach_test:
       locator: "Section 8.2.8"
+      superseded_note: >-
+        RETAINED AS FACT, VOIDED AS A TEST (D-060). Section 8.2.8 and the QA1 /
+        QA3 split are real and correctly transcribed. But they select nothing:
+        approved VM0042 has no cases, so there is no "case" for this test to
+        determine. The final sentence below is withdrawn.
       detail: >-
         The mechanical test for which CASE applies. Direct and indirect N2O from
         nitrogen inputs are "quantified in the baseline scenario under
@@ -1058,23 +1102,36 @@ blocked_or_deferred:
       distinction: the verra.org METHODOLOGY library is directly retrievable;
       only the registry.verra.org PROJECT registry is SPA-blocked.
   - target: VM0042 v2.0 uncertainty rule as it applies to VCS 4022
-    attempts: 1
+    attempts: 2
     outcome: >-
-      RESOLVED 2026-08-13 (D-059) from the v2.0 public-comment redline already
-      held. 0.4307 does NOT apply: it is a v2.2 figure and is absent from v2.0.
-      v2.0 Sec 8.6.4 (pp. 82-85) sets out TWO PATHWAYS x TWO CASES — Pathway A
-      on relative uncertainty against a threshold A (15% for case N1, 0% for
-      case N3), Pathway B on probability of exceedance (55% / 70%). This is a
-      structural difference, not a different constant. D-057's reading of the
-      redline as "a 15%-threshold rule in one layer and a two-pathway rule in
-      another" was WRONG: the 15% threshold IS Pathway A's threshold for case
-      N1, and both pathways sit in one coherent v2.0 section.
+      CLOSED 2026-08-13 (D-060). The approved v2.0 was obtained directly from
+      verra.org and Section 8.6.4 did NOT survive the public-comment round: the
+      two-pathway / two-case construction was removed and replaced by a single
+      Equation (65) using t_alpha=0.666 ~= 0.4307 — the same rule and the same
+      constant as v2.2 Equation 74. D-059's earlier "RESOLVED from the redline"
+      is therefore WITHDRAWN. It resolved the question from a superseded draft.
     consequence: >-
-      VCS 4022 is case N3 (A = 0%), so its published 31.35% IS the relative 95%
-      half-width and inverts exactly to a ~16% relative standard error. Under
-      case N1 the same figure would imply 23.65% — a 48% error. Also recovered:
-      Equations 88/89 (MDD) and the identity UNC = MDD / claimed change.
+      VCS 4022 is not "case N3" because VM0042 has no cases. Its published
+      31.35% inverts with k = 0.4307, giving an implied relative SE of 72.79%
+      (not ~16%) and a claimed change of 0.70x its own MDD at 50% power and
+      0.49x at 80% — i.e. BELOW the detection floor, inverting the direction of
+      the D-059 finding. The general identity delta/MDD = k/((t_a+t_b)*UNC) is
+      unaffected; only k was wrong. VM0042 now has ONE rule across v2.0, v2.1,
+      v2.2 and the v3.0 draft, which removes version determination from the
+      Phase 5 sweep entirely.
     next_step: >-
-      obtain the APPROVED v2.0 to confirm Sec 8.6.4 survived the public-comment
-      round unchanged. Nothing in docs/vcs4022_inversion.md depends on 0.4307,
-      so this is a confirmation step rather than a blocker.
+      two NEW items, both cheap and both gating. (1) Re-pull the VCS 4022 PD to
+      confirm 31.35% is the Equation 65 deduction for SOC specifically; the
+      corrected numbers above depend on it and it was not re-verified. (2)
+      Retrieve VCS Methodology Requirements Sec 2.4, which Sec 8.6.4 defers to
+      and which is the only remaining place a cap on UNC could live.
+  - target: VCS Methodology Requirements Section 2.4
+    attempts: 0
+    outcome: >-
+      NOT YET ATTEMPTED. VM0042 Sec 8.6.4 defers to it in both v2.0 and v2.2
+      ("see the latest version of the VCS Methodology Requirements Section
+      2.4"). VM0042 itself imposes no cap on UNC — the MIN{100%, ...} recorded
+      under D-059 belongs to the superseded draft's Equation 83.
+    next_step: >-
+      retrieve and check for a cap. If there is none, the planned Phase 5 "cap
+      sweep" is deleted rather than deferred: there is nothing to detect.

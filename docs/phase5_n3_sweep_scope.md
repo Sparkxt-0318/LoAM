@@ -33,7 +33,7 @@ Every uncertainty rule in the corpus has the same shape: a multiplier `k` on the
 
 ```
 UNC  =  k · σ_rel                    where σ_rel = SE(Δ)/Δ
-MDD  =  (t_α + t_β) · SE(Δ)          VM0042 v2.0 Eq. 88 / v2.2 Eq. (1), FAO 2019
+MDD  =  (t_α + t_β) · SE(Δ)          VM0042 §8.2.1.3 Eq. (2), FAO 2019
 ```
 
 Eliminating `SE(Δ)`:
@@ -46,16 +46,23 @@ disclosure beyond the deduction itself.**
 
 ### The four `k` values, all from primary sources
 
+> **Corrected 2026-08-13 (D-060).** The v2.0 row below previously read `1.960`
+> with a case/pathway split. That was wrong — see `vm0042_s2_verification.md`.
+> VM0042 has had **one** uncertainty rule since v2.0, and the version dimension
+> collapses out of the sweep.
+
 | rule | `k` (multiplier on relative SE) | source |
 |---|---:|---|
-| VM0042 **v2.0**, case N3, Pathway A | **1.960** | v2.0 §8.6.4 Eqs. 83/84 — the 95% half-width, `A = 0` (D-059) |
+| VM0042 **v2.0**, Eq. 65 | **0.4307** | v2.0 §8.6.4, `t_{α=0.666}` (D-060) |
+| VM0042 **v2.1** | **0.4307** | §8.6.4 (D-060) |
 | VM0042 **v2.2**, Eq. 74 | **0.4307** | v2.2 §8.6.4, `t₀.₆₆₇` (D-057) |
+| VM0042 **v3.0 draft** | **0.4307** | draft §8, 10 Feb 2026 (D-060) |
 | CAR SEP v1.1 | **1.028** | `z(70%) × 95% half-width`, via CAR1459's monitoring plan (D-057) |
-| ACCU / ACCM | **0.2533** | 60% exceedance, per VM0042 v2.0's own footnote (D-057) |
+| ACCU / ACCM | **0.2533** | 60% exceedance (D-057) |
 
-VM0042 v2.0 **case N1** (`A = 15%`) is the same `k` with an offset: `UNC = 1.960·σ_rel − 15%`.
-It is listed separately in the eligibility table (§5) because the offset makes it
-a different inversion, not a different constant.
+There are no VM0042 cases and no pathways. Any project under any version of
+VM0042 inverts with the same constant, which removes the version-determination
+step from the sweep's per-project work.
 
 ### The screening thresholds
 
@@ -65,17 +72,19 @@ whole screen:**
 
 | rule | claim = MDD at 50% power | claim = MDD at 80% power |
 |---|---:|---:|
-| VM0042 v2.0 case N3 | UNC ≥ **100.0%** | UNC ≥ **70.0%** |
-| VM0042 v2.2 | UNC ≥ **22.0%** | UNC ≥ **15.4%** |
-| CAR SEP v1.1 | UNC ≥ **52.4%** | UNC ≥ **36.7%** |
-| ACCU / ACCM | UNC ≥ **12.9%** | UNC ≥ **9.0%** |
+| VM0042 **all versions** | UNC > **21.97%** | UNC > **15.37%** |
+| CAR SEP v1.1 | UNC > **52.4%** | UNC > **36.7%** |
+| ACCU / ACCM | UNC > **12.9%** | UNC > **9.0%** |
 
-Note the first row. VM0042 v2.0 Eq. 83 caps `UNC` at `MIN{100%, …}` — and 100% is
-**exactly** the point at which a case-N3 project's claim equals its MDD at 50%
-power. *Any v2.0 case-N3 project reporting a capped 100% deduction is, by its own
-arithmetic, claiming a change no larger than its minimum detectable difference.*
-The cap is a detector. Whether any project has hit it is an empirical question
-the sweep answers.
+> **Corrected 2026-08-13 (D-060).** The former first row (v2.0 case N3, 100.0% /
+> 70.0%) is deleted, and with it the claim that VM0042's `MIN{100%, …}` cap marks
+> the `Δ = MDD` line. **VM0042 Eq. 65/74 has no cap** — no `MIN`, no `MAX`, no
+> threshold subtraction. The planned cap sweep has nothing to sweep for unless a
+> cap is found in *VCS Methodology Requirements* §2.4, which §8.6.4 defers to and
+> which has not been retrieved.
+
+The 21.97% / 15.37% line is the whole VM0042 screen, and it applies to every
+project under the methodology regardless of version or quantification approach.
 
 ---
 
@@ -84,17 +93,26 @@ the sweep answers.
 Both fall out of §2 and should be verified early, because if they hold they may
 outrank the sweep itself.
 
-**(a) VM0042 v2.0 is 4.54× more severe than v2.2 on identical measurements.**
-`1.960 / 0.4307 = 4.54`. Concretely, VCS 4022's implied relative SE of 16.0%
-produces a **31.35%** deduction under the v2.0 rule it was validated against, and
-would produce **6.91%** under v2.2. Same soil, same design, same measurements, a
-4.5× different haircut — decided by which version of one methodology was in force
-on the validation date.
+**(a) ~~VM0042 v2.0 is 4.54× more severe than v2.2~~ — VOID (D-060, verified
+2026-08-13).**
 
-*Verification required before this is stated as a result:* confirm that `s²` in
-v2.2 Eq. 74 has the same content as `Σ s²_{Δℓ,t}` in v2.0 Eq. 84. If v2.2 also
-changed what enters the variance, part of the 4.54× is compositional rather than a
-severity change. **Do not report the ratio until this is checked.**
+The check was run. `s²` **is** the same object in both versions — same
+definition, same §8.6 subsection tree, same upstream equations symbol-for-symbol
+(v2.0 Eqs. 54/55 ≡ v2.2 Eqs. 63/64). But the premise failed: **v2.0's multiplier
+is also 0.4307**, not 1.960. There is no ratio. See
+`vm0042_s2_verification.md`.
+
+What the check produced instead, on VCS 4022's published 31.35%:
+
+| quantity | as recorded (D-059) | corrected |
+|---|---:|---:|
+| implied relative SE | 15.99% | **72.79%** |
+| `Δ/MDD` at 50% power | 3.19 | **0.70** |
+| `Δ/MDD` at 80% power | 2.23 | **0.49** |
+
+The claimed change is **below** its own minimum detectable difference. Note that
+§2's threshold table already said so — 31.35% > 21.97% — while §3a said the
+opposite. That internal contradiction is what the check surfaced.
 
 **(b) Published deduction percentages are not comparable across registries *or*
 across versions of one methodology** — and the corpus already says so in two
@@ -237,12 +255,21 @@ part 2 and is not in scope here.**
    scope. LoAM's scope lock does. *Recommendation: compute for all, report
    in-scope and out-of-scope separately, never pooled — the same rule D-016
    applies to variance-table rows.*
-4. **Verify §3a before or after the sweep?** It is ~1h of methodology reading and
-   may be a bigger result than the sweep. *Recommendation: before — if the `s²`
-   contents differ between versions, several downstream framings change.*
+4. ~~**Verify §3a before or after the sweep?**~~ **DONE 2026-08-13 (D-060)** —
+   verified first, per PI direction. Outcome in `vm0042_s2_verification.md`: `s²`
+   is identical across versions, but the v2.0 rule was misrecorded and §3a is
+   void. This was the right call: the sweep would have run with `k = 1.960` on
+   every pre-October-2025 project and produced systematically wrong `Δ/MDD`.
 5. **How hard to push on Verra retrieval.** A headless browser would very likely
    work and was ruled out of scope last session. Two attempts then log, or
-   authorise the browser?
+   authorise the browser? *Unchanged — still open, and now the only thing
+   between the corrected identity and the distribution.*
+6. **NEW — is 31.35% the Eq. 65 deduction for SOC?** The corrected `Δ/MDD = 0.70`
+   depends on it. The PD and validation report are not in the container. Re-pull
+   and confirm before the number leaves the repo.
+7. **NEW — retrieve *VCS Methodology Requirements* §2.4.** VM0042 §8.6.4 defers
+   to it. It is the only remaining place a cap on `UNC` could live, and the cap
+   sweep depends entirely on whether one exists.
 
 ---
 
@@ -250,11 +277,17 @@ part 2 and is not in scope here.**
 
 | stage | work | box | stop condition |
 |---|---|---|---|
-| 0 | Verify §3a: is `s²` the same object in v2.2 Eq. 74 and v2.0 Eq. 84? | 1h | report either way |
+| ~~0~~ | ~~Verify §3a~~ **COMPLETE — D-060**, `vm0042_s2_verification.md` | — | reported |
+| 0b | Re-pull VCS 4022 PD; confirm 31.35% is the Eq. 65 SOC deduction | 30 min | if it is not, §7 of the verification record is withdrawn too |
+| 0c | Retrieve *VCS Methodology Requirements* §2.4; is there a cap? | 30 min | no cap → cap sweep is deleted, not deferred |
 | 1 | Enumerate VM0042 projects; count reached | 1.5h | < 10 projects → stop and report |
-| 2 | Per project: version, case, pathway, UNC → `Δ/MDD` | 45 min each | — |
+| 2 | Per project: UNC → `Δ/MDD` with `k = 0.4307` | ~15 min each | — |
 | 3 | Distribution, count below floor, disclosure census | 1h | — |
 | 4 | Write up; extend `projects.yaml`; log D-NNN | 1h | — |
+
+Stage 2 is now materially cheaper than scoped: no version determination, no case
+determination, no pathway determination. One published number per project and one
+constant.
 
 **No variance-table row is written or promoted at any stage.** The sweep consumes
 published registry arithmetic; it does not consume LoAM's variance components.

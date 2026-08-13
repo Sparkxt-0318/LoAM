@@ -1,5 +1,32 @@
 # VCS 4022 — implied vs applied uncertainty deduction
 
+> # ⛔ RETRACTED IN PART — 2026-08-13
+>
+> **§2, §3 and §4 of this document describe a rule that does not exist.** The
+> "two pathways × two cases", Equations 83/84, threshold `A`, cases N1/N3 and
+> the `t₀.₉₇₅` multiplier are **not in VM0042 v2.0**, nor in v2.1, v2.2, the
+> v2.2 greenlined text, the Corrections & Clarifications to v2.0, or the v3.0
+> consultation draft. See **`vm0042_s2_verification.md`** for the primary-source
+> record.
+>
+> VM0042 v2.0 §8.6.4 is **Equation (65)**, `UNC = (√s²/Δ̄ × 100) × t_{α=0.666}`,
+> with `t ≈ 0.4307` — the same rule and the same constant as v2.2 Eq. 74.
+>
+> **Consequences:**
+> - The identity `UNC = MDD/Δ` **does not follow** from v2.0 as derived (§4).
+> - The implied relative SE is **72.79%**, not 15.99% (§5).
+> - `Δ/MDD` is **0.70** at 50% power and **0.49** at 80% — the claimed change is
+>   *below* its own detection floor, inverting §4's "3.19× MDD".
+> - The case-N3 determination (§3) is moot: VM0042 has no cases.
+>
+> **What survives:** §6 (the Eqs. 36/37 share factor, 18.48% effective on gross
+> ERRs), §7 (the four withheld/undisclosed inputs and the estimand mismatch), and
+> the finding that the sample-size calculation is optional — with its locator
+> corrected to §8.2.1.3 item 10, Equations (2) and (3).
+>
+> The general identity `Δ/MDD = k/((t_α+t_β)·UNC)` is unaffected; only `k` was
+> wrong. Read `vm0042_s2_verification.md` in preference to §§2–5 below.
+
 **First Phase 5 result.** Status: reported to the PI 2026-08-13, written up here.
 No variance-table row is written or implied by this document.
 
