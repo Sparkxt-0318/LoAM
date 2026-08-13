@@ -36,8 +36,8 @@ verbatim.
 
 ### Verbatim search results
 
-| string | 1 v2.0 | 2 v2.1 | 3 v2.2 | 4 v2.2-gl | 5 C&C | 6 v3§8 | 7 v3§9-10 | 8 example |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| string | 1 v2.0 | 2 v2.1 | 3 v2.2 | 4 v2.2-gl | 5 C&C | 6 v3§8 | 7 v3§9-10 | 8 example | 9 **draft** |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | `Pathway A` | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | **5** |
 | `Pathway B` | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | **3** |
 | `Case N1` | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | **2** |
@@ -303,3 +303,141 @@ the contradiction is what this check surfaced.
 | `UNC = MDD/Δ` under case N3 | **void as derived** (rests on Eq. 83) |
 | VCS 4022 claim = 3.19× MDD | **void — inverts to 0.70×** |
 | 100% cap is a detector | **void — no cap exists** |
+
+---
+
+## 10. Addendum, 2026-08-13 — *VCS Methodology Requirements* §2.4 (D-061)
+
+Retrieved: **MR v4.4**, 88 pp., `/wp-content/uploads/2023/08/VCS-Methodology-Requirements-v4.4-updated-4-Oct-2023.pdf`.
+Cross-checked against **MR v4.0** (Sept 2019, 78 pp.) to date the provisions.
+
+### (a) `k = 0.4307` is a VCS **program-wide** rule, not a VM0042 one
+
+§2.4 sets the procedure VM0042 §8.6.4 defers to, verbatim:
+
+> `Discount factor = ( Uncertainty / t_{α=10%} ) × t_{α=66.6%}`
+>
+> `Uncertainty` = "*Half-width of the 90% confidence interval as a percentage of
+> the mean estimate*"
+> `t_{α=10%}` = "*t-value for the two-sided 90% confidence interval,
+> approximately **1.6449***"
+> `t_{α=66.6%}` = "*t-value for a one-sided 66.67% confidence interval,
+> approximately **0.4307***"
+
+Since the 90% half-width is `1.6449 · SE`, the first factor is `σ_rel` exactly,
+and the whole expression reduces to **`Discount = 0.4307 · σ_rel`** — identical
+to VM0042 Eq. 65/74. Verra's worked example confirms the arithmetic:
+`32.9% / 1.6449 × 0.4307 = 8.6%`.
+
+**Consequence for the sweep: the identity is not VM0042-specific.** Every VCS
+methodology that implements §2.4 inverts with the same `k`. The population is
+potentially all VCS methodologies with a §2.4 deduction, not just VM0042's.
+
+`0.4307` is **absent** from MR v4.0, so the discount-factor procedure entered
+somewhere between v4.0 (2019) and v4.4 (2023).
+
+### (b) There is no cap — the cap sweep is deleted
+
+No `MIN`, no `MAX`, no ceiling on the deduction anywhere in §2.4. Combined with
+§2 of this record, **no cap exists at either methodology or program level.**
+Sweep scope §3b is withdrawn and the planned cap sweep is deleted, not deferred.
+
+### (c) But there is an **eligibility bar**, and it is a better threshold
+
+Final bullet of §2.4, verbatim:
+
+> "*Where the half-width of the two-sided 90 percent confidence interval exceeds
+> **100 percent** of the reduction and removal estimate, **the project is not
+> eligible for crediting**.*"
+
+Not a cap on the deduction — a bar on the project. Translated through the same
+algebra:
+
+```
+1.6449 · SE > Δ   ⟺   σ_rel > 60.79%   ⟺   UNC > 26.18%
+```
+
+> ### A published deduction above **26.18%** states, in the registry's own units, that the project is not eligible for crediting.
+
+This is **Verra's threshold, not LoAM's** — no power convention, no detectability
+standard of our choosing. It is the single threshold the sweep should use.
+
+For orientation against the detection floor: the bar sits at `Δ/MDD = 0.839`, so
+**VCS explicitly permits crediting claims down to 84% of their own 50%-power
+minimum detectable difference.** The three lines, in `UNC`:
+
+| line | UNC above which | whose standard |
+|---|---:|---|
+| claim < MDD at 80% power | 15.37% | LoAM's choice of power |
+| claim < MDD at 50% power | 21.97% | LoAM's choice of power |
+| **not eligible for crediting** | **26.18%** | **Verra's own** |
+
+### (d) VCS 4022 against Verra's own bar
+
+| quantity | value |
+|---|---:|
+| published deduction | 31.35% |
+| implied `σ_rel` | 72.79% |
+| **implied 90% CI half-width** | **119.7% of the ERR estimate** |
+| the §2.4 bar | 100% |
+| exceedance | **+19.7 points** |
+
+**Interpretation must be stated, not asserted.** VM0042 v2.0 §8.6.4 points at
+"*the latest version of the VCS Methodology Requirements Section 2.4*" but does
+not itself reproduce the bar, and the bar is a v4.4-era provision (Oct 2023),
+*after* VM0042 v2.0's approval (May 2023) and *before* VCS 4022's validation
+(Dec 2024, VCS Standard v4.5). So either:
+
+1. the bar binds through the "latest version" pointer, and VCS 4022 sits 19.7
+   points above a threshold that reads "not eligible for crediting"; or
+2. it does not, in which case **VM0042 does not implement a program requirement
+   it explicitly cross-references.**
+
+Both are findings. Neither is a claim that anyone breached a rule — resolving
+which one holds requires Verra's own reading, and this record does not have it.
+
+### (e) What 31.35% actually covers — **not confirmed SOC-specific**
+
+The PD is not public outside the SPA registry. The validation report (the only
+public source) does **not** disaggregate by pool. It calls the figure, verbatim:
+
+> "*The **final uncertainty deduction** is inconsistent in the PD between Table
+> 4-17 (23.97%) and the text in Section 4.4.4 (14.53%)*" — CAR ID 60
+>
+> "*The new uncertainty value of **31.35%** is filled into Table 4-17 as well as
+> Section 4.4.4*" — project participant response, 09/12/2024
+
+"The final uncertainty deduction", singular and project-level. VM0042 §8.6.4
+requires deductions "*estimated and applied separately for each ERR source*", so
+a single reported figure is either the SOC/QA1 deduction or something pooled
+across sources. The participant's CAR #21 response is consistent with the QA1
+path but does not settle scope:
+
+> "*To calculate the uncertainty deductions we make use of **both the model
+> prediction variance**, which is determined using the formulas specified in
+> Section 8.6 of VM0042, **and the uncertainty derived from our soil sampling
+> data**.*"
+
+**This splits the two findings by robustness, and the split matters:**
+
+| finding | depends on 31.35% being SOC-specific? | status |
+|---|---|---|
+| 90% half-width = 119.7% > §2.4 bar | **No** — both sides refer to the same ERR estimate | **robust** |
+| `Δ/MDD` = 0.70 at 50% power | **Yes** — MDD is defined on SOC stocks (§8.2.1.3 Eq. 2) | **conditional, unconfirmed** |
+
+Lead with the eligibility comparison. The MDD ratio stays flagged until the PD
+is obtained.
+
+### (f) Retrieval — the sweep did not run
+
+`registry.verra.org` returns the SPA shell (2,598 bytes of `index.html`,
+`content-type: text/html`, HTTP 200) for **every** route tried, GET and POST
+alike, including `/uiapi/resource/resourceSummary/search` and
+`/uiapi/asset/asset/search` with JSON bodies and browser headers. Two rounds (three HTTP
+calls) this session, on top of those logged under D-056, then stopped per the
+repo's two-attempt rule. Targeted web search surfaced no
+VM0042 project publishing a deduction other than VCS 4022.
+
+**Population reachable without a headless browser: n = 1.** The distribution
+cannot be computed and no distribution is reported. The threshold, the constant
+and the method are settled; only the sample is missing.

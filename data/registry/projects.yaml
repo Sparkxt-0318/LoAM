@@ -112,6 +112,18 @@ sources:
     pages: 183
     url: https://verra.org/wp-content/uploads/2025/10/VM0042v2.2_greenlined.pdf
     accessed: 2026-08-12
+  vcs_mr_v44:
+    title: "VCS Methodology Requirements, v4.4 (updated 4 Oct 2023)"
+    pages: 88
+    url: https://verra.org/wp-content/uploads/2023/08/VCS-Methodology-Requirements-v4.4-updated-4-Oct-2023.pdf
+    accessed: 2026-08-13
+    note: >-
+      The program-level document VM0042 Sec 8.6.4 defers to. Sec 2.4 carries
+      BOTH the 0.4307 discount-factor procedure and the eligibility bar. Neither
+      is VM0042-specific. Cross-checked against MR v4.0 (Sept 2019, 78 pp.,
+      https://verra.org/documents/vcs-methodology-requirements/): v4.0 contains
+      NEITHER 0.4307 nor the uncertainty eligibility bar, so both entered
+      between 2019 and 2023.
   vm0042_v20:
     title: "VCS Methodology VM0042 Improved Agricultural Land Management, v2.0 (APPROVED)"
     document_date: 2023-05-01
@@ -573,11 +585,40 @@ projects:
         0.4307 is 'a v2.2 figure absent from v2.0'. That is FALSE. VM0042 v2.0
         Sec 8.6.4 Equation (65) uses t_alpha=0.666 ~= 0.4307, identically to
         v2.2 Equation (74). This IS a 0.43-SE deduction. See
-        docs/vm0042_s2_verification.md. NOT RE-VERIFIED IN THIS CONTAINER: that
-        31.35% is the Equation 65 deduction for SOC specifically — confirm
-        against the PD before the derived fields below are used externally.
+        docs/vm0042_s2_verification.md. SCOPE ATTEMPTED AND NOT CONFIRMED
+        2026-08-13 (D-061): the PD is not public outside the SPA registry, and
+        the validation report calls this 'the final uncertainty deduction'
+        (CAR ID 60), singular and project-level, reported in Table 4-17 and
+        Section 4.4.4 without disaggregation by pool. VM0042 Sec 8.6.4 requires
+        deductions 'estimated and applied separately for each ERR source', so a
+        single figure is either the SOC/QA1 deduction or a pooled one.
+        CONSEQUENCE: `claimed_change_in_mdd_units` stays CONDITIONAL on this
+        because MDD is defined on SOC stocks; `implied_90ci_halfwidth_pct` does
+        NOT, because both sides refer to the same ERR estimate.
         SEE ALSO `effective_deduction_on_gross_pct`: 31.35% is an uncertainty
         STATISTIC, not the fraction of credits withheld.
+    implied_90ci_halfwidth_pct:
+      value: 119.7
+      status: inferred
+      source: vcs_mr_v44
+      locator: "derived from the stated 31.35% via VCS Methodology Requirements Sec 2.4: (31.35 / 0.4307) x 1.6449"
+      note: >-
+        DERIVED BY US, and the most robust quantity in this record because it
+        does not depend on the pool scope of 31.35%. MR Sec 2.4 defines the
+        deduction as (Uncertainty / t_alpha=10%) x t_alpha=66.6% with
+        t = 1.6449 and 0.4307, where Uncertainty is the half-width of the 90%
+        CI as a percentage of the mean. Inverting: the implied half-width is
+        119.7% of the ERR estimate. MR Sec 2.4's final bullet states VERBATIM:
+        'Where the half-width of the two-sided 90 percent confidence interval
+        exceeds 100 percent of the reduction and removal estimate, the project
+        is not eligible for crediting.' This project sits 19.7 points above
+        that bar. INTERPRETATION NOT ASSERTED: VM0042 v2.0 Sec 8.6.4 points to
+        'the latest version of' MR Sec 2.4 but does not reproduce the bar, and
+        the bar is a v4.4-era provision (Oct 2023) postdating VM0042 v2.0's
+        approval (May 2023) and predating this project's validation (Dec 2024).
+        Either the bar binds through that pointer, or VM0042 does not implement
+        a program requirement it cross-references. Both are findings; resolving
+        which holds needs Verra's own reading, which we do not have.
     uncertainty_rule_in_force:
       value: "VM0042 v2.0 Sec 8.6.4 Equation (65): UNC = (sqrt(s2)/mean * 100) * t_alpha=0.666, t ~= 0.4307"
       status: stated
@@ -940,6 +981,47 @@ protocol_requirements:
   # The approved rule is one formula with the SAME 0.4307 constant as v2.2, so
   # the version dimension collapses. See docs/vm0042_s2_verification.md.
   # -------------------------------------------------------------------------
+  # -------------------------------------------------------------------------
+  # VCS PROGRAM-LEVEL rule, added 2026-08-13 (D-061). This is the document
+  # VM0042 Sec 8.6.4 defers to, and it governs every VCS methodology that
+  # implements it — so the inversion is NOT VM0042-specific.
+  # -------------------------------------------------------------------------
+  - protocol: VCS Program (Verra) — Methodology Requirements
+    version_read: "v4.4, updated 4 October 2023, 88 pp."
+    source: vcs_mr_v44
+    uncertainty_deduction:
+      rule: >-
+        Discount factor = (Uncertainty / t_alpha=10%) x t_alpha=66.6%, where
+        Uncertainty is the half-width of the 90% CI as a percentage of the mean
+        estimate. Reduces to 0.4307 x sigma_rel, identical to VM0042 Eq 65/74.
+      locator: "Section 2.4 Uncertainty, printed p. 12"
+      k_value: 0.4307
+      k_quote: >-
+        VERBATIM: t_alpha=10% = 't-value for the two-sided 90% confidence
+        interval, approximately 1.6449'; t_alpha=66.6% = 't-value for a
+        one-sided 66.67% confidence interval, approximately 0.4307'. Verra's
+        own worked example: 32.9% / 1.6449 * 0.4307 = 8.6%.
+      no_cap: >-
+        There is NO cap on the deduction at program level, as there is none at
+        methodology level. The MIN{100%, ...} recorded under D-059 exists only
+        in the superseded Dec-2021 draft. The planned cap sweep is DELETED.
+      eligibility_bar: >-
+        VERBATIM, final bullet of Sec 2.4: 'Where the half-width of the
+        two-sided 90 percent confidence interval exceeds 100 percent of the
+        reduction and removal estimate, the project is not eligible for
+        crediting.' Not a cap on the deduction — a bar on the project.
+        Translated: 1.6449 x SE > delta, i.e. sigma_rel > 60.79%, i.e.
+        UNC > 26.18%. THIS IS THE SWEEP'S THRESHOLD, and it is Verra's, not
+        ours. At that bar delta/MDD = 0.839, so the VCS program explicitly
+        permits crediting claims down to 84% of their own 50%-power minimum
+        detectable difference.
+      materiality_floor: >-
+        Sec 2.4 also sets a floor: where the 90% CI half-width is unlikely to
+        exceed 10% of the estimate, methodologies MAY EXCLUDE random
+        uncertainty entirely. Relevant to the sweep's population — a
+        methodology below the floor publishes no deduction to invert.
+      status: stated
+
   - protocol: Verra VM0042 Improved Agricultural Land Management
     version_read: "v2.0 APPROVED (May 2023), 157 pp."
     source: vm0042_v20
@@ -1126,12 +1208,48 @@ blocked_or_deferred:
       Retrieve VCS Methodology Requirements Sec 2.4, which Sec 8.6.4 defers to
       and which is the only remaining place a cap on UNC could live.
   - target: VCS Methodology Requirements Section 2.4
-    attempts: 0
+    attempts: 1
     outcome: >-
-      NOT YET ATTEMPTED. VM0042 Sec 8.6.4 defers to it in both v2.0 and v2.2
-      ("see the latest version of the VCS Methodology Requirements Section
-      2.4"). VM0042 itself imposes no cap on UNC — the MIN{100%, ...} recorded
-      under D-059 belongs to the superseded draft's Equation 83.
+      CLOSED 2026-08-13 (D-061). Retrieved v4.4 first try from verra.org.
+      NO CAP — so the cap sweep is DELETED, not deferred. But Sec 2.4 carries
+      two things worth more than a cap: (a) the 0.4307 procedure is a VCS
+      PROGRAM-WIDE rule, so the inversion generalises beyond VM0042 to every
+      methodology implementing Sec 2.4; (b) an ELIGIBILITY BAR — 'Where the
+      half-width of the two-sided 90 percent confidence interval exceeds 100
+      percent of the reduction and removal estimate, the project is not
+      eligible for crediting' — which is UNC > 26.18% and is the sweep's
+      threshold, set by Verra rather than by us.
     next_step: >-
-      retrieve and check for a cap. If there is none, the planned Phase 5 "cap
-      sweep" is deleted rather than deferred: there is nothing to detect.
+      none. Recorded as a `protocol_requirements` entry.
+  - target: VCS 4022 project description (Table 4-17, Section 4.4.4)
+    attempts: 1
+    outcome: >-
+      NOT OBTAINED 2026-08-13 (D-061). The PD is served only through
+      registry.verra.org, which returns its SPA shell. The validation report is
+      publicly mirrored (terrapass.com) and was re-read, but it does not
+      disaggregate the deduction by pool: CAR ID 60 calls 31.35% 'the final
+      uncertainty deduction', singular and project-level.
+    consequence: >-
+      `claimed_change_in_mdd_units` (0.70) stays CONDITIONAL, because MDD is
+      defined on SOC stocks. `implied_90ci_halfwidth_pct` (119.7) does NOT
+      depend on the scope question and is the quantity to lead with.
+    next_step: >-
+      needs the PD, which needs the registry, which needs the browser decision.
+  - target: VM0042 project population for the Phase 5 sweep
+    attempts: 2
+    outcome: >-
+      BLOCKED 2026-08-13 (D-061), consistent with D-056. Two rounds, three HTTP
+      calls, counted the way D-056 counted its own ('4 endpoints, 2 attempts'):
+      round 1 GET on /uiapi/resource/resourceSummary/search and
+      /uiapi/asset/asset/search; round 2 POST with a JSON body, browser
+      User-Agent and Referer. registry.verra.org returned an identical
+      2598-byte SPA shell (content-type text/html, HTTP 200) every time. Then
+      stopped, per the two-attempt rule. Targeted web search surfaced no VM0042
+      project publishing an uncertainty deduction other than VCS 4022.
+    consequence: >-
+      POPULATION REACHABLE WITHOUT A HEADLESS BROWSER = 1. The distribution
+      sweep cannot run and NO DISTRIBUTION IS REPORTED. Method, constant and
+      threshold are all settled; only the sample is missing.
+    next_step: >-
+      PI decision on the headless browser (sweep scope Sec 8 item 5). This is
+      now the single blocker on the whole of Phase 5.

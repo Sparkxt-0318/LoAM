@@ -70,11 +70,29 @@ Setting `Δ/MDD = 1` — the project claims exactly its own detection floor — 
 a published-deduction threshold per rule. **These are exact, and they are the
 whole screen:**
 
+> **THE THRESHOLD IS SETTLED, AND IT IS NOT OURS (D-061, 2026-08-13).**
+> *VCS Methodology Requirements* §2.4 ends: "*Where the half-width of the
+> two-sided 90 percent confidence interval exceeds **100 percent** of the
+> reduction and removal estimate, **the project is not eligible for
+> crediting**.*" Since the 90% half-width is `1.6449·SE`, that is
+> `σ_rel > 60.79%`, i.e. **`UNC > 26.18%`**. The sweep runs at that single line —
+> Verra's own, with no power convention chosen by us. The power-based rows below
+> are kept for orientation only.
+
 | rule | claim = MDD at 50% power | claim = MDD at 80% power |
 |---|---:|---:|
 | VM0042 **all versions** | UNC > **21.97%** | UNC > **15.37%** |
 | CAR SEP v1.1 | UNC > **52.4%** | UNC > **36.7%** |
 | ACCU / ACCM | UNC > **12.9%** | UNC > **9.0%** |
+
+The VCS bar sits at `Δ/MDD = 0.839`: **Verra permits crediting claims down to
+84% of their own 50%-power minimum detectable difference.** That relationship —
+not a LoAM threshold — is the publishable form of the detectability argument.
+
+**And `k = 0.4307` is a VCS program-wide constant, not a VM0042 one.** MR §2.4
+defines `Discount = (Uncertainty / t_{α=10%}) × t_{α=66.6%}` with `1.6449` and
+`0.4307`, which reduces to `0.4307·σ_rel`. Every VCS methodology implementing
+§2.4 inverts identically, so the population is wider than VM0042.
 
 > **Corrected 2026-08-13 (D-060).** The former first row (v2.0 case N3, 100.0% /
 > 70.0%) is deleted, and with it the claim that VM0042's `MIN{100%, …}` cap marks
@@ -278,12 +296,17 @@ part 2 and is not in scope here.**
 | stage | work | box | stop condition |
 |---|---|---|---|
 | ~~0~~ | ~~Verify §3a~~ **COMPLETE — D-060**, `vm0042_s2_verification.md` | — | reported |
-| 0b | Re-pull VCS 4022 PD; confirm 31.35% is the Eq. 65 SOC deduction | 30 min | if it is not, §7 of the verification record is withdrawn too |
-| 0c | Retrieve *VCS Methodology Requirements* §2.4; is there a cap? | 30 min | no cap → cap sweep is deleted, not deferred |
-| 1 | Enumerate VM0042 projects; count reached | 1.5h | < 10 projects → stop and report |
-| 2 | Per project: UNC → `Δ/MDD` with `k = 0.4307` | ~15 min each | — |
-| 3 | Distribution, count below floor, disclosure census | 1h | — |
+| ~~0b~~ | ~~Confirm 31.35% is the SOC deduction~~ **ATTEMPTED — D-061, NOT CONFIRMED.** PD not public; validation report calls it "the final uncertainty deduction", project-level, undisaggregated | — | `Δ/MDD` stays conditional; the §2.4 comparison does not depend on it |
+| ~~0c~~ | ~~Is there a cap?~~ **COMPLETE — D-061. No cap** at methodology or program level; **an eligibility bar instead**, `UNC > 26.18%` | — | cap sweep **deleted** |
+| **1** | **Enumerate VM0042 projects — BLOCKED.** `registry.verra.org` returns the SPA shell on every route, GET and POST (3 further attempts, D-061). Web search surfaces no other project's deduction | — | **population reachable = 1. Stopped and reported, per the stop condition** |
+| 2 | Per project: UNC → eligibility test at 26.18%, `Δ/MDD` beside it | ~10 min each | — |
+| 3 | Distribution, count over the bar, disclosure census | 1h | — |
 | 4 | Write up; extend `projects.yaml`; log D-NNN | 1h | — |
+
+**Stage 1 is the only thing left, and it is the thing that was flagged as the
+sweep's sole real risk from the start.** Everything downstream is settled: one
+constant, one threshold, one published number per project. The blocker is
+retrieval, and the decision on it (§8 item 5) is still the PI's.
 
 Stage 2 is now materially cheaper than scoped: no version determination, no case
 determination, no pathway determination. One published number per project and one
