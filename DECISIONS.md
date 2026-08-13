@@ -80,6 +80,7 @@ That is enforced, not requested: see D-032.
 | D-056 | decided | **FINDING**: registry sampling designs are mostly unpublished — Phase 5 corpus started, gap quantified |
 | D-057 | decided | VM0042 read from primary: 0.4307 **confirmed**, version caveat, and VM0042's own Eq. 2 **is** the inverted audit |
 | D-058 | decided | estimator repair: debiased weighted log-variance replaces D-040's unweighted `log(sd)`; conclusion holds |
+| D-059 | decided | **FINDING**: VM0042's uncertainty deduction **is** MDD ÷ claimed change; VCS 4022 read as case N3 |
 
 ---
 
@@ -2919,6 +2920,115 @@ specification's behaviour rather than past it.
 
 ---
 
+**D-059 — VM0042's UNCERTAINTY DEDUCTION IS `MDD / claimed change`, AND VCS 4022
+IS READ AS CASE N3.** Two things, because the second is what makes the first
+usable on a real project. Full write-up: `docs/vcs4022_inversion.md`.
+
+**THE IDENTITY (this is the result).** VM0042 v2.0 §8.6.4 Equation 83, under case
+N3 where the threshold `A` is 0%, reduces to the relative half-width of the 95%
+confidence interval; Equation 84 makes that half-width `t₀.₉₇₅ · SE(Δ)`. VM0042's
+*own* minimum-detectable-difference equation — §9.3.1 Eq. 88,
+`MDD ≥ (S/√n)(t_α + t_β)` — reduces to exactly the same quantity at 50% power,
+where `t_β = 0`. Therefore
+
+> **UNC = MDD / Δ**, identically.
+
+**The uncertainty deduction a registry already accepts is the ratio of a
+project's minimum detectable difference to the change it claims.** It follows
+from two equations in the same document; it needs no assumption and no LoAM
+input. Read back onto VCS 4022's published 31.35%: the claimed SOC change is
+**3.19× its own MDD at 50% power, 2.23× at 80%**.
+
+*Why this reshapes Phase 5 again.* D-057 found that VM0042's Eq. (2) **is** the
+inverted audit but is optional, and that the input we must supply is `S` — which
+no project publishes. D-059 finds the other end of the same rope: **where a
+case-N3 project publishes a deduction, the detectability ratio is already
+published too**, and `S` is not needed at all. That converts the inverted audit
+from "LoAM asserts your design was inadequate" into "the registry's own arithmetic
+says your claim sits 2–3× above your detection floor" — a far harder finding to
+dismiss, because nobody has to accept our variance table to accept it.
+
+**THE CASE DETERMINATION (this is the inference, and it is load-bearing).**
+Neither the PD nor the validation report names a pathway or a case. Case
+selection turns on one thing: which Quantification Approach was used for **direct
+N₂O**. v2.0 §8.2.8 makes the test mechanical (QA1 → Eq. 11, modelled; QA3 →
+Eq. 12, defaults), and the validation report's own CAR #01 item V records IPCC
+2019 Tier 1 defaults for `EF_Ndirect` — QA3, hence **case N3, A = 0%**.
+**Counterfactual stated because it is large:** reading this as case N1 (A = 15%)
+would put the implied relative SE at **23.65%** instead of **15.99%**, a 48%
+error. Pathway A over B is inferred from the deduction being applied
+multiplicatively as a percentage (Eqs. 36/37), which is A's form; B yields a
+retained fraction. **If the PI reads the case differently, one field flips and
+every derived figure in the VCS 4022 record moves with it.**
+
+**CORRECTION TO D-057.** D-057 read the v2.0 redline as carrying "a 15%-threshold
+rule in one layer and a two-pathway rule in another", i.e. as tracked-changes
+noise. **That was wrong.** The 15% threshold *is* Pathway A's threshold `A` for
+case N1; both pathways and both cases sit in one coherent v2.0 §8.6.4. The rule
+is one rule. What D-057 got right and this confirms: **0.4307 is a v2.2 figure
+and is absent from v2.0**, so a v2.0 project's deduction must never be described
+in those terms — and the difference is structural (two pathways × two cases vs
+one formula), not a changed constant. v2.0 now has its own
+`protocol_requirements` entry rather than living as a caveat on v2.2's.
+
+**WHAT INVERTS, AND WHAT DOES NOT.** The inversion is exact: with `A = 0`,
+31.35% *is* the relative 95% half-width, giving an implied relative standard
+error of **15.99% at large df**, 15.33% at df = 29, 13.86% at df = 9. The only
+inferred input is `df`, and the sensitivity is one-sided and bounded — fewer
+samples give a *smaller* implied SE, so 16% is a ceiling.
+
+**The forward direction is NOT computable, and that is the honest finding.** It
+needs `n` (not disclosed — the PD gives 3–5 PAIs per stratum but defers the
+stratum count to verification), `ρ` (Eq. 53 needs `Cov(y_t, y_{t−1})`; no value
+published), the RothC prediction variance (**withheld** — "Table 3.9" in the
+non-public MVR), and the uncertainty workbook itself (**withheld** —
+`uncert_deduct_proj.zip`, named twice, public neither time). And a fifth problem
+that is not about disclosure: **the estimand does not match.** Case N3 pools
+model and sampling error — the project participant says so directly — while
+LoAM's envelope covers only sampling; and LoAM's between-plot rows measure
+*replicate plots within one site* (3.4–11.9%) where VCS 4022's sample unit is a
+*field within a stratum across ten countries*. Running the low end of the
+envelope through Eq. 83 would produce a number about a different population.
+**No such number was produced.**
+
+**A SECOND CORRECTION, TO D-057's SEVERITY TABLE.** VM0042 Eqs. 36/37 apply the
+deduction as `(1 − UNC × share)`, each stream scaled by its fraction of gross
+ERRs. VCS 4022's own ex-ante table therefore shows an **effective deduction of
+18.48% on gross ERRs, not 31.35%** (gross 13,331,506.72 − 2,464,107.81 =
+10,867,398.91, internally exact). The two reconcile at a reductions:removals
+split of ≈71:29, which is not publicly verifiable — recorded as *a consistency
+check that passes, not independent confirmation*. **Consequence: a published
+deduction percentage is an uncertainty STATISTIC, not the fraction of credits
+withheld.** The D-057 table (ACCU 0.253 · VM0042 0.431 · CAR SEP 1.028) compares
+`k` multipliers on a standard error; the *credited* consequence additionally
+depends on a share factor none of the three registries publishes. The fourfold
+severity spread stands; "fourfold different haircut" needs that qualifier.
+
+**AND THE FINDING.** VM0042 v2.0's monitored-parameter tables make the sample-size
+calculation optional in as many words — "*Calculation of the number of required
+samples to detect a minimum difference is **optional** for projects*" — and VCS
+4022 took the option. The record is unusually complete because the validator
+forced the question: CAR #01 item VII found "*MDD, n, n−1, t_x,u, parameters are
+missing from data and parameters to be monitored*"; the PD added the rows; the
+validation body then assessed **all five** — MDD, S, n, n−1 and t — as "*not
+relevant and therefore not further assessed*". **A 479,834 ha project claiming
+543,370 tCO₂e/year over 20 years, validated, with its minimum detectable
+difference formally recorded as not relevant — while, by the identity above,
+computing MDD/Δ every year under another name.** The PD's own commitment is
+prospective and conditional ("*will be performed… where prudent*") and cites a
+section that does not exist in v2.0.
+
+**What breaks if wrong.** The identity is algebra and does not break. The case
+determination is an inference from one validator finding, and it carries the
+whole VCS 4022 record — it is marked `inferred` in the corpus with the
+counterfactual attached, not folded into a `stated` field. The Pathway A reading
+is weaker still: it rests on the *form* in which the deduction was applied, and
+no document names a pathway. If VCS 4022 in fact used Pathway B, Eq. 83 does not
+apply and the inversion is void for this project — though the identity itself,
+which is a property of the methodology, is unaffected.
+
+---
+
 ---
 
 ## Open evidence gaps
@@ -2955,3 +3065,4 @@ specification's behaviour rather than past it.
 | 2026-08-12 | (no new D-NNN) | **Phase 5 inverted-audit design doc written — `docs/phase5_inverted_audit_design.md`. DESIGN ONLY, no code.** Rests on D-057's find that **VM0042 §8.2.1 Eq. (2) `n ≥ (S(t_α+t_β)/MDD)²` IS the inverted audit**, made optional by the methodology in the same sentence, with `S` the one input we supply. **Degeneracy resolved without an arbitrary choice:** density ≡ A/n is an output not a knob, and the remaining `(n, C)` trade-off is removed by reporting the **infimum of cost over all admissible designs** rather than picking a design — the claim "no plausible campaign could have detected this" is a statement about the best case, so the minimum *is* the finding. **Low end of the variance envelope adopted as a hard rule** with an exact `bias_direction` mapping (`inflates`→`value_low`, `deflates`→`value`), so the headline reads "even under the most generous noise assumptions…". **Depth convention: bracket, and the bracket is free** — ESM is the *generous* branch, so it carries the headline and the unknown branch can only strengthen a finding; and for VM0042 projects ESM is a compliance requirement (D-057), not a guess. **"Implausibly large" grounded in the project's own economics:** headline metric is the **break-even carbon price**, so no threshold is chosen by us. **53 credit-issuing projects carry the finding; the 999 give a distribution explicitly conditional on an assumed rate.** Forward audit re-roled as **validation** with three tests, including the Indigo 1-in-5→1-in-3 bulk-density change (a design change made on variance grounds and documented as such) — flagged that `VC-BDC-*` are convention *biases*, not BD measurement variances, so that test may need a new row rather than being runnable. **Six adversarial objections stated against my own design**, the strongest being that VM0042 Eq. (2) is sampling-only while most of the corpus is measure-and-model, so required-`n` overstates for QA1 — conceded, and reframed as a reportable quantity (*how much detectability is the model being asked to supply?*). **THE BLOCKER, listed not assumed (rule 9): there is no 0–30 cm within-plot spatial row.** G2 forbids combining the 0–10 and 10–30 layers, and within-plot variance governs the entire `C` dimension. D-043's compositing contrast offers an indirect ~8–9% estimate; using it is the PI's decision. Six decisions listed in §10. |
 | 2026-08-12 | (PI decision implemented; no new D-NNN) | **DELIVERABLE 3 RETIRED — the spatially explicit MDC surface is withdrawn and the invariance result is restated as a positive claim.** `docs/invariance_finding.md`: *we searched for spatial structure in monitoring noise across climate, texture and soil chemistry, each time against a stated detection limit, and found none; a single set of variance components serves temperate cropland; **MDC varies with DESIGN and INTERVAL, not with PLACE**.* Four nulls, each with its limit: climate shifts **0.300/0.152** against CI widths **3.97/3.52** in opposite directions (~±2 pt limit); texture spreads **2.611/3.690** against widest-bin CIs **11.016/10.464** (~10 pt limit); joint model **R² = 0.0722** under the repaired estimator (D-058), *lower* than the 0.093 first reported; inorganic carbon null at a **~6.4–7.6%** analytical-error limit against Potash's stated 1–10% (D-055). Temporal behaves the same (D-045). **Argued as a stronger product than a map:** "use these numbers anywhere in temperate cropland" is distributable, checkable by anyone with their own data, and cannot manufacture structure from covariates the way an interpolated surface fitted to non-predictive covariates can. **New repo-wide standard adopted: a null is only informative against a stated detection limit** — every null in this project must carry the magnitude it could have detected; three existing instances named as the template. **What would overturn it, stated concretely:** the carbonate channel is the cheapest to close and needs *lab duplicates, not a field campaign* — a few hundred split samples spanning 0 to >2% inorganic carbon would reach the untested lower two-thirds of Potash's range. **Consequence: Phase 5 is the headline, and invariance is what makes it tractable** — if σ varied by location, auditing 999 ACCU projects would need a per-project variance estimate nobody can supply. `docs/phase0_summary.md` Finding 3 rewritten, `docs/phase1_design.md` and `scripts/derive_g1_napeshm.py` annotated where they still promised the surface. No row written, no row promoted. |
 | 2026-08-08 | D-031, D-032, D-033; **D-028 still open** | Open-decision guard: decisions and the constants they govern are now machine-readable (`src/loam/decisions.py`), the build prints `<-- PROPOSED, NOT DECIDED`, and two tests refuse to pass while an open decision governs a live constant — **the suite is red on merge, by design** (D-032). Replacing the private climate envelope with IPCC 2006 climate regions was attempted and is **blocked**: MAP:PET and frost-day counts are not derivable from NAPESHM, and no proxy is substituted (D-033). Poeplau ↔ NAPESHM corroboration logged, with a figure correction (D-031). No variance-table values changed. |
+| 2026-08-13 | D-059 | **FIRST PHASE 5 RESULT — and the identity that makes the method republish the registry's own arithmetic.** `docs/vcs4022_inversion.md`. **VM0042 v2.0 §8.6.4 Eq. 83 under case N3 (`A = 0`) reduces to `t₀.₉₇₅·SE(Δ)/Δ`; VM0042's own MDD equation (§9.3.1 Eq. 88) reduces to `t₀.₉₇₅·SE(Δ)` at 50% power. Hence `UNC = MDD / Δ`, identically.** The uncertainty deduction a registry has already accepted **is** the ratio of a project's minimum detectable difference to the change it claims. VCS 4022's published **31.35%** therefore states that its claimed SOC change is **3.19× its own MDD at 50% power, 2.23× at 80%** — no assumption, no LoAM input. Where D-057 found Eq. (2) *is* the inverted audit but needs `S`, which nobody publishes, D-059 finds the other end: **for case-N3 projects that publish a deduction, `S` is not needed at all.** **Case determination (inferred, load-bearing, D-059):** no document names a pathway or case; the test is which Quantification Approach was used for direct N₂O (v2.0 §8.2.8), and CAR #01 item V records IPCC 2019 Tier 1 defaults for `EF_Ndirect` → QA3 → **case N3, A = 0%**. Counterfactual stated: case N1 would give an implied SE of **23.65%** not **15.99%**, a 48% error. **Corrections to D-057, two.** (a) The v2.0 redline is **not** two conflicting layers — the 15% threshold *is* Pathway A's `A` for case N1, and both pathways sit in one coherent section; 0.4307 remains confirmed for v2.2 and absent from v2.0, and the difference is **structural** (two pathways × two cases vs one formula), so v2.0 now has its own `protocol_requirements` entry. (b) Eqs. 36/37 apply the deduction as `(1 − UNC × share)`, so VCS 4022's own ex-ante table gives an **effective 18.48% on gross ERRs, not 31.35%** — a published deduction is an uncertainty *statistic*, not the fraction of credits withheld, and the D-057 severity table needs that qualifier. **THE FORWARD AUDIT IS NOT COMPUTABLE FOR THIS PROJECT, and that is the finding:** `n` not disclosed (3–5 PAIs per stratum, stratum count deferred to verification), `ρ` not disclosed, RothC prediction variance **withheld** ("Table 3.9", non-public MVR), the uncertainty workbook **withheld** (`uncert_deduct_proj.zip`, named twice) — and the estimand does not match, since case N3 pools model with sampling error while LoAM's rows measure replicate plots within one site against VCS 4022's fields across ten countries. **No number was manufactured.** **AND THE FINDING:** v2.0 makes the sample-size calculation optional in as many words; CAR #01 item VII forced the MDD parameters into the PD's monitoring tables; the validation body then assessed **all five — MDD, S, n, n−1, t — as "not relevant and therefore not further assessed"**, on a 479,834 ha project claiming 543,370 tCO₂e/year. PR #12 closed unmerged (D-053 load-bearing for D-054/056/057/058). No variance-table row written or promoted. |
