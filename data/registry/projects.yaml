@@ -1251,5 +1251,61 @@ blocked_or_deferred:
       sweep cannot run and NO DISTRIBUTION IS REPORTED. Method, constant and
       threshold are all settled; only the sample is missing.
     next_step: >-
-      PI decision on the headless browser (sweep scope Sec 8 item 5). This is
-      now the single blocker on the whole of Phase 5.
+      superseded by the browser entry below — the PI authorised it 2026-08-13.
+  - target: VM0042 project population via authorised headless browser
+    attempts: 2
+    method_note: >-
+      A DISTINCT METHOD from the HTTP entry above, authorised separately by the
+      PI, so logged separately rather than folded into that entry's count. Full
+      picture for a reviewer: 2 HTTP rounds (3 calls) + 2 browser rounds, all
+      logged, then stopped. The two-attempt cap was applied to each method and
+      was not raised.
+    outcome: >-
+      NOT COMPLETED 2026-08-13 (D-062) — AND NOT BECAUSE OF VERRA. Chromium
+      could not reach ANY host from this container. Round 1: default launch,
+      then explicit playwright proxy= config. Round 2: explicit --proxy-server,
+      --proxy-bypass-list=<-loopback>, QUIC disabled, background networking and
+      component update disabled, certificate errors ignored. Every navigation
+      returned net::ERR_CONNECTION_RESET, INCLUDING https://example.com/. The
+      egress proxy accepts only CONNECT tunnels; its own failure log records
+      only Chromium plain-HTTP telemetry to clients2.google.com being refused.
+      curl reaches the same hosts from the same shell without difficulty.
+    constraints_honoured: >-
+      robots.txt checked before any launch (see the robots entry below); 4-6s
+      between navigations; no parallelism; no credentials held, supplied or
+      attempted; probe written to abort on a login wall; two rounds then stop.
+    consequence: >-
+      THIS IS AN ENVIRONMENT LIMITATION, NOT AN ACCESS WALL AND NOT A
+      DISCLOSURE GAP. It carries NO information about Verra and must never be
+      reported as though it did. The access wall (SPA rendering) remains a real
+      and separate finding; the disclosure gap (ACCU's 999 projects with zero
+      sampling fields) remains a third, and the three are never merged.
+      Population reachable in this environment = 1; no distribution reported.
+    next_step: >-
+      retry from an environment whose browser egress permits CONNECT tunnels.
+      Nothing about the method, constant or threshold needs revisiting.
+  - target: robots.txt compliance for the retrieval paths used by this project
+    attempts: 1
+    outcome: >-
+      CHECKED 2026-08-13 (D-062), with one result FOR and one AGAINST us.
+      (a) registry.verra.org serves NO robots.txt — the SPA catch-all returns
+      the 2598-byte index.html with content-type text/html for /robots.txt as
+      for every path — so no parseable directive exists and the authorised
+      project paths are NOT disallowed. (b) verra.org DOES serve directives:
+      'User-agent: * / Disallow:/wp-content/uploads'. EVERY primary document in
+      this project's evidence base sits under that path — VM0042 v2.0/v2.1/
+      v2.2/greenlined, the C&C, the v3.0 drafts, MR v4.4, and the worked
+      uncertainty example.
+    assessment: >-
+      Stated rather than argued away. The REP governs automated CRAWLING; these
+      were individual PI-directed retrievals of specific documents, each linked
+      publicly from Verra's own methodology pages, fetched once and cached — no
+      traversal, no index, no bulk enumeration. But the directive is unqualified
+      and a reviewer is entitled to know the evidence base came from a path
+      Verra asks automated agents not to fetch. It does not affect document
+      CONTENT, which is independently verifiable from the locators recorded here.
+    next_step: >-
+      STANDING RULE ADOPTED: no automated or bulk retrieval under
+      verra.org/wp-content/uploads. Documents already held are retained and
+      cited. Any future bulk fetch from that path is a PI DECISION, not an agent
+      decision. Flagged as an open question, not assumed either way.

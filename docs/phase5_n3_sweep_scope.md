@@ -305,8 +305,149 @@ part 2 and is not in scope here.**
 
 **Stage 1 is the only thing left, and it is the thing that was flagged as the
 sweep's sole real risk from the start.** Everything downstream is settled: one
-constant, one threshold, one published number per project. The blocker is
-retrieval, and the decision on it (§8 item 5) is still the PI's.
+constant, one threshold, one published number per project.
+
+---
+
+## 10. Retrieval decision log (D-062, 2026-08-13)
+
+Written so a reviewer asking *how was this corpus assembled?* can answer it
+without reconstructing anything.
+
+### 10.1 What was authorised, and the limits applied
+
+A headless browser was authorised by the PI for **`registry.verra.org` project
+pages only**, under stated constraints, all of which were applied:
+
+| constraint | how it was honoured |
+|---|---|
+| Check `robots.txt` first; stop if it disallows | Checked before any browser launch. See §10.2 — including a finding that cuts against us. |
+| Several seconds between requests, no parallelism | 4–6 s waits, single page object, sequential. Never exceeded 3 navigations in a run. |
+| No authentication, login walls or paywalls | No credentials held, none supplied, none attempted. The probe was written to abort on a login wall; it never got far enough to test one. |
+| Two rounds max, do not raise the cap | Two rounds used (§10.3). Stopped. Cap not raised. |
+
+### 10.2 `robots.txt` — two results, one of which is against us
+
+**`registry.verra.org/robots.txt`** returns the SPA catch-all: HTTP 200,
+`content-type: text/html`, the same 2,598-byte `index.html` served for every
+path. **No robots.txt is served, and no parseable directive exists** — under the
+Robots Exclusion Protocol, content that yields no valid rules is not a
+disallow. The authorised target paths are therefore **not disallowed**.
+
+**`verra.org/robots.txt`**, however, *does* serve directives, and they matter:
+
+```
+User-agent: *
+Disallow:/wp-content/uploads
+```
+
+**Every primary document in this project's evidence base sits under
+`/wp-content/uploads`** — VM0042 v2.0/v2.1/v2.2/greenlined, the Corrections &
+Clarifications, the v3.0 consultation drafts, the *Methodology Requirements*
+v4.4, and Verra's worked uncertainty example.
+
+Stated plainly rather than argued away:
+
+- **What the directive addresses.** The Robots Exclusion Protocol governs
+  automated *crawling* — discovery and traversal. These were individual,
+  PI-directed retrievals of specific documents, each linked publicly from
+  Verra's own methodology pages, fetched once and cached locally. No crawl, no
+  traversal, no index, no bulk enumeration of that path.
+- **What is nonetheless true.** The directive exists, it is unqualified, and a
+  reviewer is entitled to know that the documents underpinning every finding in
+  this project were retrieved from a path Verra's `robots.txt` asks automated
+  agents not to fetch.
+- **What it does not affect.** Document *content*. Eq. (65), `0.4307`, and the
+  §2.4 eligibility bar say what they say; they are also obtainable by hand from
+  a browser, and the locators in this repo let any reader verify them
+  independently.
+- **Standing rule adopted here.** No automated or bulk retrieval under
+  `verra.org/wp-content/uploads`. Documents already held are retained and cited.
+  **Any future bulk fetch from that path is a PI decision, not an agent
+  decision**, and is flagged as an open question rather than assumed.
+
+### 10.3 Why rendering a public project page is not circumvention
+
+Recorded because the question is legitimate and should not be left implicit.
+
+`registry.verra.org` project detail pages are **published, unauthenticated, and
+intended for public reading** — Verra links them from its own site and from
+press material, and each is the canonical public record of a registered project.
+The obstacle is not a control that withholds them; it is that the pages are
+**client-rendered**, so an HTTP client receives the application shell rather than
+the content a human reader sees.
+
+Running the page's own JavaScript reproduces exactly what an ordinary visitor
+receives. It does not defeat authentication, does not evade a paywall, does not
+use credentials, does not exploit a flaw, and does not reach anything a member
+of the public cannot read by opening the same URL. **What it changes is
+throughput, not entitlement** — which is why the rate limit, the sequencing and
+the two-round cap were imposed as conditions rather than treated as optional.
+
+Had a login wall, a paywall or a terms gate appeared, the constraint was to
+stop. That remains the rule if this is attempted from another environment.
+
+### 10.4 What actually happened — and it was not Verra
+
+**The browser could not be made to work in this container, for reasons that have
+nothing to do with Verra.**
+
+The egress proxy accepts only `CONNECT` tunnels. Chromium's navigations were
+reset at the network layer for **every** host tried, including
+`https://example.com/`:
+
+```
+net::ERR_CONNECTION_RESET   https://example.com/
+net::ERR_CONNECTION_RESET   https://verra.org/
+net::ERR_CONNECTION_RESET   https://registry.verra.org/app/projectDetail/VCS/4022
+```
+
+Round 1: default launch, then explicit `proxy=` configuration. Round 2: explicit
+`--proxy-server`, `--proxy-bypass-list=<-loopback>`, QUIC disabled, background
+networking and component updates disabled, certificate errors ignored. Identical
+reset each time. The proxy's own failure log records only Chromium's plain-HTTP
+telemetry to `clients2.google.com` being refused for being non-`CONNECT` — the
+HTTPS navigations do not appear in it at all.
+
+`curl` reaches the same hosts from the same shell without difficulty. **The
+limitation is this environment's browser egress, not the target.**
+
+### 10.5 The three-way distinction — do not merge these
+
+The corpus has now met three different failure modes, and collapsing them into a
+single "we couldn't get the data" number would destroy the finding:
+
+| | mode | example | what it evidences |
+|---|---|---|---|
+| 1 | **Disclosure gap** | ACCU register: 999 soil projects, **no field of any kind** for sample count, depth, cores per composite, density or interval; `Estimation or measurement approach` populated for 24/999 | About the **registry**. Complete-population evidence — the strongest kind, because nothing is missing from it. |
+| 2 | **Access wall** | `registry.verra.org` serves a client-rendered shell; no systematic read without executing the page | About the **delivery mechanism**. The data is public but not auditable at population scale. |
+| 3 | **Environment limitation** | Chromium cannot reach *any* host from this container | About **us**. Carries no information about Verra whatsoever. |
+
+**(1) is a finding about disclosure. (2) is a finding about auditability.
+(3) is not a finding about Verra at all**, and must never be reported as though
+it were.
+
+### 10.6 The finding that survives the failure
+
+Recorded beside the ACCU census, and jointly stronger than either alone:
+
+> **The two largest soil-carbon registries publish design and uncertainty data in
+> forms that cannot be systematically audited — by complete-population evidence
+> for one, and by access-wall evidence for the other.**
+>
+> ACCU: **999** soil projects, **zero** sampling-design fields. Verra: project
+> records public and individually readable, but reachable only one client-
+> rendered page at a time.
+>
+> Neither statement depends on a variance component, a detectability threshold,
+> or anything LoAM computes.
+
+**Population reachable in this environment: n = 1. No distribution is reported
+and none was estimated.** The threshold (§2, `UNC > 26.18%`), the constant
+(`k = 0.4307`) and the method are all settled and unaffected. Only the sample is
+missing, and the sweep is now correctly a **second-order** question: the Phase 5
+headline rests on `vcs_eligibility_bar.md`, which is complete at n = 1 plus a
+program-level rule.
 
 Stage 2 is now materially cheaper than scoped: no version determination, no case
 determination, no pathway determination. One published number per project and one
