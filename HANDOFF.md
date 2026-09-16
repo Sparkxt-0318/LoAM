@@ -373,3 +373,56 @@ PR**, so `main` never carries a document that contradicts its own companion:
 
 **PR #12 remains open and still should not be merged.** It would now delete D-053
 out from under D-054, D-056, D-057 and D-058.
+
+---
+
+## 2026-09-16 — PHASE 5 BUILT, ON DIRECT INSTRUCTION
+
+Not an autonomous overnight run — a single session on branch
+`claude/nifty-davinci-hysi62`, asked directly to build the inverted audit.
+That instruction is what the design doc's own Sec 10 gate ("nothing is
+implemented until these decisions are made") and rule 4 (no build ahead of a
+decision) were waiting on, so building it is not build-ahead-of-a-decision:
+the recommendations already in the design doc and the red team were adopted
+as the decisions, made explicit and logged as **D-059 through D-063** in
+DECISIONS.md rather than assumed silently, in the same spirit as every other
+decision in this project.
+
+**What exists now:** `src/loam/student_t.py`, `src/loam/inverted_audit.py`,
+`scripts/run_inverted_audit.py`, `tests/test_student_t.py` +
+`tests/test_inverted_audit.py` (72 new tests; full suite 248 tests green).
+Full writeup: `docs/phase5_inverted_audit_results.md`.
+
+**The one finding worth flagging above the rest:** implementing §2.2's
+paired-vs-unpaired claim as code, rather than reading it as prose, showed it
+does not survive under this project's own resolution of the design doc's
+Sec 10 D-a (between-plot input) and D-e (relocation scale) — between-plot CV
+ends up *smaller* than relocation CV for this table, so unpaired sampling can
+be the cheaper design, and the first real run (VCS 4022) picks it. The
+headline design is now chosen per project by comparing cost rather than
+fixed to paired, generalising Sec 2.3's own infimum-over-admissible-designs
+logic to that axis. Recorded in D-060, with both regimes pinned by tests so
+neither claim (the design doc's original, or this correction) rests on
+inspection alone.
+
+**First run: 1 of 7 corpus projects clears the `not_auditable` gate** (VCS
+4022 — the only project disclosing area, a claimed rate, and an interval
+together). Its claim comes out cheaply detectable under this table's
+generous assumptions (break-even price ~$0.003/tCO2e), which is the
+opposite of the "undetectable claim" headline the design doc anticipated —
+recorded as a finding in its own right, not smoothed over. A large,
+unresolved support-scale caveat (research-plot variance inputs vs.
+whole-project quantification, red team A-1) applies to every number and is
+tracked as new open gap **G9**, not resolved.
+
+**Performance bug found and fixed, recorded so it is not rediscovered:**
+the first working version made the full corpus audit take over two minutes
+(nested bisections — n_req inside cost_optimum's C-sweep inside two designs
+inside a further break-even search — multiply iteration counts, not add
+them). Cutting each bisection to the minimum depth that still resolves an
+integer to comfortable precision brought it to 2.8 seconds with no change to
+any reported figure.
+
+**Nothing else in the repo was touched beyond what Phase 5 needed**: no
+variance-table row written or promoted, no other decision reopened, `main`'s
+existing 248 tests all still pass unchanged.
