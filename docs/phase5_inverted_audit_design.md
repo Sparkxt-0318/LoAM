@@ -22,6 +22,20 @@ applies: the 393-line unfed classifier is the precedent.
 > the record of where it is weak, and B-1's restructuring is a decision the PI
 > has not yet made.
 
+> ✅ **IMPLEMENTED 2026-09-16. See [`phase5_inverted_audit_results.md`](phase5_inverted_audit_results.md)
+> and DECISIONS.md D-059–D-063.** `src/loam/inverted_audit.py` builds this
+> design with every §10 decision resolved and every red team required change
+> applied, including B-1's restructuring (adopted) and C-3's bisection fix
+> (adopted, already reflected in §2.1 below). **One resolution changes a
+> conclusion this document states as fact**: §2.2's claim that paired
+> revisits are always cheaper does NOT survive under the implementation's own
+> resolution of §10 D-a/D-e (between-plot input is the narrower, in-depth-
+> scope Wuest row; relocation error is used undivided) — the headline design
+> is now chosen per project by comparing cost, not fixed to paired. This
+> document is left standing for the same reason the red team pointer above
+> is: it is the record of what was proposed, not what was built. Read the
+> results doc for what actually ran.
+
 ---
 
 ## 0. The one-paragraph version

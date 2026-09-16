@@ -80,6 +80,11 @@ That is enforced, not requested: see D-032.
 | D-056 | decided | **FINDING**: registry sampling designs are mostly unpublished — Phase 5 corpus started, gap quantified |
 | D-057 | decided | VM0042 read from primary: 0.4307 **confirmed**, version caveat, and VM0042's own Eq. 2 **is** the inverted audit |
 | D-058 | decided | estimator repair: debiased weighted log-variance replaces D-040's unweighted `log(sd)`; conclusion holds |
+| D-059 | decided | Phase 5 inverted audit BUILT: `src/loam/student_t.py`, `src/loam/inverted_audit.py`, `scripts/run_inverted_audit.py`; headline restructured around the implied-vs-applied uncertainty deduction (red team B-1); bisection, not iteration (red team C-3) |
+| D-060 | decided | Sec 10 D-a resolved (0-30 cm within/between-plot inputs) and D-b REVISED: headline design (paired/unpaired) chosen per project by lower Cost*, not fixed to paired |
+| D-061 | decided | Sec 10 D-d/D-e resolved: `stock` basis throughout; difference-scale declared per component in code (`DIFFERENCE_SCALE`), not a schema column |
+| D-062 | decided | low-envelope rule stated as a corner bound, not a CI (red team C-2); `not_auditable` gate (A-3); break-even price/noise-scale/stratification efficiency reported (A-2, B-2); ESM-only headline, fixed-depth as footnote (A-5); QA1 upper-bound flag (Objection 1) |
+| D-063 | decided | support/scale-mismatch ratio reported, never gated on (red team A-1); tracked as new open gap **G9**; D-054 stays open and non-blocking |
 
 ---
 
@@ -2919,6 +2924,280 @@ specification's behaviour rather than past it.
 
 ---
 
+**D-059 — PHASE 5 BUILT. The design doc's own Sec 10 gate ("nothing is
+implemented until these decisions are made") is satisfied by this entry and
+D-060 through D-063. The headline metric is restructured around the
+implied-vs-applied uncertainty deduction, and required-n is solved by
+bisection, not fixed-point iteration.**
+
+New: `src/loam/student_t.py` (pure-Python Student's t CDF/quantile, since
+`src/loam` stays standard-library only — see `loam.logvar` for why), a
+regularized-incomplete-beta continued-fraction implementation verified
+against standard published critical-value tables to 2e-3 and, more
+sharply, against the red team's own worked demonstration in
+`docs/inverted_audit_redteam.md` C-3 (four `(sigma, delta)` pairs, reproduced
+exactly). `src/loam/inverted_audit.py`, the audit engine. `scripts/
+run_inverted_audit.py`, a CLI that runs the corpus and writes
+`data/processed/inverted_audit.json`. `tests/test_student_t.py` and `tests/
+test_inverted_audit.py`, 72 tests between them.
+
+**Red team B-1 adopted: required-n is an intermediate quantity, not the
+headline.** The headline is the registry's own instrument — `implied
+uncertainty deduction = k * (S(C)/sqrt(n)) / Delta * 100`, evaluated at the
+audit's own cost-optimal design and compared directly against a project's
+disclosed `uncertainty_deduction_applied_pct`. This is checkable today
+against VCS 4022's published 31.35% without waiting on any other blocker
+(B-1's own selling point): the first run gives an implied figure of
+**13.2%**, well below the 31.35% applied — the right order of magnitude
+(not off by 10x or 100x, which would indicate a broken pipeline) and
+consistent with Objection 1 (the implied figure is sampling-only; the
+project's own applied deduction folds in QA1 model-prediction uncertainty
+too, which this audit does not attempt to quantify).
+
+**Red team C-3 adopted: `n_req` bisects `g(n) = n_req(n) - n` rather than
+iterating the fixed point.** `tests/test_student_t.py` pins the exact
+failure the red team demonstrated — naive iteration cycling at `sigma=3,
+delta=3` — as a permanent regression guard, not just a one-time check.
+
+**Performance mattered more than expected and is recorded so it is not
+rediscovered.** The first working version of `n_req` (200 bisection
+iterations, inherited from an unexamined round-number default) made a
+single project's audit take **8 seconds** and the full corpus **time out at
+120 seconds**, because `n_req`'s own bisection sits inside `cost_optimum`'s
+30-value sweep over `C`, which sits inside `run_audit`'s two designs, which
+sits inside `break_even_noise_scale`'s own outer bisection — nested
+searches multiply, not add. Cutting every bisection depth to the minimum
+that still resolves an integer `n` to comfortable precision (35-40
+iterations, chosen from `log2` of the actual range in play, not a round
+number) brought the full seven-project corpus to **2.8 seconds** with no
+change to any reported figure at the precision it is rounded to. Recorded
+in both modules' docstrings at the constants themselves, not only here.
+
+**D-f affirmed, not re-decided.** The design doc's brief already answered
+"is Phase 5 the headline deliverable?" — yes, and Deliverable 3 was retired
+on that basis (PI decision, 2026-08-12, `docs/invariance_finding.md`). This
+entry is the first code to actually exist under that decision.
+
+*If wrong:* the two new modules are pure computation with no side effects
+beyond the CLI's `data/processed/inverted_audit.json` output; wrong numbers
+here cannot corrupt the variance table or any Phase 0 baseline. The risk is
+a plausible-looking audit output being quoted out of the caveats it ships
+with — see `docs/phase5_inverted_audit_results.md`, which exists specifically
+to prevent that.
+
+---
+
+**D-060 — SEC 10 D-a RESOLVED (0-30 cm between-plot and within-plot
+inputs), AND D-b REVISED, NOT ADOPTED AS RECOMMENDED. The headline design
+(paired vs. unpaired) is chosen per project by comparing `Cost*`, not fixed
+to "paired" by fiat — because checking the design doc's own D-b
+recommendation directly, rather than assuming it, shows it does not always
+hold.**
+
+**Between-plot 0-30 cm:** `VC-BPS-007` (Wuest, one PNW series, the *only*
+row in the table that is a genuine 0-30 cm pure between-plot term — see the
+Sec 10 D-a table itself) is the primary input, generous end **3.136%**.
+`VC-BPS-006` (NAPESHM, 0-15 cm, D-026 forbids rescaling to 0-30 cm) is
+offered in code only as an explicitly off-depth sensitivity, never as the
+headline input — the alternative the design doc itself flagged as
+unusable at this depth without D-026 being revisited.
+
+**Within-plot 0-30 cm (G2):** no table row exists at all. D-043's indirect
+compositing-ratio estimate (Wuest 3-core-vs-1-core residual ratio, 1.785
+against sqrt(3) = 1.732, implying single-core within-plot CV of roughly
+8-9% at 0-20/0-30 cm) is adopted as the primary input, generous end
+**8.0%** — the route the design doc's own Sec 10 recommended without
+taking. The stated alternative ("bound `C` between 1 and 4, needs no new
+assumption") is implemented too, as a `"layer_bracket"` source using
+`VC-WPS-001`/`VC-WPS-002`'s own low/high bounds as bracket ENDPOINTS
+([5.8, 14.5]%) rather than a combined 0-30 cm SD — G2 forbids the latter,
+not the former.
+
+**D-b, checked rather than assumed, does not survive as written.** The
+design doc's Sec 2.2 argues paired revisits are always cheaper because
+between-plot variance (~11.5%, NAPESHM) dominates relocation error (~6.65%,
+its own illustrative "per observation" figure for `VC-REL-001`). Under
+THIS entry's own resolution of D-a (between-plot input is the narrower,
+genuinely-in-scope Wuest figure, ~3.1%, not the broader but off-depth
+NAPESHM figure) and D-061's resolution of D-e below (relocation stays on
+the difference scale, undivided, ~9.4%), the ordering **reverses**:
+`sigma_B < sigma_R` for this table, so the paired formula's `sigma_R^2`
+term can exceed the unpaired formula's `2*sigma_B^2` term, and unpaired
+comes out cheaper. Caught by a test written to check the design doc's own
+claim directly rather than by inspection — the same discipline the red
+team's C-3 finding came from, applied one level further into the
+implementation. Both regimes are now pinned:
+`tests/test_inverted_audit.py::test_paired_is_cheaper_when_between_plot_dominates_relocation`
+(synthetic inputs matching the design doc's own assumption) and
+`::test_unpaired_can_be_cheaper_than_paired_under_this_modules_resolved_inputs`
+(this table's actual resolved inputs).
+
+**The fix generalises the design doc's own Sec 2.3 logic rather than
+contradicting it.** Sec 2.3 already refuses to pick a point on the `(n, C)`
+trade-off curve and instead reports the infimum of cost over the whole
+admissible set. Paired vs. unpaired is exactly one more axis of the
+admissible-design set, so `run_audit` now computes **both** in full (both
+are always present in `AuditResult` as `paired`/`unpaired`) and reports
+whichever has the lower `Cost*` as `headline_design` — the generous choice
+under Sec 2.4's own rule, extended to this axis instead of exempted from
+it. The first real run (VCS 4022) picks **unpaired**.
+
+*If wrong:* the exposure is narrow. `s_of_c`'s two formulas are unit-tested
+against both orderings directly (a synthetic component set where `sigma_B`
+dominates confirms paired wins there, matching the design doc's own
+illustration; the real, resolved component set confirms the reversal).
+Getting the between-plot or within-plot input source wrong would move
+`n_req` by less than an order of magnitude either way, not invalidate the
+headline-selection logic itself, which only ever compares two numbers this
+module computes consistently.
+
+---
+
+**D-061 — SEC 10 D-d AND D-e RESOLVED. `stock` basis used throughout;
+difference-scale declared per component in code, not a schema column — a
+narrower-blast-radius version of what D-e asked for.**
+
+**Basis (D-d):** every component the audit uses is `basis: stock`
+(`VC-BPS-007`, `VC-ANA-001`'s harmonised figure, `VC-TMP-003`,
+`VC-REL-001`) or a module-level constant sourced from stock-basis
+derivations (the D-043 within-plot estimate). D-052's discipline — never
+mix bases — is enforced by construction: `assemble_components` never reads
+a `concentration`-basis row.
+
+**Difference-scale (D-e / Objection 5):** the design doc asked for "a
+schema field, not prose" recording, per component, whether its dispersion
+is per-observation or already on the difference scale — a full
+`src/loam/schema.py` column would touch the Phase 0 build pipeline this
+audit does not otherwise depend on, so a smaller, still-testable version is
+used instead: `DIFFERENCE_SCALE`, a module-level dict in
+`loam/inverted_audit.py`, checked by `tests/test_inverted_audit.py`.
+Logged here as a deliberate simplification, not an oversight.
+
+**`VC-REL-001` resolved as difference-scale, undivided (9.4%) — and this
+DIFFERS from the design doc's own Sec 2.2 illustrative arithmetic, which
+used the sqrt(2)-halved "per observation" figure (~6.65%).** The row's own
+harmonization note defines the source statistic as the mean of
+`|SOC_initial - SOC_resampled|` — already the SD of a ONE-TIME mismatch
+between the true original point and the actual (imperfectly relocated)
+revisit point. That is exactly what the paired formula's un-doubled
+`sigma_R` term represents (within-plot/analytical/temporal error occur
+independently at both t0 and t1, hence doubled; relocation error is a
+single structural offset, not a second independent draw). Used undivided.
+**This is flagged as a probable correction to the design doc's own
+illustration, not silently changed there** — the design doc is left
+standing, per the same convention already used for the C-3/B-1 corrections
+at its own top. A `relocation_scale="per_observation_sqrt2"` toggle
+reproduces the design doc's own convention in code, for direct comparison.
+
+*If wrong:* this is the single most consequential resolution in this
+batch, by the design doc's own admission ("getting this factor wrong
+changes required n by 2x") — and it is what flipped D-060's headline-design
+finding. Both readings are implemented and tested, not just asserted, so a
+reader who disagrees can re-run with `relocation_scale="per_observation_sqrt2"`
+and see the other answer rather than having to re-derive it.
+
+---
+
+**D-062 — THE RED TEAM'S REMAINING REQUIRED CHANGES IMPLEMENTED: THE
+LOW-ENVELOPE RULE IS AN EXPLICIT CORNER BOUND (C-2), A `not_auditable` GATE
+EXISTS (A-3), AND BREAK-EVEN PRICE / NOISE SCALE / STRATIFICATION
+EFFICIENCY ARE ALL REPORTED (A-2, B-2), ALONGSIDE THE ESM-ONLY HEADLINE
+(A-5) AND THE QA1 UPPER-BOUND FLAG (OBJECTION 1).**
+
+**C-2, partially.** Every docstring and every output field built on
+`generous_cv_pct` states, in words, that taking each component's
+`value_low` independently is a deliberate worst-case-for-us CORNER of the
+input space, not a joint confidence interval — fix (a) from the red team's
+own menu. Fix (b), a genuine stochastic joint-quantile propagation, is
+**not implemented**: it needs a distributional assumption per component
+this project does not yet have evidence to defend, and asserting one to
+look more rigorous would be worse than the honestly-labelled corner bound.
+Left as a candidate follow-up, not silently taken.
+
+**A-3.** `gate()` returns `not_auditable` with named reasons for: a project
+whose SOC pool is not separable from its credited ledger (`CAR1513`,
+matched by `project_id` against a short explicit set — the corpus does not
+yet carry a machine-readable "credited pool" field, so this is a stopgap,
+not a general classifier); missing usable project area; and no usable
+claimed rate (`claimed_soc_change_rate`, `claimed_abatement` and
+`credits_issued` all missing, withheld or not_disclosed). First run: 1 of
+7 corpus projects clears the gate.
+
+**A-2 / B-2.** `break_even_noise_scale` (the multiplicative factor by which
+every component would have to shrink together for a plausible campaign —
+CAR1459's own disclosed density, applied to the audited project's area —
+to suffice) generalises A-2 to the paired headline, where between-plot
+variance does not enter `S(C)` at all and a literal "break-even sigma_B"
+is undefined. `break_even_between_plot_cv_pct` and
+`required_stratification_efficiency` implement A-2 and B-2 literally,
+under the unpaired design where between-plot variance does enter.
+
+**A-5.** The audit's deliverable spec (Sec 9) is followed as revised by the
+red team: ESM is the sole headline depth-convention figure (`esm_note` on
+every result), fixed-depth bias magnitudes (`VC-BDC-001..004`) appear only
+as that footnote's text, never as a parallel numeric branch or as a term in
+`S(C)` — they are `error_kind: systematic`, and schema rule R9 already
+forbids a systematic row a harmonised SD for exactly the reason a bias must
+never enter a variance budget.
+
+**Objection 1.** `quantification_approach` from the corpus, when
+disclosed, sets `qa_upper_bound_flag`: true for QA1 (measure-and-model,
+the majority of the corpus — CAR1459/DayCent-CR, VCS 4022/RothC,
+CAR1513/DNDC), with a note that required-n there overstates what the
+project's actual measure-and-model design needs, to the extent its
+validated model error is smaller; false for QA2, with no qualification.
+
+**Objection 6.** `INHERITED_DETECTION_LIMITS`, three static citations
+(D-055's ~6.4-7.6% analytical/inorganic-carbon limit, D-040's ~2/10 CV-point
+climate/texture limits, and G2's "not a measured quantity at all" caveat on
+the within-plot input), attached verbatim to every `AuditResult`.
+
+*If wrong:* the `not_auditable` project-id list (A-3) is the weakest part
+of this entry — a hand-maintained set rather than a general rule — and
+will silently pass a future project whose credited pool is similarly
+inseparable but not named here. Flagged rather than fixed with a heavier
+classifier this pass had no evidence to build correctly.
+
+---
+
+**D-063 — SUPPORT/SCALE MISMATCH (RED TEAM A-1) IS COMPUTED AND REPORTED
+ON EVERY RESULT, NEVER GATED ON. TRACKED AS A NEW OPEN GAP, G9. D-054
+STAYS OPEN AND REMAINS NON-BLOCKING FOR THIS AUDIT.**
+
+**A-1's strongest form ("the audit must not run on a project whose
+quantification unit is more than an order of magnitude from the support of
+the components... if that excludes everything, that is the finding") is
+taken seriously rather than either ignored or silently adopted as a hard
+gate.** `support_mismatch_ratio` (project area / the between-plot
+component's own nominal support, `VC-BPS-007`'s stated "3.6 x 53 m plots")
+is computed and returned on every auditable result. For the one project
+currently auditable, VCS 4022, it is **~25 million** — many orders of
+magnitude past even a generous reading of A-1's "order of magnitude"
+threshold. Hard-gating on that threshold would mean the audit could never
+run on any real commercial-scale project, which is a genuine finding this
+module should surface rather than decide unilaterally by silently refusing
+to run. **Recorded as `G9`** in the Open evidence gaps table below, using
+the same mechanism this project already uses for exactly this shape of
+problem (G2, G3, G5 are all "known, open, tracked, not resolved by
+assumption") rather than inventing a new one.
+
+**D-054 stays open, unchanged, and remains non-blocking for the audit's
+headline** — restated rather than re-litigated. Sec 2.4's own generous
+rule takes `VC-ANA-001`'s narrower tabled figure (1.25% harmonised, not the
+raw 1.0% MAPE the design doc's own illustration quotes — see
+`generous_cv_pct`'s docstring for that correction) regardless of which way
+D-054 eventually resolves, exactly as the design doc's own Sec 10 D-c
+already noted.
+
+*If wrong:* this entry decides nothing about the magnitude of the support
+mismatch's effect on `sigma_B` — only that it is real, large, and now
+visible on every output rather than assumed away. A future PR that wants
+to actually model support-scale effects (upscaling between-plot variance
+from research-plot to commercial-field support) has a number to start
+from and a place (G9) to record what it finds.
+
+---
+
 ---
 
 ## Open evidence gaps
@@ -2933,6 +3212,7 @@ specification's behaviour rather than past it.
 | **G6** | The two LUCAS rows are unverified against the primary report. | Locked out of use by rule R6. | open — needs LUCAS PDF |
 | **G7** | No source yet isolates cover-crop or reduced-till effects on *variance* (as opposed to mean). | Practice-specific variance inflation is unparameterized. | open |
 | **G8** | Every temporal row comes from ONE region: four sites, all silt loam, all semi-arid Mediterranean, all Pacific Northwest dryland. | Component 4 is derived but not generalised. The provider says so themselves (D-042). | open — **narrowed in direction**: KBS LTER (humid temperate row-crop) is *more* variable, not less, so PNW dryland is the low end and using it understates rather than overstates (D-047). Blocked from becoming a row by a written-permission licence, confirmed to travel with the EDI mirror. |
+| **G9** | Every between-plot input the Phase 5 inverted audit can use is measured on research-plot support (order 0.01-0.2 ha — `VC-BPS-007`'s "3.6 x 53 m plots"). Every corpus project quantifies at commercial-field or whole-project support (hundreds to hundreds of thousands of ha). | Red team A-1: the audit's `sigma_B` may be a different quantity, not a noisier measurement of the same one, at commercial support. `support_mismatch_ratio` is reported on every audit result (~25 million for VCS 4022) rather than hidden, but the effect of the mismatch on the true value of `sigma_B` at commercial support is unknown in either direction. | open — new 2026-09-16 (D-063). No upscaling study exists; none is assumed. |
 
 ---
 
@@ -2955,3 +3235,4 @@ specification's behaviour rather than past it.
 | 2026-08-12 | (no new D-NNN) | **Phase 5 inverted-audit design doc written — `docs/phase5_inverted_audit_design.md`. DESIGN ONLY, no code.** Rests on D-057's find that **VM0042 §8.2.1 Eq. (2) `n ≥ (S(t_α+t_β)/MDD)²` IS the inverted audit**, made optional by the methodology in the same sentence, with `S` the one input we supply. **Degeneracy resolved without an arbitrary choice:** density ≡ A/n is an output not a knob, and the remaining `(n, C)` trade-off is removed by reporting the **infimum of cost over all admissible designs** rather than picking a design — the claim "no plausible campaign could have detected this" is a statement about the best case, so the minimum *is* the finding. **Low end of the variance envelope adopted as a hard rule** with an exact `bias_direction` mapping (`inflates`→`value_low`, `deflates`→`value`), so the headline reads "even under the most generous noise assumptions…". **Depth convention: bracket, and the bracket is free** — ESM is the *generous* branch, so it carries the headline and the unknown branch can only strengthen a finding; and for VM0042 projects ESM is a compliance requirement (D-057), not a guess. **"Implausibly large" grounded in the project's own economics:** headline metric is the **break-even carbon price**, so no threshold is chosen by us. **53 credit-issuing projects carry the finding; the 999 give a distribution explicitly conditional on an assumed rate.** Forward audit re-roled as **validation** with three tests, including the Indigo 1-in-5→1-in-3 bulk-density change (a design change made on variance grounds and documented as such) — flagged that `VC-BDC-*` are convention *biases*, not BD measurement variances, so that test may need a new row rather than being runnable. **Six adversarial objections stated against my own design**, the strongest being that VM0042 Eq. (2) is sampling-only while most of the corpus is measure-and-model, so required-`n` overstates for QA1 — conceded, and reframed as a reportable quantity (*how much detectability is the model being asked to supply?*). **THE BLOCKER, listed not assumed (rule 9): there is no 0–30 cm within-plot spatial row.** G2 forbids combining the 0–10 and 10–30 layers, and within-plot variance governs the entire `C` dimension. D-043's compositing contrast offers an indirect ~8–9% estimate; using it is the PI's decision. Six decisions listed in §10. |
 | 2026-08-12 | (PI decision implemented; no new D-NNN) | **DELIVERABLE 3 RETIRED — the spatially explicit MDC surface is withdrawn and the invariance result is restated as a positive claim.** `docs/invariance_finding.md`: *we searched for spatial structure in monitoring noise across climate, texture and soil chemistry, each time against a stated detection limit, and found none; a single set of variance components serves temperate cropland; **MDC varies with DESIGN and INTERVAL, not with PLACE**.* Four nulls, each with its limit: climate shifts **0.300/0.152** against CI widths **3.97/3.52** in opposite directions (~±2 pt limit); texture spreads **2.611/3.690** against widest-bin CIs **11.016/10.464** (~10 pt limit); joint model **R² = 0.0722** under the repaired estimator (D-058), *lower* than the 0.093 first reported; inorganic carbon null at a **~6.4–7.6%** analytical-error limit against Potash's stated 1–10% (D-055). Temporal behaves the same (D-045). **Argued as a stronger product than a map:** "use these numbers anywhere in temperate cropland" is distributable, checkable by anyone with their own data, and cannot manufacture structure from covariates the way an interpolated surface fitted to non-predictive covariates can. **New repo-wide standard adopted: a null is only informative against a stated detection limit** — every null in this project must carry the magnitude it could have detected; three existing instances named as the template. **What would overturn it, stated concretely:** the carbonate channel is the cheapest to close and needs *lab duplicates, not a field campaign* — a few hundred split samples spanning 0 to >2% inorganic carbon would reach the untested lower two-thirds of Potash's range. **Consequence: Phase 5 is the headline, and invariance is what makes it tractable** — if σ varied by location, auditing 999 ACCU projects would need a per-project variance estimate nobody can supply. `docs/phase0_summary.md` Finding 3 rewritten, `docs/phase1_design.md` and `scripts/derive_g1_napeshm.py` annotated where they still promised the surface. No row written, no row promoted. |
 | 2026-08-08 | D-031, D-032, D-033; **D-028 still open** | Open-decision guard: decisions and the constants they govern are now machine-readable (`src/loam/decisions.py`), the build prints `<-- PROPOSED, NOT DECIDED`, and two tests refuse to pass while an open decision governs a live constant — **the suite is red on merge, by design** (D-032). Replacing the private climate envelope with IPCC 2006 climate regions was attempted and is **blocked**: MAP:PET and frost-day counts are not derivable from NAPESHM, and no proxy is substituted (D-033). Poeplau ↔ NAPESHM corroboration logged, with a figure correction (D-031). No variance-table values changed. |
+| 2026-09-16 | D-059 … D-063; G9 (open) | **PHASE 5 BUILT — the design doc's own Sec 10 gate is satisfied.** `src/loam/student_t.py` (pure-Python Student's t, verified against published tables and against the red team's own C-3 demonstration table, exactly), `src/loam/inverted_audit.py`, `scripts/run_inverted_audit.py`, 72 new tests (full suite 248, green). **Headline restructured around the implied-vs-applied uncertainty deduction** (red team B-1): first run against VCS 4022 gives an implied **13.2%** against its disclosed applied **31.35%** — right order of magnitude, and the gap is consistent with Objection 1 (ours is sampling-only; theirs folds in QA1 model uncertainty). **Bisection replaces iteration** (red team C-3), pinned as a permanent regression test. **Sec 10 D-a resolved**: `VC-BPS-007` (the one genuine 0-30 cm between-plot row) and D-043's indirect ~8% within-plot estimate adopted as primary inputs, each with a no-new-assumption fallback implemented alongside. **D-b CHECKED, NOT ADOPTED: the design doc's own claim that paired revisits are always cheaper does not survive under this resolution of D-a** — between-plot CV (~3.1%, Wuest) ends up smaller than relocation CV (~9.4%, D-061's difference-scale resolution), so unpaired can be cheaper, and the first real run picks it. **Headline design is now chosen per project by comparing `Cost*`**, generalising Sec 2.3's own infimum-over-admissible-designs logic to this axis rather than fixing it by fiat (D-060). **D-e resolved in code** (`DIFFERENCE_SCALE`), not a schema column, and `VC-REL-001` is used undivided — a correction to the design doc's own Sec 2.2 illustration, flagged rather than silently applied (D-061). **Every other required red-team change implemented**: the low-envelope rule stated everywhere as a corner bound, not a CI (C-2); a `not_auditable` gate (A-3, 1 of 7 corpus projects clears it); break-even price, break-even noise scale, and stratification efficiency all reported (A-2, B-2); ESM-only headline with fixed-depth as a footnote (A-5); a QA1 upper-bound flag (Objection 1) (D-062). **Support/scale mismatch (A-1) is computed and reported, never gated on** — ~25 million-fold for VCS 4022 — and tracked as new open gap **G9** rather than resolved by assumption (D-063). **A real performance bug found and fixed along the way**: nested bisections (n_req inside cost_optimum inside run_audit's two designs) made the full corpus take over two minutes before iteration depths were cut to the minimum that still resolves an integer n; now 2.8 seconds, no numbers changed. See `docs/phase5_inverted_audit_results.md` for the full first-run numbers and their caveats. |
