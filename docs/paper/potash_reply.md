@@ -43,13 +43,47 @@ the measurement methods, plus CAR1459 and VCS 4022), the answer is mostly reassu
   campaign at Indigo's disclosed density would detect the claimed change, at break-even carbon
   prices from $0.003 to about $1 per tonne.
 - **The three that would not** are young projects with small credited changes on small areas.
-- **One finding concerns the deduction comparison in your model.** At the audit's own
-  cost-optimal design, the "implied" deduction is fixed by the registry's k and the power
-  convention, roughly 100k/(z_α+z_β), whatever the soil. The informative quantity turns out to
-  be the project's *published* deduction inverted through k. That gives the claim as a multiple
-  of its own minimum detectable difference: about 2.8× for CAR1459 and about 0.4× for VCS 4022.
-  The VCS 4022 figure has two caveats we have not resolved: which VM0042 version's rule applied,
-  and whether the 31.35% is SOC-only.
+- **One design choice matters most.** If every project is forced to revisit the same locations
+  rather than re-randomise, the required n for the two projects that publish a deduction rises
+  2.3×. Neither changes category. We report it as a named sensitivity.
+
+**3. Two results we would most like you to check.** Both touch the deduction term in your model
+(your z_deduct = 0.43, after VM0042), and we have not circulated either.
+
+*(a) The audit's "implied" deduction is fixed by k, not by the soil.*
+- At the audit's own cost-optimal design, n is chosen by VM0042 Eq. 2 so that SE ≤ Δ/(t_α + t_β).
+- The deduction that design implies, k·SE/Δ, is therefore at most k/(z_α + z_β), which is
+  **k / 3.24** at α = 0.05 and 90% power.
+- That holds for every project and every variance: about 13.3% under VM0042, 31.7% under CAR's
+  SEP and 7.8% under the ACCU rule. Our population run sits exactly there.
+- An independent re-implementation, written without seeing our code, derived the same bound.
+- **The consequence:** comparing an "implied" deduction with an applied one carries no project
+  information. What does is the applied deduction itself, inverted through k.
+
+Have we got that right, or is there a sense in which the implied figure should carry information
+that we are missing?
+
+*(b) What that inversion gives for VCS 4022: 0.42×, and we are treating it as pending expert
+review.*
+- **The calculation.**
+  - VCS 4022 publishes a 31.35% uncertainty deduction.
+  - Divided by k = 0.4307, that is a relative SE of about 0.73 of the estimate.
+  - So Δ/MDD = 1/((z_α + z_β) × 0.73) ≈ **0.42** at 90% power, and 0.70 at 50%.
+  - On that reading, the credited change is smaller than the project's own stated precision
+    could detect.
+  - For comparison, CAR1459's published 11.27% gives **2.8×** by the same route, using CAR's
+    effective k of 1.028.
+- **Two conditions we have not been able to settle from primary documents:**
+  1. whether k = 0.4307 is the rule that applied under VM0042 v2.0 (verified for v2.2);
+  2. whether the 31.35% is the SOC-pool deduction. The validation report calls it a single
+     "final uncertainty deduction".
+- **And one question of principle.** Both projects' deductions pool sampling with
+  model-prediction error, so the "MDD" here describes the project's stated precision, not its
+  sampling alone.
+
+Is reading a published deduction this way sound? Would you be comfortable with this result
+being reported at all, and if so, with what caveat? We would rather you tell us it is wrong now
+than after it is public.
 
 The large caveat is support. Our between-plot variance comes from research plots of about
 0.02 ha, while projects quantify at field to continental scale. From the literature we could
@@ -60,7 +94,8 @@ scale. Your two-stage model's fitted within- and between-field change parameters
 thing to that number we know of. If you could share them, they would let us test the floor
 directly.
 
-**Would you be willing to read the audit section of the draft?** About eight pages. Your model
+**Would you be willing to read the audit section of the draft?** About eight pages; points
+(a) and (b) above are where we most want your view. Your model
 is the nearest prior art, and we position the audit as upstream of the feasibility question
 your paper answers, not as a substitute for it. We would rather hear now if you think we have
 any of it wrong.
@@ -82,11 +117,18 @@ With thanks,
 | 999/999 no sampling-design field | `data/registry/projects.yaml` `registry_coverage` (2026-10-20 entry); D-064 |
 | 56 projects, 8 of 11 inside reach, $0.003–~$1 | `docs/phase5_population_results.md` §1–2; `data/audit/population_audit.csv`; D-067. In-scope inside-reach break-even prices run $0.003–$0.94. |
 | implied deduction bounded by 100k/(z_α+z_β) | D-068; confirmed by the independent re-implementation (WP3) |
-| 2.8× / 0.4× | D-068; `docs/phase5_population_results.md` §3. **VCS 4022 figure conditional on PI decision A.** |
+| k / 3.24 bound; 13.3 / 31.7 / 7.8% | D-068; `docs/phase5_robustness.md` §(i) (independent derivation) |
+| 0.42× / 0.70× (VCS 4022), 2.8× (CAR1459) | D-068; `docs/phase5_population_results.md` §3. **The 0.42× is pending expert review (PI rule, 2026-11-10); this letter is a request for that review.** Conditions: D-072 (open, PR #21 port) and the p. 147 scope wording |
+| 2.3× under forced paired design | sensitivity S1; D-069; manuscript §5 and §7 |
 | ~0.02 ha research plots; support mismatch | G9; D-063 |
 | stock σ_B larger at commercial support; capped by paired design; change unbounded | D-070; `docs/g9_support_literature.md` |
 | "your fitted change parameters" | Potash et al. 2025 models within- and between-field variability of change (abstract, per `docs/g9_support_literature.md` S13); the values were not read here |
 
-**Before sending, decide:** (a) whether to mention the VCS 4022 ratio at all before decision A
-is settled. The letter hedges it, but the safer draft drops that sentence. (b) Whether to say
-our positioning follows D-038 (upstream, not downstream). The letter says it in one line.
+**Before sending:**
+- Per your instruction of 2026-11-10, section 3 asks him specifically about the k / 3.24 result
+  and the 0.42× reading.
+- The 0.42× is presented as pending expert review, with both conditions stated. Nothing in the
+  letter presents it as a finding.
+- **The letter shares an unpublished, unreviewed figure with one outside reader, by design.**
+  If you would rather he see the derivation before the number, move the sentence "So Δ/MDD
+  ≈ 0.42 at 90% power" below the two conditions.
