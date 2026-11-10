@@ -18,9 +18,10 @@ are the in-scope projects with the smallest credited change on small areas (0.55
 the noise, it is cheaply detectable**. VCS 4022's break-even price is still $0.003/tCO2e, and
 the in-scope median is $0.31. Separately, the comparison the B-1 headline rested on turns out to
 carry no project information on the audit side (D-068). What it does carry is the project's
-*own* published precision. On that reading, **VCS 4022's published deduction implies a claim
-0.42× its own 90%-power minimum detectable difference, and CAR1459's implies 2.8×.** The VCS
-4022 figure carries two unresolved conditions; see §3.
+*own* published precision. On that reading, **CAR1459's published deduction implies a claim
+2.8× its own 90%-power minimum detectable difference.** VCS 4022's reading is in §3, labelled
+**pending expert review** and dependent on PI decision A; by PI rule (2026-11-10) it is not
+quoted in summaries.
 
 ---
 
@@ -98,21 +99,24 @@ it claims:
 | project | registry k | applied | own relative SE | **own Δ / MDD (90% power)** | own Δ / MDD (50% power) |
 |---|---:|---:|---:|---:|---:|
 | CAR1459 (RP5) | 1.028 | 11.27% | 0.110 | **2.81** | 4.65 |
-| VCS 4022 | 0.4307 | 31.35% | 0.728 | **0.42** | 0.70 |
+| VCS 4022 — *pending expert review; dependent on decision A* | 0.4307 | 31.35% | 0.728 | **0.42** | 0.70 |
 
 These use **none of our variance components**: only the registry's own rule and the project's
 own published number. Read plainly:
 - **CAR1459:** its claimed RP5 change is 2.8× the smallest change its own stated precision could
   detect at 90% power.
-- **VCS 4022:** its claimed change is below that threshold, 0.42× at 90% power and 0.70× at 50%
-  power.
+- **VCS 4022 (pending expert review):** on this reading its claimed change is below that
+  threshold, 0.42× at 90% power and 0.70× at 50% power. Not to be quoted outside this section
+  until reviewed (PI rule, 2026-11-10).
 
-**Two conditions travel with the VCS 4022 row, and both are the PI's decision A:**
+**Two conditions travel with the VCS 4022 row (PI decision A; D-072 and D-075 in the PR #21
+port, Sparkxt-0318/LoAM#27):**
 1. **Which rule applies.** It assumes k = 0.4307 governs VCS 4022's v2.0 crediting. On `main`
    that is verified for v2.2 only (D-057). Unmerged PR #21 reports the approved v2.0 uses the same
    rule.
-2. **What the 31.35% covers.** It assumes the 31.35% is the SOC deduction. PR #21 reports the
-   validation report calls it "the final uncertainty deduction", not disaggregated by pool.
+2. **What the 31.35% covers.** It assumes the 31.35% is the SOC deduction. The validation report
+   calls it "the final uncertainty deduction", not disaggregated by pool (verified from the
+   primary document, PDF p. 147). Only the project description would settle it.
 
 Both deductions also pool sampling with model-prediction error (VM0042 QA1, CAR SEP), so the
 ratios describe each project's own stated precision, not its sampling alone. For the 54 ACCU
