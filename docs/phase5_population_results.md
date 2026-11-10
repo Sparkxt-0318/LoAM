@@ -135,3 +135,10 @@ projects no applied deduction is published, so this comparison does not exist fo
   small issuance have small Δ, and they are the in-scope "outside reach" cases.
 - **Measurement-only projects.** 22 of the 54 ACCU projects state a measurement-only approach, so
   for them n_req applies without the QA1 upper-bound caveat. 30 state nothing.
+- **No developer-level inference.** One proponent, AgriProve Solutions, is registered for 47 of the
+  54 credit-issued ACCU soil projects. It therefore accounts for all 14 projects outside reach or
+  within the band, and also for 33 inside reach. The category follows area and credited change.
+  Its projects are smaller (median CEA 173 ha against 1,824 ha for the other seven) and younger
+  (median first issuance FY2024 against FY2023), and a smaller area caps the plausible campaign.
+  Fourteen of 47 against 0 of 7 is what that base rate and those sizes produce. It is not a
+  finding about the developer, and no ACCU project or developer is named in the manuscript text.
