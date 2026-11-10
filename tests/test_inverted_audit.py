@@ -339,21 +339,55 @@ def test_car1513_is_gated_as_not_soc_separable(projects_by_id):
     assert any("not separable" in r for r in reasons)
 
 
-def test_car1459_is_gated_on_missing_claimed_rate(projects_by_id):
-    """CAR1459 is the best-documented project in the corpus but discloses
-    neither credits_issued nor a claimed rate (data/registry/projects.yaml),
-    so it cannot be run through the main gated pipeline even though its area
-    and density are public - see test_car1459_density_sensitivity below for
-    the separate, explicitly-labelled sensitivity check that CAN be run."""
-    reasons = ia.gate(projects_by_id["CAR1459"])
-    assert any("claimed rate" in r for r in reasons)
-    assert not any("area" in r for r in reasons)  # area IS disclosed for CAR1459
+def test_car1459_clears_gate_on_scope_matched_rp5_soc_credits(projects_by_id):
+    """WP1b (2026-11-10): CAR1459's RP5 monitoring report publishes SOC-only
+    credits for one reporting period together with that period's enrolled
+    area (Table 7). That is the claim the audit tests - NOT the cumulative
+    credits_issued, which mixes N2O/CH4 credits and five periods of a project
+    whose area grew 24.5-fold, and NOT the RP1 `area` field."""
+    p = projects_by_id["CAR1459"]
+    assert ia.gate(p) == []
+    area = ia.project_area_ha(p)
+    assert area == pytest.approx(2463690.6 * ia.HA_PER_ACRE)
+    delta, why = ia.derive_delta_mg_c_ha(p, 5.0)
+    assert delta == pytest.approx(1065452.3 / ia.TCO2E_TO_MG_C / area)
+    assert "reporting period" in why
 
 
-def test_accu_projects_are_gated_on_missing_area(projects_by_id):
+def test_accu_corpus_projects_clear_gate_on_inferred_cea_area(projects_by_id):
+    """WP1a (2026-11-10, D-064): the register has no numeric area field, but
+    the CEA shapefile is published for every credit-issued project, so area is
+    INFERRED and the four corpus ACCU projects clear the gate."""
     for pid in ("ERF108333", "ERF105067", "ERF104527", "ERF176354"):
-        reasons = ia.gate(projects_by_id[pid])
-        assert any("area" in r for r in reasons), f"{pid} should be gated on missing area"
+        p = projects_by_id[pid]
+        assert p["area"]["status"] == "inferred"
+        assert ia.gate(p) == [], pid
+
+
+def test_gate_names_missing_area_not_missing_claim_when_credits_are_disclosed():
+    """Before WP1 the gate reported 'no usable claimed rate' for ACCU projects
+    whose credits_issued WAS stated - the real reason was the missing area."""
+    p = {
+        "project_id": "SYNTH_NOAREA",
+        "credits_issued": {"value": 1000, "status": "stated"},
+    }
+    reasons = ia.gate(p)
+    assert any("no usable project area" in r for r in reasons)
+    assert any("credits_issued is disclosed" in r for r in reasons)
+    assert not any("all missing" in r for r in reasons)
+
+
+def test_cumulative_credits_delta_does_not_depend_on_interval():
+    """D-064: Delta from cumulative credits is credits/3.667/area; the
+    remeasurement interval cancels and must not move it."""
+    p = {
+        "project_id": "SYNTH_CUM",
+        "area": {"value": 100.0, "units": "hectares", "status": "stated"},
+        "credits_issued": {"value": 1000.0 * ia.TCO2E_TO_MG_C, "status": "stated"},
+    }
+    d5, _ = ia.derive_delta_mg_c_ha(p, 5.0)
+    d9, _ = ia.derive_delta_mg_c_ha(p, 9.0)
+    assert d5 == pytest.approx(10.0) and d9 == pytest.approx(10.0)
 
 
 def test_minimal_complete_synthetic_project_passes_the_gate():
@@ -381,7 +415,7 @@ def test_project_missing_area_cascades_to_missing_rate_too():
     reasons = ia.gate(synthetic)
     assert len(reasons) == 2
     assert any("area" in r for r in reasons)
-    assert any("claimed rate" in r for r in reasons)
+    assert any("claimed rate cannot be formed" in r for r in reasons)
 
 
 # ---------------------------------------------------------------------------
@@ -445,35 +479,25 @@ def test_vcs4022_break_even_price_is_positive_and_tiny_relative_to_a_plausible_c
 # ---------------------------------------------------------------------------
 
 
-def test_car1459_density_sensitivity_stays_within_two_orders_of_magnitude(rows_by_id, projects_by_id):
-    """Design doc Sec 7, Test V1's spirit, run as a SENSITIVITY rather than a
-    real validation: CAR1459's own claimed rate is not disclosed (see
-    test_car1459_is_gated_on_missing_claimed_rate), so this borrows VCS
-    4022's disclosed rate (~0.309 Mg C/ha/y, the only real claimed rate in
-    the corpus) purely to exercise the pipeline at CAR1459's real area, and
-    compares against CAR1459's own disclosed density (1 point per 8 acres,
-    ~12,546 points over 100,371 acres) under the UNPAIRED design (CAR1459
-    states it re-randomises, so the paired headline does not apply to it -
-    Sec 2.2's own worked example).
+def test_car1459_own_claim_vs_own_density_stays_within_two_orders_of_magnitude(rows_by_id, projects_by_id):
+    """Design doc Sec 7, Test V1's spirit. Before WP1b this BORROWED VCS
+    4022's rate, because CAR1459 disclosed none; since 2026-11-10 it uses
+    CAR1459's own RP5 SOC claim over its own RP5 area (2,463,691 acres), and
+    compares the audit's unpaired n_req (CAR1459 re-randomises, so paired
+    does not apply - Sec 2.2's own worked example) against the count its
+    stated Design-1 density (1 point per 8 acres) would imply over that area.
 
-    Pass criterion, loosened from the design doc's "same order of magnitude"
-    to two orders (a factor of 100): our figure is deliberately generous
-    (low-envelope components, no model-uncertainty contribution, indirect
-    within-plot input) and is expected to sit BELOW a careful real project's
-    actual practice, not to match it - the failure mode this guards against
-    is the method demanding wildly MORE sampling than any real project has
-    ever run, which would indicate a broken implementation, not merely a
-    generous one.
+    Caveat carried with the number: 1-per-8-acres is the Design 1 rule
+    (2019-2020); Design 2's realised count is not disclosed, so this is a
+    sanity band, not a validation. Pass criterion as before: within two
+    orders of magnitude, with our generous figure BELOW real practice - the
+    failure mode guarded is the method demanding wildly MORE sampling than
+    a real project runs.
     """
     car1459 = projects_by_id["CAR1459"]
-    vcs4022 = projects_by_id["VCS 4022"]
     area_ha = ia.project_area_ha(car1459)
-    assert area_ha is not None
-
     years, _ = ia.project_interval_years(car1459)
-    borrowed_tau_mg_c_ha_yr = vcs4022["claimed_abatement"]["value"] / ia.TCO2E_TO_MG_C / ia.project_area_ha(vcs4022)
-    delta = borrowed_tau_mg_c_ha_yr * years
-
+    delta, _ = ia.derive_delta_mg_c_ha(car1459, years)
     components = ia.assemble_components(rows_by_id)
     opt_unpaired = ia.cost_optimum(components, delta, paired=False)
 
@@ -481,6 +505,76 @@ def test_car1459_density_sensitivity_stays_within_two_orders_of_magnitude(rows_b
     ratio = car1459_own_n / opt_unpaired.n_req
     assert 1.0 <= ratio < 100.0, (
         f"CAR1459's own density implies {car1459_own_n:.0f} points; the audit's "
-        f"generous unpaired estimate at a borrowed rate is {opt_unpaired.n_req} "
+        f"generous unpaired estimate at its own RP5 claim is {opt_unpaired.n_req} "
         f"- ratio {ratio:.1f}x, outside the expected [1, 100) sanity band"
     )
+
+
+# ---------------------------------------------------------------------------
+# WP2 (D-067, D-068): envelopes, three categories, own-deduction ratio, headroom
+# ---------------------------------------------------------------------------
+
+
+def test_envelope_corners_bracket_the_central_value(rows_by_id):
+    gen = ia.assemble_components(rows_by_id, envelope="generous")
+    cen = ia.assemble_components(rows_by_id, envelope="central")
+    hi = ia.assemble_components(rows_by_id, envelope="high")
+    for f in ("between_plot_cv_pct", "within_plot_cv_pct", "analytical_cv_pct",
+              "temporal_cv_pct", "relocation_cv_pct"):
+        assert getattr(gen, f) <= getattr(cen, f) <= getattr(hi, f), f
+    assert ia.s_of_c(gen, 1, paired=False) < ia.s_of_c(hi, 1, paired=False)
+
+
+def test_generous_envelope_is_the_unchanged_default(rows_by_id):
+    assert ia.assemble_components(rows_by_id) == ia.assemble_components(rows_by_id, envelope="generous")
+
+
+def test_classify_reach_three_categories_never_two():
+    assert ia.classify_reach(2.0, 1.5) == "inside_reach"
+    assert ia.classify_reach(1.2, 0.9) == "within_uncertainty_band"
+    assert ia.classify_reach(0.9, 0.7) == "outside_reach"
+    assert ia.classify_reach(1.0, 1.0) == "inside_reach"
+    assert set(ia.REACH_CATEGORIES) == {"inside_reach", "within_uncertainty_band", "outside_reach"}
+
+
+def test_own_deduction_inverts_the_registry_rule_exactly():
+    """D-068: UNC = 100 k sigma_rel, so sigma_rel = UNC / (100 k), and
+    Delta/MDD = 1/((z_a + z_b) sigma_rel). VCS 4022's 31.35% under k=0.4307."""
+    o = ia.own_deduction_detectability(31.35, 0.4307)
+    assert o["implied_relative_se"] == pytest.approx(0.72789, rel=1e-4)
+    assert o["delta_over_mdd_power50"] == pytest.approx(0.7009, rel=1e-3)
+    assert o["delta_over_mdd_power90"] == pytest.approx(0.4238, rel=1e-3)
+    # round trip: a project whose own SE is exactly Delta/(z_a+z_b) sits at ratio 1
+    k = 1.028
+    unc = 100 * k / (ia.Z_ALPHA_TWO_SIDED_005 + ia.Z_POWER_090)
+    assert ia.own_deduction_detectability(unc, k)["delta_over_mdd_power90"] == pytest.approx(1.0)
+
+
+def test_implied_deduction_at_optimum_is_bounded_by_k_over_z_sum(rows_by_id):
+    """D-068, and confirmed by the independent re-implementation (WP3): at the
+    audit's own optimum, n_req makes SE <= Delta/(t_a + t_b) < Delta/(z_a + z_b),
+    so the implied deduction is at most 100 k / (z_a + z_b) WHATEVER the
+    variance inputs or Delta. It therefore carries almost no project-specific
+    information; applied/implied is the informative ratio."""
+    comps = ia.assemble_components(rows_by_id)
+    for k in (0.253, 0.4307, 1.028):
+        bound = 100 * k / (ia.Z_ALPHA_TWO_SIDED_005 + ia.Z_POWER_090)
+        for delta in (0.3, 1.5, 6.0, 15.0):
+            opt = ia.cost_optimum(comps, delta, paired=False)
+            implied = ia.implied_uncertainty_deduction_pct(k, opt.s_mg_c_ha, opt.n_req, delta)
+            assert implied <= bound + 1e-9
+
+
+def test_between_plot_headroom_is_zero_when_other_components_alone_exceed(rows_by_id):
+    comps = ia.assemble_components(rows_by_id)
+    # a tiny Delta on a tiny plausible campaign: unreachable even at sigma_B = 0
+    assert ia.between_plot_headroom(comps, 0.2, cores_per_assay=2, n_plausible=20) == 0.0
+    # a large Delta on a large campaign: headroom > 1
+    assert ia.between_plot_headroom(comps, 5.0, cores_per_assay=2, n_plausible=500) > 1.0
+
+
+def test_vcs4022_reach_and_own_deduction_fields(rows_by_id, projects_by_id):
+    r = ia.run_audit(projects_by_id["VCS 4022"], rows_by_id)
+    assert r.reach_category == "inside_reach"
+    assert r.own_deduction["delta_over_mdd_power90"] == pytest.approx(0.4238, rel=1e-3)
+    assert r.break_even_noise_scale_high_corner < r.break_even_noise_scale_at_car1459_density
