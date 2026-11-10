@@ -578,3 +578,39 @@ def test_vcs4022_reach_and_own_deduction_fields(rows_by_id, projects_by_id):
     assert r.reach_category == "inside_reach"
     assert r.own_deduction["delta_over_mdd_power90"] == pytest.approx(0.4238, rel=1e-3)
     assert r.break_even_noise_scale_high_corner < r.break_even_noise_scale_at_car1459_density
+
+
+# ---------------------------------------------------------------------------
+# WP3 (D-069): sensitivity parameters on run_audit
+# ---------------------------------------------------------------------------
+
+
+def test_run_audit_sensitivity_parameters_default_to_the_headline(rows_by_id, projects_by_id):
+    p = projects_by_id["VCS 4022"]
+    a = ia.run_audit(p, rows_by_id)
+    b = ia.run_audit(p, rows_by_id, relocation_scale="difference_scale",
+                     cost_location_usd=ia.COST_LOCATION_USD, cost_assay_usd=ia.COST_ASSAY_USD,
+                     envelope="generous", force_design=None)
+    assert a.to_dict() == b.to_dict()
+
+
+def test_run_audit_force_design_and_costs_thread_through(rows_by_id, projects_by_id):
+    p = projects_by_id["VCS 4022"]
+    forced = ia.run_audit(p, rows_by_id, force_design="paired")
+    assert forced.headline_design == "paired"
+    dear = ia.run_audit(p, rows_by_id, cost_assay_usd=80.0)
+    base = ia.run_audit(p, rows_by_id)
+    assert dear.break_even_price_usd_per_tco2e > base.break_even_price_usd_per_tco2e
+    with pytest.raises(ValueError):
+        ia.run_audit(p, rows_by_id, force_design="sideways")
+
+
+def test_relocation_sqrt2_makes_paired_relatively_cheaper(rows_by_id, projects_by_id):
+    """D-061's toggle: dividing relocation by sqrt(2) shrinks only the paired
+    formula's sigma_R term, so the paired optimum gets cheaper and the unpaired
+    one is unchanged."""
+    p = projects_by_id["VCS 4022"]
+    base = ia.run_audit(p, rows_by_id)
+    alt = ia.run_audit(p, rows_by_id, relocation_scale="per_observation_sqrt2")
+    assert alt.paired.optimum.cost_usd < base.paired.optimum.cost_usd
+    assert alt.unpaired.optimum.cost_usd == base.unpaired.optimum.cost_usd

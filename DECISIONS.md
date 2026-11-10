@@ -90,6 +90,7 @@ That is enforced, not requested: see D-032.
 | D-066 | decided | CAR1459 audited on RP5 SOC-only credits over RP5's own area (scope-matched by the source); applied UNC 11.27% recorded; Verra registry and OffsetsDB logged as access walls (2 attempts each); VM0042 v3 consultation closed 2026-03-31 |
 | D-067 | decided | WP2 three-category reach: break-even noise scale at CAR1459 density under the generous AND the high corner of the table's own envelope; out-of-scope groups reported separately; σ_B headroom reported as the per-project G9 exposure |
 | D-068 | decided | **FINDING**: the implied deduction at the audit's own optimum is bounded by 100k/(z_α+z_β) for every project — it carries ~no project information; applied/implied ≡ MDD/Δ under the project's own stated precision is reported instead |
+| D-069 | decided | WP3 robustness: independent re-implementation agrees exactly (0/336); sensitivity grid over D-060, D-061, cost ratio and central inputs — categories hold; n_req moves 2.3× under forced paired; G9 literature verdict recorded |
 
 ---
 
@@ -3483,6 +3484,43 @@ definition. The own-deduction ratios inherit every uncertainty in what the
 published deduction pools (model and sampling for both CAR SEP and VM0042
 QA1) — so they are statements about the project's own stated precision, not
 about its sampling alone.
+
+---
+
+**D-069 — WP3: THE AUDIT IS REPRODUCED EXACTLY BY AN INDEPENDENT
+RE-IMPLEMENTATION, AND ITS QUALITATIVE RESULT SURVIVES EVERY CHALLENGED CHOICE.
+The paired/unpaired choice (D-060) is the most consequential: forcing paired
+moves VCS 4022's and CAR1459's n_req by 2.3x (the PI's 2x reporting threshold)
+without changing either project's category.** Written up in
+`docs/phase5_robustness.md`.
+
+**(i) Independent re-implementation.** `scripts/independent_audit_reimpl.py`,
+written by a separate agent from a formula specification without reading the
+engine, its tests or its outputs (scipy t-quantiles; integer bracketing on
+`g(n) = n - RHS(n)`, self-checked against a brute-force scan).
+`scripts/compare_independent_reimpl.py`: **0 disagreements** in n_req, C*, S,
+Cost*, headline design or implied deduction across 56 projects x 2 designs x 3
+variants (default; relocation /sqrt2; assay $60), including one exact
+paired/unpaired tie broken the same way. One contamination disclosed by the
+agent itself: it saw a changelog line giving VCS 4022's 13.2%/unpaired before
+running. It also derived D-068's bound unprompted. *What this does not
+establish:* the shared inputs and conventions are shared by construction.
+
+**(ii) Sensitivity** (`scripts/sensitivity_audit.py`, `data/audit/sensitivity.csv`;
+10 variants). In-scope categories range 6-8 inside / 0-1 band / 3-5 outside
+across every variant (baseline 8/0/3); VCS 4022 and CAR1459 stay inside reach
+in all ten. **More than 2x from baseline: VCS 4022 n_req 161 -> 374 and
+CAR1459 n_req 4,451 -> 10,430 under a forced paired design; CAR1459 C* 2 -> 5
+at an $80 assay; the grazing median break-even price x2.06 at an $80 assay.**
+No in-scope count, median price, or the two named projects' categories move by
+2x. Relocation scale (D-061) alone changes no headline quantity because 55/56
+headline designs are unpaired; it matters only with a forced paired design.
+Central inputs change no in-scope category. Absolute cost scale is linear and
+not run. These are sensitivities to decisions already made (D-060, D-061, C-1),
+reported rather than acted on; none is re-decided here.
+
+*If wrong:* the sensitivity grid varies one axis at a time (plus the design
+doc's own two-axis convention); interactions beyond those are not explored.
 
 ---
 

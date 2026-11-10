@@ -139,6 +139,7 @@ sources:
     url: https://thereserve2.apx.com/mymodule/reg/TabDocuments.asp?r=111&ad=Prpt&act=update&type=PRO&aProj=pub&tablename=doc&id1=1513
     accessed: 2026-08-12
   agreena_val_v4:
+    sha256_2026_11_10: 7dfc0bf06112161c791d05a9445d2ba2b32fec0656fb5c1a9f6df244a52b5c28
     title: "VCS Validation Report of AgreenaCarbon Project, v4.0, Report ID VCS.VAL.22.89"
     author: Earthood Services Private Limited
     document_date: 2024-12-20
@@ -681,6 +682,33 @@ projects:
         one layer and a two-pathway rule (Pathway B at 55% / 70% probability of
         exceedance) in another. **This 31.35% must NOT be described as a 0.43-SE
         deduction** - the rule that produced it is not established.
+    power_analysis_parameters_assessment:
+      value: >-
+        MDD, S, n, n-1 and t_x,U are listed among 'Data and Parameters
+        monitored', each with frequency 'NA' and VVB assessment 'The parameter
+        is not relevant and therefore not further assessed.'
+      status: stated
+      source: agreena_val_v4
+      locator: "PDF p. 50, table 'Data and Parameters monitored' (rows MDD, S, n, n-1, tx,U)"
+      note: >-
+        Verified from primary 2026-11-10 (WP3), after PR #21 reported it. These
+        are the inputs and output of VM0042 Sec 8.2.1 Eq. (1)/(2) - the
+        inverted audit's own equation - recorded and assessed as not relevant.
+    uncertainty_deduction_pool_scope:
+      value: >-
+        described as 'the final uncertainty deduction', single and project-level;
+        no split by emission/removal source is given in the validation report.
+        The PD had reported 23.97% (Table 4-17) and 14.53% (Sec 4.4.4) before the
+        corrective action resolved it to 31.35%.
+      status: stated
+      source: agreena_val_v4
+      locator: "PDF p. 147, CAR description item 1, project participant response 09/12/2024, VVB assessment 17/12/2024"
+      note: >-
+        Verified from primary 2026-11-10 (WP3). Whether 31.35% is the SOC-pool
+        deduction is therefore NOT established from public documents - the
+        condition D-068 attaches to VCS 4022's own-deduction ratio. The PD
+        (Sec 4.4.4, Table 4-17) would settle it and is not public outside the
+        registry.
 
   # =========================================================================
   # Australian ACCU projects. Everything below the administrative block is

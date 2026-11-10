@@ -1168,6 +1168,11 @@ def run_audit(
     c_max: int = C_MAX,
     alpha: float = ALPHA_DEFAULT,
     power: float = POWER_DEFAULT,
+    relocation_scale: str = "difference_scale",
+    cost_location_usd: float = COST_LOCATION_USD,
+    cost_assay_usd: float = COST_ASSAY_USD,
+    envelope: str = "generous",
+    force_design: str | None = None,
 ) -> AuditResult:
     """The full per-project audit: gate, assemble, solve, cost, and compare
     against the registry's own applied deduction. See the module docstring
@@ -1183,16 +1188,21 @@ def run_audit(
     delta, delta_why = derive_delta_mg_c_ha(project, years)
     assert area is not None and delta is not None and delta > 0  # gate() already checked
 
+    # WP3 (D-069): relocation_scale, cost constants, envelope and a forced
+    # design are exposed for the sensitivity grid. Defaults reproduce every
+    # pre-WP3 figure exactly (test-pinned).
     components = assemble_components(
         rows_by_id, within_plot_source=within_plot_source,
         between_plot_source=between_plot_source,
         reference_stock_mg_c_ha=reference_stock_mg_c_ha,
+        relocation_scale=relocation_scale, envelope=envelope,
     )
+    costs = dict(cost_location_usd=cost_location_usd, cost_assay_usd=cost_assay_usd)
 
-    opt_paired = cost_optimum(components, delta, paired=True, c_max=c_max, alpha=alpha, power=power)
+    opt_paired = cost_optimum(components, delta, paired=True, c_max=c_max, alpha=alpha, power=power, **costs)
     paired_result = DesignResult(True, s_of_c(components, 1, paired=True), opt_paired)
 
-    opt_unpaired = cost_optimum(components, delta, paired=False, c_max=c_max, alpha=alpha, power=power)
+    opt_unpaired = cost_optimum(components, delta, paired=False, c_max=c_max, alpha=alpha, power=power, **costs)
     unpaired_result = DesignResult(False, s_of_c(components, 1, paired=False), opt_unpaired)
 
     # D-060: the headline design is whichever is CHEAPER for these inputs -
@@ -1200,7 +1210,12 @@ def run_audit(
     # Sec 2.3 already applies to C - not fixed to "paired" by fiat. See the
     # module docstring point 7 for why this differs from the design doc's own
     # D-b recommendation.
-    if opt_paired.cost_usd <= opt_unpaired.cost_usd:
+    if force_design is not None:
+        if force_design not in ("paired", "unpaired"):
+            raise ValueError(f"force_design must be 'paired' or 'unpaired', got {force_design!r}")
+        headline_design = force_design
+        headline_result = paired_result if force_design == "paired" else unpaired_result
+    elif opt_paired.cost_usd <= opt_unpaired.cost_usd:
         headline_design, headline_result = "paired", paired_result
     else:
         headline_design, headline_result = "unpaired", unpaired_result
@@ -1271,6 +1286,7 @@ def run_audit(
         rows_by_id, within_plot_source=within_plot_source,
         between_plot_source=between_plot_source,
         reference_stock_mg_c_ha=reference_stock_mg_c_ha, envelope="high",
+        relocation_scale=relocation_scale,
     )
     scale_high = break_even_noise_scale(
         components_high, delta, paired=(headline_design == "paired"),
