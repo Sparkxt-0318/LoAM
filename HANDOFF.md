@@ -441,7 +441,7 @@ Merge in order and each diff shrinks to its own WP.
 | 1 population | `claude/loam-phase5-inverted-audit-k914d8` | Sparkxt-0318/LoAM#23 | D-064, D-065, D-066 |
 | 2 distributions | `claude/loam-wp2-audit-distribution` | Sparkxt-0318/LoAM#24 | D-067, D-068 |
 | 3 robustness | `claude/loam-wp3-robustness` | Sparkxt-0318/LoAM#25 | D-069, D-070 |
-| 4 writing | `claude/loam-wp4-paper-drafts` | (see PR list) | — |
+| 4 writing | `claude/loam-wp4-paper-drafts` | Sparkxt-0318/LoAM#26 | — |
 
 **Environment.** The Default cloud environment blocked every source host. A personal "LoAM"
 environment was created with the PI's approval: 20 allowed hosts covering CER, Verra, CAR,
