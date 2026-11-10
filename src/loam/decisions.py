@@ -55,6 +55,23 @@ DECISION_REF = re.compile(r"\bD-\d{3}\b")
 #: Keep in sync with the "Decision status" table in DECISIONS.md - a test
 #: compares the two and fails if they drift.
 OPEN_DECISIONS: dict[str, str] = {
+    "D-072": (
+        "PR #21's correction (ported, renumbered from its D-060): does the APPROVED "
+        "VM0042 v2.0 use one uncertainty rule, Sec 8.6.4 Eq. (65) with t ~ 0.4307, "
+        "with no pathways or cases? Open until re-read from the primary PDF the PI "
+        "downloads by hand (D-075)."
+    ),
+    "D-073": (
+        "PR #21's MR Sec 2.4 finding (ported, renumbered from its D-061): does VCS "
+        "Methodology Requirements v4.4 Sec 2.4 carry the 0.4307 procedure and an "
+        "eligibility bar at a 100% 90%-CI half-width (UNC > 26.18%)? Open until "
+        "re-read from the primary PDF (D-075)."
+    ),
+    "D-075": (
+        "Is every claim ported from PR #21 verified against its primary document? "
+        "Validation-report and arithmetic claims: yes. Verra-hosted PDFs: pending "
+        "the PI's hand download (decision B)."
+    ),
     "D-054": (
         "Which laboratory error should the `analytical` component carry? "
         "Poeplau et al. 2022 report two nested figures - 1.2% MAPE for two "
@@ -89,6 +106,8 @@ DECIDED_DECISIONS: tuple[str, ...] = (
     "D-041", "D-042", "D-043", "D-044", "D-045", "D-046", "D-047", "D-048",
     "D-049", "D-050", "D-051", "D-052", "D-053", "D-055", "D-056",
     "D-057", "D-058", "D-059", "D-060", "D-061", "D-062", "D-063",
+    # PR #21, ported 2026-11-10 (D-075): D-071 and D-074 decided; D-072/D-073 open.
+    "D-071", "D-074",
 )
 
 ALL_DECISIONS: tuple[str, ...] = tuple(
