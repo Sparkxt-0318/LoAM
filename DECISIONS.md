@@ -88,6 +88,8 @@ That is enforced, not requested: see D-032.
 | D-064 | decided | ACCU area is INFERRED from the published CEA shapefiles (no numeric area field exists); cumulative-credits Delta = ACCUs/3.667/area, interval cancels; census re-pulled 2026-10-20 (999 / 54 issued / 462,162 ACCUs) |
 | D-065 | decided | scope flags for generated ACCU records: land use classified from stated activities; tropical-LATITUDE flag from CEA centroid — geographic, not an IPCC class; out-of-scope never pooled |
 | D-066 | decided | CAR1459 audited on RP5 SOC-only credits over RP5's own area (scope-matched by the source); applied UNC 11.27% recorded; Verra registry and OffsetsDB logged as access walls (2 attempts each); VM0042 v3 consultation closed 2026-03-31 |
+| D-067 | decided | WP2 three-category reach: break-even noise scale at CAR1459 density under the generous AND the high corner of the table's own envelope; out-of-scope groups reported separately; σ_B headroom reported as the per-project G9 exposure |
+| D-068 | decided | **FINDING**: the implied deduction at the audit's own optimum is bounded by 100k/(z_α+z_β) for every project — it carries ~no project information; applied/implied ≡ MDD/Δ under the project's own stated precision is reported instead |
 
 ---
 
@@ -3383,6 +3385,107 @@ is stale; it is dated.
 
 ---
 
+**D-067 — WP2: THE AUDIT IS REPORTED IN THREE CATEGORIES — INSIDE REACH,
+WITHIN THE UNCERTAINTY BAND, OUTSIDE REACH — DEFINED ON THE BREAK-EVEN NOISE
+SCALE AT A PLAUSIBLE CAMPAIGN, UNDER BOTH CORNERS OF THE VARIANCE TABLE'S OWN
+ENVELOPE. Out-of-scope projects are reported in their own groups and never
+pooled.** Implemented as `loam.inverted_audit.classify_reach`, run by
+`scripts/run_population_audit.py`; results in `data/audit/population_audit.csv`
+and `docs/phase5_population_results.md`.
+
+**The statistic.** `break_even_noise_scale` (already reported since D-062): the
+factor by which every noise component could grow before a campaign at
+CAR1459's disclosed density (1 point per 8 acres — the design doc Sec 5(a)
+"densest disclosed campaign" anchor), on the project's own area, at the
+cost-optimal design and C, stops sufficing. Computed twice: with the generous
+corner (the Sec 2.4 headline rule) and with the HIGH corner (`value_high`
+where a row prints one; tabled value otherwise). New `envelope=` argument to
+`assemble_components`; the generous default is unchanged and test-pinned.
+
+* **outside reach**: < 1 under the generous corner.
+* **inside reach**: >= 1 under the high corner.
+* **within the uncertainty band**: everything between.
+
+**Why this and not a price threshold.** Break-even price is reported for every
+project, but a price category would need a carbon-price band, and no price
+source is held for the voluntary registries; picking one would be a choice of
+ours. The noise-scale category needs no outside number: its anchor is a
+disclosed real campaign and its band is the table's own envelope.
+
+**What the band is NOT.** The table's envelope is narrow (between-plot
+3.136-3.732%, temporal 2.708-3.778%; analytical and relocation carry no
+bounds), because the evidence base is narrow (G8). It does not include G9 —
+support — which is unquantified in either direction. So each project also
+carries `between_plot_headroom_unpaired`: the factor by which sigma_B could
+exceed its research-plot value before the claim leaves reach, 0 when the
+other components alone already put it out of reach. **"Inside reach" is
+always conditional on G9 not exceeding that headroom.**
+
+**Grouping.** In scope (D-065 plus the two hand-curated in-scope projects);
+out of scope by land use (grazing/pasture; unresolved). The tropical-latitude
+flag is carried per project. Distributions are min/quartiles/max, never a
+mean or a proportion with a sampling interpretation: the population is a
+complete count of what is auditable, not a sample (red team C-5).
+
+*If wrong:* (a) a different plausible-campaign anchor moves every category —
+the anchor is a disclosed real density, but for small projects a denser grid
+is physically possible, so "outside reach" there means "denser than the
+densest disclosed campaign", which the results doc says in those words.
+(b) The integer ceiling in n_req makes s* a step function; a project sitting
+at n_req = n_plausible (one does: ERF175414, 206 vs 206) reads as
+`outside_reach` by a hair. Its s* values are printed so no reader takes it as
+robust.
+
+---
+
+**D-068 — FINDING: THE "IMPLIED DEDUCTION AT THE AUDIT'S OPTIMUM" IS BOUNDED
+BY `100 k / (z_alpha + z_beta)` FOR EVERY PROJECT, WHATEVER ITS VARIANCE OR
+ITS CLAIM. It carries almost no project-specific information. The informative
+quantity is applied / implied, which is the ratio MDD/Delta under the
+project's OWN published precision, and it is now reported as
+`own_deduction`.**
+
+**Why.** D-059 defines the implied deduction as `k * (S/sqrt(n)) / Delta * 100`
+evaluated at the cost-optimal design. But that design's n is n_req, defined by
+VM0042 Eq. (2) so that `S/sqrt(n) <= Delta / (t_alpha + t_beta)`. Substituting,
+the implied deduction is `<= 100 k / (t_alpha + t_beta) < 100 k / (z_alpha +
+z_beta)` = 30.85 k: **13.29% for every VM0042 project, 31.71% for every CAR
+project, 7.80% for every ACCU project**, approached from below as n grows
+(small-n projects sit lower because the t multiplier is larger and n is
+rounded up). Population run: ACCU 5.0-7.8%, VCS 4022 13.18%, CAR1459 31.71%.
+**Confirmed independently**: the WP3 re-implementation, written without
+reading this code, derived the same bound and the same ratio range
+(0.645-0.9997 of the bound).
+
+**Consequence for D-059's headline.** "Implied 13.2% vs applied 31.35%" was
+read as "right order of magnitude, consistent with model uncertainty". The
+13.2% is not a property of VCS 4022 — it would be 13.2% for any VM0042
+project with n of a few hundred. What the comparison actually carries is the
+ratio: **applied / implied = 2.38 for VCS 4022, i.e. its own published
+deduction implies a relative SE large enough that its claimed change is 0.42x
+its own 90%-power MDD (0.70x at 50% power). For CAR1459 the ratio is 0.355:
+its claim is 2.81x its own 90%-power MDD.** These use only the registry's own
+k and the project's own published deduction — none of our variance
+components — and are now computed by `own_deduction_detectability`.
+
+**Two conditions travel with the VCS 4022 figure, and neither is resolved
+here.** (1) It assumes k = 0.4307 applies to VCS 4022's v2.0 crediting —
+verified in v2.2 only on `main` (D-057); PR #21 (unmerged, 2026-08-13) reports
+the APPROVED v2.0 uses the same rule. (2) It assumes the 31.35% is the SOC
+deduction; PR #21 reports the validation report calls it "the final
+uncertainty deduction", undisaggregated. **Both are PI decision A.** This
+entry derives the identity independently of PR #21 (algebra from D-057's k
+and Eq. 2) and reaches PR #21's own 0.70 at 50% power; it adopts none of PR
+#21's text.
+
+*If wrong:* the bound is algebra and cannot be wrong given Eq. (2) and the
+definition. The own-deduction ratios inherit every uncertainty in what the
+published deduction pools (model and sampling for both CAR SEP and VM0042
+QA1) — so they are statements about the project's own stated precision, not
+about its sampling alone.
+
+---
+
 ## Open evidence gaps
 
 | id | gap | consequence | status |
@@ -3420,3 +3523,4 @@ is stale; it is dated.
 | 2026-08-08 | D-031, D-032, D-033; **D-028 still open** | Open-decision guard: decisions and the constants they govern are now machine-readable (`src/loam/decisions.py`), the build prints `<-- PROPOSED, NOT DECIDED`, and two tests refuse to pass while an open decision governs a live constant — **the suite is red on merge, by design** (D-032). Replacing the private climate envelope with IPCC 2006 climate regions was attempted and is **blocked**: MAP:PET and frost-day counts are not derivable from NAPESHM, and no proxy is substituted (D-033). Poeplau ↔ NAPESHM corroboration logged, with a figure correction (D-031). No variance-table values changed. |
 | 2026-09-16 | D-059 … D-063; G9 (open) | **PHASE 5 BUILT — the design doc's own Sec 10 gate is satisfied.** `src/loam/student_t.py` (pure-Python Student's t, verified against published tables and against the red team's own C-3 demonstration table, exactly), `src/loam/inverted_audit.py`, `scripts/run_inverted_audit.py`, 72 new tests (full suite 248, green). **Headline restructured around the implied-vs-applied uncertainty deduction** (red team B-1): first run against VCS 4022 gives an implied **13.2%** against its disclosed applied **31.35%** — right order of magnitude, and the gap is consistent with Objection 1 (ours is sampling-only; theirs folds in QA1 model uncertainty). **Bisection replaces iteration** (red team C-3), pinned as a permanent regression test. **Sec 10 D-a resolved**: `VC-BPS-007` (the one genuine 0-30 cm between-plot row) and D-043's indirect ~8% within-plot estimate adopted as primary inputs, each with a no-new-assumption fallback implemented alongside. **D-b CHECKED, NOT ADOPTED: the design doc's own claim that paired revisits are always cheaper does not survive under this resolution of D-a** — between-plot CV (~3.1%, Wuest) ends up smaller than relocation CV (~9.4%, D-061's difference-scale resolution), so unpaired can be cheaper, and the first real run picks it. **Headline design is now chosen per project by comparing `Cost*`**, generalising Sec 2.3's own infimum-over-admissible-designs logic to this axis rather than fixing it by fiat (D-060). **D-e resolved in code** (`DIFFERENCE_SCALE`), not a schema column, and `VC-REL-001` is used undivided — a correction to the design doc's own Sec 2.2 illustration, flagged rather than silently applied (D-061). **Every other required red-team change implemented**: the low-envelope rule stated everywhere as a corner bound, not a CI (C-2); a `not_auditable` gate (A-3, 1 of 7 corpus projects clears it); break-even price, break-even noise scale, and stratification efficiency all reported (A-2, B-2); ESM-only headline with fixed-depth as a footnote (A-5); a QA1 upper-bound flag (Objection 1) (D-062). **Support/scale mismatch (A-1) is computed and reported, never gated on** — ~25 million-fold for VCS 4022 — and tracked as new open gap **G9** rather than resolved by assumption (D-063). **A real performance bug found and fixed along the way**: nested bisections (n_req inside cost_optimum inside run_audit's two designs) made the full corpus take over two minutes before iteration depths were cut to the minimum that still resolves an integer n; now 2.8 seconds, no numbers changed. See `docs/phase5_inverted_audit_results.md` for the full first-run numbers and their caveats. |
 | 2026-11-10 | D-064, D-065, D-066 | **WP1 — the population that clears the gate grows from 1 to 56 distinct projects (54 credit-issued ACCU, which include the corpus four, plus CAR1459 and VCS 4022).** ACCU register re-pulled (Last-Modified 2026-10-20): **no numeric area field exists, but the CEA shapefile is published for exactly the 54 credit-issued projects and the boundary KML for all 999** — area is derivable, never published; both earlier documents were half-right (D-064). Census reproduces 999; 54 issued, 462,162 ACCUs. Geodesic CEA areas 36.7-3,877 ha, cross-checked two ways and against the KML. Cumulative Delta = ACCUs/3.667/area, interval cancels (my session-start "timing error" note was wrong). Scope flags: 9/54 cropland south of the tropic (D-065). **CAR1459 now auditable on RP5 SOC credits over RP5 area (2,463,691 acres, 24.5x RP1); applied UNC 11.27% stated; true-up re-measurement deferred by Reserve variance** (D-066). Verra registry migrated to an S&P Platts SPA (wall, 2 attempts); OffsetsDB down (wall, 2 attempts). VM0042 v3.0 consultation closed 2026-03-31. Engine: scope-matched reporting-period route, accurate gate reasons. 266 tests. |
+| 2026-11-10 | D-067, D-068 | **WP2 — the audit run over all 56 projects that clear the gate, reported in three categories and by group, never pooled.** In scope (11): **8 inside reach, 0 within the band, 3 outside**; grazing/pasture (38): 30 / 2 / 6; land use unresolved (7): 4 / 1 / 2. The category (break-even noise scale at CAR1459's disclosed density, under both corners of the table's own envelope) lines up with break-even price without being defined on it: inside $0.003-1.74, band $1.04-1.79, outside $1.83-182 per tCO2e (D-067). In-scope median break-even price $0.31; VCS 4022 unchanged at $0.003. **FINDING (D-068): the implied deduction at the audit's optimum is bounded by 100k/(z_a+z_b) for every project and carries ~no project information; applied/implied is MDD/Delta under the project's own stated precision.** Own Delta/MDD at 90% power: CAR1459 **2.81**, VCS 4022 **0.42** (0.70 at 50% power) — the VCS 4022 figure conditional on PI decision A. Independent re-implementation: 0 disagreements. Also fixed: 30 ACCU records had the register's 'n/a' approach recorded as stated. 273 tests. |

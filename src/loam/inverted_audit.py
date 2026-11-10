@@ -261,6 +261,32 @@ def generous_cv_pct(row: dict[str, Any]) -> tuple[float, str]:
     raise ValueError(f"{row.get('row_id')}: unrecognised bias_direction {bias!r}")
 
 
+#: WP2 (D-067): which corner of the variance table's own envelope to read.
+#: ``generous`` is the Sec 2.4 headline rule (``generous_cv_pct``); ``central``
+#: is the tabled harmonised value (sensitivity only, never headline);
+#: ``high`` is the opposite corner, ``value_high`` where a row prints one. The
+#: three-category classification (D-067) is defined by whether a claim stays
+#: detectable across generous -> high, so the band is the TABLE'S OWN stated
+#: envelope - which is narrow because the evidence base is narrow (G8), and
+#: which says nothing about G9 (support), reported separately.
+ENVELOPES = ("generous", "central", "high")
+
+
+def envelope_cv_pct(row: dict[str, Any], envelope: str = "generous") -> tuple[float, str]:
+    if envelope == "generous":
+        return generous_cv_pct(row)
+    if envelope == "central":
+        return row["cv_pct"], f"central: tabled harmonised value {row['cv_pct']}% (sensitivity only)"
+    if envelope == "high":
+        high = row.get("value_high")
+        if high is not None:
+            if not (row.get("statistic") == "cv_pct" and row.get("units") == "pct"):
+                raise ValueError(f"{row.get('row_id')}: value_high is not on the cv_pct scale")
+            return high, f"high corner: value_high {high}% (vs tabled {row['cv_pct']}%)"
+        return row["cv_pct"], f"high corner: no value_high printed; tabled {row['cv_pct']}% taken"
+    raise ValueError(f"unknown envelope {envelope!r}; expected one of {ENVELOPES}")
+
+
 #: Design doc Sec 10 D-a's "recommended route, not taken": D-043's indirect
 #: compositing-ratio estimate of single-core within-plot CV at 0-20/0-30 cm,
 #: from the Wuest 3-core-vs-1-core residual ratio (1.785 against sqrt(3) =
@@ -274,7 +300,7 @@ WITHIN_PLOT_D043_INDIRECT = {
 }
 
 
-def within_plot_cv_pct(rows_by_id: dict[str, dict], source: str = "d043_indirect") -> tuple[float, str]:
+def within_plot_cv_pct(rows_by_id: dict[str, dict], source: str = "d043_indirect", envelope: str = "generous") -> tuple[float, str]:
     """0-30 cm within-plot CV%. No table row exists at this depth (G2/D-a).
 
     ``"d043_indirect"`` (default, D-059/D-060's resolution): D-043's indirect
@@ -286,13 +312,17 @@ def within_plot_cv_pct(rows_by_id: dict[str, dict], source: str = "d043_indirect
     into a single SD - G2 forbids the latter, not the former.
     """
     if source == "d043_indirect":
+        key = {"generous": "value_low", "central": "value", "high": "value_high"}[envelope]
         return (
-            WITHIN_PLOT_D043_INDIRECT["value_low"],
-            f"D-043 indirect estimate, generous end (G8: PNW dryland only): "
-            f"{WITHIN_PLOT_D043_INDIRECT['value_low']}%",
+            WITHIN_PLOT_D043_INDIRECT[key],
+            f"D-043 indirect estimate, {envelope} ({key}) (G8: PNW dryland only): "
+            f"{WITHIN_PLOT_D043_INDIRECT[key]}%",
         )
     if source == "layer_bracket":
         wps1, wps2 = rows_by_id["VC-WPS-001"], rows_by_id["VC-WPS-002"]
+        if envelope != "generous":
+            hi = max(wps1["value_high"], wps2["value_high"])
+            return hi, f"layer bracket, {envelope} end taken as the high endpoint: {hi}%"
         low = min(wps1["value_low"], wps2["value_low"])
         return low, (
             "layer bracket, generous end (G2: VC-WPS-001/002 raw low bounds "
@@ -301,7 +331,7 @@ def within_plot_cv_pct(rows_by_id: dict[str, dict], source: str = "d043_indirect
     raise ValueError(f"unknown within_plot source {source!r}")
 
 
-def between_plot_cv_pct(rows_by_id: dict[str, dict], source: str = "wuest_0_30") -> tuple[float, str]:
+def between_plot_cv_pct(rows_by_id: dict[str, dict], source: str = "wuest_0_30", envelope: str = "generous") -> tuple[float, str]:
     """0-30 cm between-plot CV%. Design doc Sec 10 D-a: only ``VC-BPS-007``
     (one Wuest PNW series) is a genuine 0-30 cm PURE between-plot term.
     ``VC-BPS-006`` (NAPESHM, broad evidence base) is 0-15 cm, and D-026
@@ -309,10 +339,10 @@ def between_plot_cv_pct(rows_by_id: dict[str, dict], source: str = "wuest_0_30")
     explicitly off-depth sensitivity, never as the headline input.
     """
     if source == "wuest_0_30":
-        cv, why = generous_cv_pct(rows_by_id["VC-BPS-007"])
+        cv, why = envelope_cv_pct(rows_by_id["VC-BPS-007"], envelope)
         return cv, f"VC-BPS-007, 0-30 cm, single PNW series (G8-narrow): {why}"
     if source == "napeshm_0_15_off_depth_sensitivity":
-        cv, why = generous_cv_pct(rows_by_id["VC-BPS-006"])
+        cv, why = envelope_cv_pct(rows_by_id["VC-BPS-006"], envelope)
         return cv, (
             f"VC-BPS-006, 0-15 cm - D-026 FORBIDS treating this as a 0-30 cm "
             f"baseline; off-depth cross-check only, never headline: {why}"
@@ -347,6 +377,7 @@ def assemble_components(
     between_plot_source: str = "wuest_0_30",
     relocation_scale: str = "difference_scale",
     reference_stock_mg_c_ha: float = DEFAULT_REFERENCE_STOCK_MG_C_HA,
+    envelope: str = "generous",
 ) -> ComponentBreakdown:
     """Assemble the five low-envelope CV% inputs S(C) is built from.
 
@@ -374,11 +405,11 @@ def assemble_components(
       cheaper is headline" once this was checked directly rather than
       assumed.
     """
-    b_cv, b_why = between_plot_cv_pct(rows_by_id, between_plot_source)
-    w_cv, w_why = within_plot_cv_pct(rows_by_id, within_plot_source)
-    a_cv, a_why = generous_cv_pct(rows_by_id["VC-ANA-001"])
-    t_cv, t_why = generous_cv_pct(rows_by_id["VC-TMP-003"])
-    r_cv, r_why = generous_cv_pct(rows_by_id["VC-REL-001"])
+    b_cv, b_why = between_plot_cv_pct(rows_by_id, between_plot_source, envelope)
+    w_cv, w_why = within_plot_cv_pct(rows_by_id, within_plot_source, envelope)
+    a_cv, a_why = envelope_cv_pct(rows_by_id["VC-ANA-001"], envelope)
+    t_cv, t_why = envelope_cv_pct(rows_by_id["VC-TMP-003"], envelope)
+    r_cv, r_why = envelope_cv_pct(rows_by_id["VC-REL-001"], envelope)
     if relocation_scale == "difference_scale":
         r_why = (
             r_why + " (difference-scale, taken as-tabled per D-062: "
@@ -740,6 +771,103 @@ def implied_uncertainty_deduction_pct(
 
 
 # ---------------------------------------------------------------------------
+# WP2 (D-067): three-category reach, own-deduction detectability, G9 headroom
+# ---------------------------------------------------------------------------
+
+#: The three categories, never a pass/fail count (red team C-5).
+REACH_CATEGORIES = ("inside_reach", "within_uncertainty_band", "outside_reach")
+
+
+def classify_reach(scale_generous: float, scale_high: float) -> str:
+    """D-067. ``scale_*`` is ``break_even_noise_scale`` - the factor by which
+    every noise component could grow before a campaign at CAR1459's disclosed
+    density, on this project's own area, stops sufficing - evaluated with the
+    generous-corner and the high-corner components respectively.
+
+    * ``outside_reach``: < 1 even under the generous corner - the plausible
+      campaign does not suffice even on our most favourable inputs.
+    * ``inside_reach``: >= 1 even under the high corner - it suffices across
+      the whole of the variance table's stated envelope.
+    * ``within_uncertainty_band``: everything between - the verdict turns on
+      where in the table's own envelope the truth lies.
+
+    The band is the TABLE'S envelope only. It does not include G9 (support) or
+    G8 (one region), neither of which is quantified; see
+    ``between_plot_headroom`` for the G9 exposure, reported per project.
+    """
+    if scale_generous < 1.0:
+        return "outside_reach"
+    if scale_high >= 1.0:
+        return "inside_reach"
+    return "within_uncertainty_band"
+
+
+#: Large-sample normal quantiles for the own-deduction ratio below: alpha =
+#: 0.05 two-sided and power 0.90 (VM0042 Eq. 2's convention), and 50% power.
+Z_ALPHA_TWO_SIDED_005 = 1.959963984540054
+Z_POWER_090 = 1.2815515655446004
+
+
+def own_deduction_detectability(applied_pct: float, k: float) -> dict[str, float]:
+    """D-067 / D-068. Invert a project's PUBLISHED uncertainty deduction
+    through its registry's own rule to the relative standard error it implies,
+    ``sigma_rel = applied / (100 k)``, and express that as the ratio of the
+    claimed change to the minimum detectable difference it implies:
+
+        Delta / MDD = 1 / ((z_alpha + z_beta) * sigma_rel)
+
+    at 90% power (VM0042 Eq. 2's convention) and at 50% power (z_beta = 0).
+    Needs none of our variance components - it is the project's own
+    precision, as its own deduction states it. Large-sample z, so slightly
+    generous to the project at small n. What sigma_rel pools (sampling only,
+    or sampling + model) is the registry's, not ours: under VM0042 QA1 and
+    CAR SEP it includes model prediction error.
+
+    The same identity is why ``implied_deduction_pct_at_optimum`` is close to
+    ``k * 100 / (t_alpha + t_beta)`` for EVERY project: at the audit's own
+    optimum n_req is defined to make SE = Delta / (t_alpha + t_beta). The
+    ratio applied / implied is therefore ~ MDD/Delta under the project's own
+    stated precision - this function reports that quantity directly.
+    """
+    sigma_rel = applied_pct / (100.0 * k)
+    return {
+        "implied_relative_se": sigma_rel,
+        "delta_over_mdd_power90": 1.0 / ((Z_ALPHA_TWO_SIDED_005 + Z_POWER_090) * sigma_rel),
+        "delta_over_mdd_power50": 1.0 / (Z_ALPHA_TWO_SIDED_005 * sigma_rel),
+    }
+
+
+def between_plot_headroom(
+    components: ComponentBreakdown, delta_mg_c_ha: float, *,
+    cores_per_assay: int, n_plausible: float,
+    alpha: float = ALPHA_DEFAULT, power: float = POWER_DEFAULT,
+) -> float:
+    """G9 exposure, per project: the factor by which the between-plot CV
+    could exceed its research-plot value before a campaign of ``n_plausible``
+    locations stops sufficing, UNPAIRED design (the only one where sigma_B
+    enters). ``< 1`` means it already does not suffice at research-plot
+    sigma_B. This is what G9 would have to exceed to move a claim out of
+    reach; G9 itself is not quantified (no upscaling relationship is assumed).
+    """
+    # If even sigma_B -> 0 leaves n_req above n_plausible, the other
+    # components alone already put the claim out of reach of the plausible
+    # campaign: no amount of between-plot headroom exists. Return 0 rather
+    # than asking the bisection for a root that is not bracketed.
+    floor_s = s_of_c(replace(components, between_plot_cv_pct=0.0), cores_per_assay, paired=False)
+    try:
+        floor_n = float(n_req(floor_s, delta_mg_c_ha, alpha=alpha, power=power))
+    except OverflowError:
+        floor_n = float("inf")
+    if floor_n > n_plausible:
+        return 0.0
+    cv_be = break_even_between_plot_cv_pct(
+        components, delta_mg_c_ha, cores_per_assay=cores_per_assay,
+        n_plausible=n_plausible, alpha=alpha, power=power,
+    )
+    return cv_be / components.between_plot_cv_pct
+
+
+# ---------------------------------------------------------------------------
 # project-level inputs, gating, and the top-level audit
 # ---------------------------------------------------------------------------
 
@@ -968,6 +1096,16 @@ class AuditResult:
     stratification_note: str | None = None
 
     support_mismatch_ratio: float | None = None
+
+    # WP2 (D-067)
+    n_plausible_at_car1459_density: float | None = None
+    break_even_noise_scale_high_corner: float | None = None
+    reach_category: str | None = None
+    between_plot_headroom_unpaired: float | None = None
+    own_deduction: dict | None = None
+    in_loam_scope: bool | None = None
+    scope_distance: tuple[str, ...] = ()
+
     qa_upper_bound_flag: bool | None = None
     qa_note: str | None = None
     esm_note: str = (
@@ -1126,6 +1264,26 @@ def run_audit(
 
     support_ratio = area / BETWEEN_PLOT_NOMINAL_SUPPORT_HA
 
+    # D-067: the same break-even scale under the HIGH corner of the table's
+    # envelope, same design and C, so the category is a statement about the
+    # table's whole stated envelope rather than one corner of it.
+    components_high = assemble_components(
+        rows_by_id, within_plot_source=within_plot_source,
+        between_plot_source=between_plot_source,
+        reference_stock_mg_c_ha=reference_stock_mg_c_ha, envelope="high",
+    )
+    scale_high = break_even_noise_scale(
+        components_high, delta, paired=(headline_design == "paired"),
+        cores_per_assay=opt_headline.cores_per_assay,
+        n_plausible=n_plausible, alpha=alpha, power=power,
+    )
+    category = classify_reach(scale, scale_high)
+    headroom = between_plot_headroom(
+        components, delta, cores_per_assay=opt_unpaired.cores_per_assay,
+        n_plausible=n_plausible, alpha=alpha, power=power,
+    )
+    own = own_deduction_detectability(float(applied), k) if applied is not None else None
+
     qa = _usable_value(project, "quantification_approach")
     qa_flag, qa_note = None, None
     if qa is not None:
@@ -1152,5 +1310,12 @@ def run_audit(
         deduction_caveat=deduction_caveat,
         break_even_noise_scale_at_car1459_density=scale, stratification_note=strat_note,
         support_mismatch_ratio=support_ratio,
+        n_plausible_at_car1459_density=n_plausible,
+        break_even_noise_scale_high_corner=scale_high,
+        reach_category=category,
+        between_plot_headroom_unpaired=headroom,
+        own_deduction=own,
+        in_loam_scope=project.get("in_loam_scope"),
+        scope_distance=tuple(project.get("scope_distance") or ()),
         qa_upper_bound_flag=qa_flag, qa_note=qa_note,
     )

@@ -508,3 +508,73 @@ def test_car1459_own_claim_vs_own_density_stays_within_two_orders_of_magnitude(r
         f"generous unpaired estimate at its own RP5 claim is {opt_unpaired.n_req} "
         f"- ratio {ratio:.1f}x, outside the expected [1, 100) sanity band"
     )
+
+
+# ---------------------------------------------------------------------------
+# WP2 (D-067, D-068): envelopes, three categories, own-deduction ratio, headroom
+# ---------------------------------------------------------------------------
+
+
+def test_envelope_corners_bracket_the_central_value(rows_by_id):
+    gen = ia.assemble_components(rows_by_id, envelope="generous")
+    cen = ia.assemble_components(rows_by_id, envelope="central")
+    hi = ia.assemble_components(rows_by_id, envelope="high")
+    for f in ("between_plot_cv_pct", "within_plot_cv_pct", "analytical_cv_pct",
+              "temporal_cv_pct", "relocation_cv_pct"):
+        assert getattr(gen, f) <= getattr(cen, f) <= getattr(hi, f), f
+    assert ia.s_of_c(gen, 1, paired=False) < ia.s_of_c(hi, 1, paired=False)
+
+
+def test_generous_envelope_is_the_unchanged_default(rows_by_id):
+    assert ia.assemble_components(rows_by_id) == ia.assemble_components(rows_by_id, envelope="generous")
+
+
+def test_classify_reach_three_categories_never_two():
+    assert ia.classify_reach(2.0, 1.5) == "inside_reach"
+    assert ia.classify_reach(1.2, 0.9) == "within_uncertainty_band"
+    assert ia.classify_reach(0.9, 0.7) == "outside_reach"
+    assert ia.classify_reach(1.0, 1.0) == "inside_reach"
+    assert set(ia.REACH_CATEGORIES) == {"inside_reach", "within_uncertainty_band", "outside_reach"}
+
+
+def test_own_deduction_inverts_the_registry_rule_exactly():
+    """D-068: UNC = 100 k sigma_rel, so sigma_rel = UNC / (100 k), and
+    Delta/MDD = 1/((z_a + z_b) sigma_rel). VCS 4022's 31.35% under k=0.4307."""
+    o = ia.own_deduction_detectability(31.35, 0.4307)
+    assert o["implied_relative_se"] == pytest.approx(0.72789, rel=1e-4)
+    assert o["delta_over_mdd_power50"] == pytest.approx(0.7009, rel=1e-3)
+    assert o["delta_over_mdd_power90"] == pytest.approx(0.4238, rel=1e-3)
+    # round trip: a project whose own SE is exactly Delta/(z_a+z_b) sits at ratio 1
+    k = 1.028
+    unc = 100 * k / (ia.Z_ALPHA_TWO_SIDED_005 + ia.Z_POWER_090)
+    assert ia.own_deduction_detectability(unc, k)["delta_over_mdd_power90"] == pytest.approx(1.0)
+
+
+def test_implied_deduction_at_optimum_is_bounded_by_k_over_z_sum(rows_by_id):
+    """D-068, and confirmed by the independent re-implementation (WP3): at the
+    audit's own optimum, n_req makes SE <= Delta/(t_a + t_b) < Delta/(z_a + z_b),
+    so the implied deduction is at most 100 k / (z_a + z_b) WHATEVER the
+    variance inputs or Delta. It therefore carries almost no project-specific
+    information; applied/implied is the informative ratio."""
+    comps = ia.assemble_components(rows_by_id)
+    for k in (0.253, 0.4307, 1.028):
+        bound = 100 * k / (ia.Z_ALPHA_TWO_SIDED_005 + ia.Z_POWER_090)
+        for delta in (0.3, 1.5, 6.0, 15.0):
+            opt = ia.cost_optimum(comps, delta, paired=False)
+            implied = ia.implied_uncertainty_deduction_pct(k, opt.s_mg_c_ha, opt.n_req, delta)
+            assert implied <= bound + 1e-9
+
+
+def test_between_plot_headroom_is_zero_when_other_components_alone_exceed(rows_by_id):
+    comps = ia.assemble_components(rows_by_id)
+    # a tiny Delta on a tiny plausible campaign: unreachable even at sigma_B = 0
+    assert ia.between_plot_headroom(comps, 0.2, cores_per_assay=2, n_plausible=20) == 0.0
+    # a large Delta on a large campaign: headroom > 1
+    assert ia.between_plot_headroom(comps, 5.0, cores_per_assay=2, n_plausible=500) > 1.0
+
+
+def test_vcs4022_reach_and_own_deduction_fields(rows_by_id, projects_by_id):
+    r = ia.run_audit(projects_by_id["VCS 4022"], rows_by_id)
+    assert r.reach_category == "inside_reach"
+    assert r.own_deduction["delta_over_mdd_power90"] == pytest.approx(0.4238, rel=1e-3)
+    assert r.break_even_noise_scale_high_corner < r.break_even_noise_scale_at_car1459_density
