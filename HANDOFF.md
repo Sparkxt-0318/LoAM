@@ -426,3 +426,116 @@ any reported figure.
 **Nothing else in the repo was touched beyond what Phase 5 needed**: no
 variance-table row written or promoted, no other decision reopened, `main`'s
 existing 248 tests all still pass unchanged.
+
+
+---
+
+## 2026-11-10 — PHASE 5 TO A SHOWABLE RESULT: WP1–WP4
+
+One session, PI brief of 2026-11-10. **Nothing merged. Nothing sent. All PRs draft, each based on
+`main`.** WP2–WP4 each contain the previous WP's commits because each needs the previous data.
+Merge in order and each diff shrinks to its own WP.
+
+| WP | branch | PR | decisions |
+|---|---|---|---|
+| 1 population | `claude/loam-phase5-inverted-audit-k914d8` | Sparkxt-0318/LoAM#23 | D-064, D-065, D-066 |
+| 2 distributions | `claude/loam-wp2-audit-distribution` | Sparkxt-0318/LoAM#24 | D-067, D-068 |
+| 3 robustness | `claude/loam-wp3-robustness` | Sparkxt-0318/LoAM#25 | D-069, D-070 |
+| 4 writing | `claude/loam-wp4-paper-drafts` | (see PR list) | — |
+
+**Environment.** The Default cloud environment blocked every source host. A personal "LoAM"
+environment was created with the PI's approval: 20 allowed hosts covering CER, Verra, CAR,
+Indigo, terrapass and literature APIs. Future sessions should start on it.
+
+### Done
+
+- **WP1a, ACCU.**
+  - Register re-pulled (Last-Modified 2026-10-20). **No numeric area field exists; boundary files
+    do.** The KML is published for 999/999 projects and the CEA shapefile for exactly the 54
+    credit-issued ones.
+  - 54 geodesic CEA areas computed, cross-checked two ways and against the KML. Recorded as
+    `inferred`.
+  - Census reproduces 999. 54 issued (was 53); 462,162 ACCUs (was 439,348); still no
+    sampling-design field.
+  - 54 generated records in the corpus schema. 9 are in scope (D-065).
+  - Cumulative Δ = ACCUs/3.667/area; the interval cancels (D-064).
+- **WP1b, CAR1459.**
+  - RP1–RP5 credits, area and applied deduction retrieved: 11.27% in RP5, 14.17% in RP4.
+  - Audited on RP5 SOC-only credits over RP5's own area, 2,463,691 acres (24.5× RP1).
+  - The RP5 verification report records that the re-measurement true-up was deferred under a
+    Reserve variance (D-066).
+- **WP1c, Verra.** Walled: the registry moved to an S&P Platts single-page app, and the OffsetsDB
+  fallback is down, two attempts each. The hand-download procedure (one export, then per-project
+  documents) is in `docs/registry_population.md` §3. The VM0042 v3.0 consultation **closed
+  2026-03-31**.
+- **WP2.**
+  - 56 projects audited, in three categories, by group, never pooled.
+  - **In scope: 8 inside reach / 0 within the band / 3 outside.** Grazing 30/2/6; land use
+    unresolved 4/1/2.
+  - In-scope median break-even price $0.31; VCS 4022 still $0.003.
+  - **FINDING D-068:** the implied deduction at the audit's optimum is bounded by 100k/(z_α+z_β)
+    for every project. The informative quantity is the project's own deduction read as Δ/MDD:
+    CAR1459 2.81, VCS 4022 0.42 (conditional; decision A).
+- **WP3.**
+  - (i) Independent re-implementation: **0/336 disagreements**.
+  - (ii) Sensitivity: categories hold; forced paired moves two n_req by 2.3×.
+  - (iii) **G9 narrowed (D-070).** Stock σ_B is larger at commercial support (~1.5–5× SD within a
+    field; ~5–10× across fields). The scenario bracket bottoms out at the paired-design floor,
+    which has no σ_B term: in scope, 6 inside / 5 outside at worst. The variance of *change* is
+    not bounded in direction, so G9 now lives there.
+- **WP4.** Six drafts in `docs/paper/`. Two facts PR #21 had reported for VCS 4022 were verified
+  from the primary validation report: MDD/S/n "not relevant" (p. 50), and a single "final
+  uncertainty deduction" (p. 147).
+- **Tests:** 248 → 277, all passing.
+
+### Not done
+
+- **The Verra population.** Needs the PI's registry export. About 200 VM0042 projects; status is
+  access wall, not disclosure gap.
+- **Per-project Verra public comments.** Template only; no projects enumerated.
+- **The VM0042 v3.0 draft and the approved v2.0 text** were not read; both are blocked on
+  decision B.
+- **No figure was drawn** for the manuscript; tables only.
+
+### Decisions waiting on the PI
+
+- **A. PR #21** (open draft, 13 Aug; not mentioned in the previous HANDOFF).
+  - It reports that the approved VM0042 v2.0 uses k = 0.4307. That would resolve the v2.0/v2.2
+    caveat the manuscript's limitations currently lead with.
+  - It reports a VCS Methodology Requirements §2.4 eligibility bar (UNC > 26.18%).
+  - Its D-059–D-062 collide with main's numbering.
+  - Should its findings be brought onto main, re-verified and renumbered D-070+? *Recommend yes.*
+    D-068 already reproduces its 0.70 independently by algebra; what remains is the version and
+    pool-scope facts, and those need the primary documents.
+- **B. `verra.org/robots.txt` disallows `/wp-content/uploads`.**
+  - May single documents there be fetched: approved VM0042 v2.0, MR v4.4, the VM0042 v3.0 draft?
+  - Or will the PI download them by hand into `data/registry/raw/verra/`?
+- **C. PR #16 is stale** (design doc, base `claude/loam-vm0042-primary`); its content is on main
+  via #20. *Recommend close.*
+- **D. Sensitivity to an existing decision crossed the 2× threshold.**
+  - D-060's per-project design choice: forcing paired moves VCS 4022 n_req 161 → 374 and CAR1459
+    4,451 → 10,430. Neither changes category; break-even prices move 1.6×.
+  - Reported, not re-decided. Confirm D-060 stands.
+- **E. Right of reply.** Who receives notes depends on whether the supplementary table naming 54
+  ACCU project IDs is published. One proponent holds 47 of them.
+- **F. D-054** (lab error) stays open and non-blocking, unchanged.
+
+### Contradicts a standing assumption
+
+1. **"The ACCU register publishes area for 999 projects"** (`registry_corpus.md`, D-056): **false
+   as to fields.** It publishes boundary files from which area is derivable. Corrected in place
+   with a note.
+2. **"Implied 13.2% vs applied 31.35% is consistent, not a red flag"** (D-059): the 13.2% is fixed
+   by k and the power convention, and would be ~13% for any VM0042 project. The ratio is what
+   carries information, and it says VCS 4022's claim is 0.42× its own MDD, conditional on
+   decision A (D-068).
+3. **"CAR1459 is not auditable"** (first run): it is. Its credits and an applied deduction were
+   public all along, and are now retrieved.
+4. **"Verra's registry is an SPA access wall"** still holds, but on a new platform (S&P Platts,
+   Okta). The old `/uiapi` routes are gone, so any earlier scraping recipe is dead.
+5. **My own session-start status** called the credits route a timing error. It was not: the
+   interval cancels out of Δ (D-064).
+6. **"One developer's projects fall outside reach"** is a base-rate artefact. That proponent holds
+   47 of 54 projects; the category follows area and Δ. Stated wherever results appear.
+7. **"Paired revisits are generally better"** remains reversed for this table (D-060), and the
+   grid shows it is the most consequential of the three challenged choices.
