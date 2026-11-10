@@ -85,6 +85,13 @@ That is enforced, not requested: see D-032.
 | D-061 | decided | Sec 10 D-d/D-e resolved: `stock` basis throughout; difference-scale declared per component in code (`DIFFERENCE_SCALE`), not a schema column |
 | D-062 | decided | low-envelope rule stated as a corner bound, not a CI (red team C-2); `not_auditable` gate (A-3); break-even price/noise-scale/stratification efficiency reported (A-2, B-2); ESM-only headline, fixed-depth as footnote (A-5); QA1 upper-bound flag (Objection 1) |
 | D-063 | decided | support/scale-mismatch ratio reported, never gated on (red team A-1); tracked as new open gap **G9**; D-054 stays open and non-blocking |
+| D-064 | decided | ACCU area is INFERRED from the published CEA shapefiles (no numeric area field exists); cumulative-credits Delta = ACCUs/3.667/area, interval cancels; census re-pulled 2026-10-20 (999 / 54 issued / 462,162 ACCUs) |
+| D-065 | decided | scope flags for generated ACCU records: land use classified from stated activities; tropical-LATITUDE flag from CEA centroid — geographic, not an IPCC class; out-of-scope never pooled |
+| D-066 | decided | CAR1459 audited on RP5 SOC-only credits over RP5's own area (scope-matched by the source); applied UNC 11.27% recorded; Verra registry and OffsetsDB logged as access walls (2 attempts each); VM0042 v3 consultation closed 2026-03-31 |
+| D-067 | decided | WP2 three-category reach: break-even noise scale at CAR1459 density under the generous AND the high corner of the table's own envelope; out-of-scope groups reported separately; σ_B headroom reported as the per-project G9 exposure |
+| D-068 | decided | **FINDING**: the implied deduction at the audit's own optimum is bounded by 100k/(z_α+z_β) for every project — it carries ~no project information; applied/implied ≡ MDD/Δ under the project's own stated precision is reported instead |
+| D-069 | decided | WP3 robustness: independent re-implementation agrees exactly (0/336); sensitivity grid over D-060, D-061, cost ratio and central inputs — categories hold; n_req moves 2.3× under forced paired; G9 literature verdict recorded |
+| D-070 | decided | **FINDING (G9, narrowed)**: literature bounds the DIRECTION for stock σ_B (larger at commercial support; ~1.5–5× SD within field, ~5–10× across fields, moderate/low confidence) but NOT for variance of change; scenario bracket σ_B ×1.5/×5/×10 bottoms out at the paired-design floor — in scope 6 inside / 5 outside; no distribution assumed |
 
 ---
 
@@ -3198,6 +3205,396 @@ from and a place (G9) to record what it finds.
 
 ---
 
+**D-064 — WP1a: ACCU AREA IS INFERRED FROM PUBLISHED GEOMETRY, NOT READ
+FROM A FIELD. THE REGISTER HAS NO NUMERIC AREA FIELD, BUT IT PUBLISHES THE
+BOUNDARY FILES THAT DETERMINE ONE. Cumulative-credits Delta is
+`ACCUs / 3.667 / CEA area`, and the remeasurement interval cancels out of it.**
+Scripts `scripts/fetch_cer_register.py`, `scripts/derive_accu_areas.py`,
+`scripts/build_accu_corpus.py`; output `data/registry/projects_accu_issued.yaml`
+(54 records, same field schema as `projects.yaml`, guarded by the same tests).
+
+**The contradiction the PI flagged, resolved from the register itself.**
+`docs/registry_corpus.md` ("area, claimed rate and interval, all of which the
+ACCU register does publish for 999 projects") and D-056's identical sentence
+are **wrong as statements about fields**: the 73-column register (re-pulled
+2026-11-10, `Last-Modified` 2026-10-20, sha256 `3481c436…`) has no numeric area
+column. `Project Area(s)` is a list of cadastral lot/plan identifiers.
+`docs/phase5_inverted_audit_results.md` ("no area field exists in the public
+register at all") is **right about fields and wrong in what it implied**:
+`Project Mapping File URL` (a project-boundary KML) is filled for **999/999**,
+and `Carbon Estimation Area mapping file URL` (a zipped shapefile of the land
+the credits are computed over) for **54/999 — exactly the 54 credit-issued
+projects**. So area is derivable for every project that has a claim to audit,
+and is never published as a number. Every derived area is therefore
+`inferred`, never `stated`.
+
+**How.** Geodesic area on the GRS80 ellipsoid (pyproj, Karney), the ellipsoid
+of GDA2020, which every CEA `.prj` declares; polygons re-oriented so holes
+subtract. Two checks, both passed: (1) a second, independent ring-sign
+computation agrees with the first to 1e-4 on all 54 (a pyshp warning about an
+"orphaned hole" in one file changed no area); (2) **99.7-100% of every CEA
+lies inside its project-boundary KML**, as it must. The CEA is 30-100% of the
+project boundary (median ~0.9). The CEA, not the boundary, is used: it is the
+credited land, and it is the generous choice (smaller area → larger Delta →
+easier to detect).
+
+**Rate (the PI's "rate from ACCUs over the crediting dates").** Two quantities,
+kept apart:
+* `delta_net = ACCUs / 3.667 / CEA_ha` — the cumulative NET credited stock
+  change from the baseline sampling round to the latest one. **This is what the
+  audit tests.** The remeasurement interval does not enter it: in
+  `derive_delta_mg_c_ha`'s credits route `tau x years` with
+  `tau = credits/area/years`, so years cancel. (My start-of-session status note
+  called this route a timing error. **That was wrong**: Delta does not depend
+  on the interval, and `scripts/run_inverted_audit.py`'s revenue is the same
+  cumulative total, so the two are scope-matched. Only the provenance text
+  overstated the problem, and it is now corrected in code.)
+* `credited_rate_lower_bound = delta_net / T_upper`, `T_upper` from the
+  crediting-period start to 30 June of the last financial year with any
+  issuance (the register breaks issuance out by FY). Issuance follows the end
+  of a reporting period, so `T_upper` over-states the time covered and the rate
+  is a LOWER bound. Reported for comparison with literature rates; not used by
+  the audit. Range across the 54: 0.15-4.36 Mg C/ha/y.
+
+**Census re-pulled; appended to `registry_coverage`, the 2026-06-30 entry
+kept.** Definition made explicit for the first time: Method contains "Soil" and
+"Measurement" (the 2018 and 2021 determinations); it reproduces **999**
+exactly. As at 2026-10-20: 999 projects, **54** issued (was 53), **462,162**
+ACCUs (was 439,348), approach field 26/999 (was 24/999), 45 revoked. The 2014
+grazing-systems method (30 projects, none issued) is counted separately. Every
+issued project is under the 2021 method, nominates a 25-year permanence
+period, and is not revoked.
+
+**Raw files are git-ignored** (`data/registry/raw/*`): third-party, reproducible
+from the scripts, with URL, HTTP status, bytes, sha256 and access time per file
+in the committed `data/registry/cer_manifest.json`. cer.gov.au's robots.txt
+was read first; neither `/document/` nor `/sites/default/files/projectFiles/`
+is disallowed. Sequential, 2 s between requests, 109 files, no failures.
+
+*If wrong:* (a) if the CEA is not the credited area (e.g. credits computed over
+a sub-area the CEA does not delimit), Delta is mis-scaled for that project; the
+KML boundary area is recorded alongside as the bound in the other direction.
+(b) If ACCU issuance covers more than one baseline-to-latest comparison in a
+way that does not telescope (e.g. a reset baseline), the cumulative Delta
+overstates the change measured between any two rounds — which would make the
+audit too GENEROUS, not too harsh. No public document held says either way;
+the methodology determination has not been read for this point.
+
+---
+
+**D-065 — SCOPE FLAGS FOR THE GENERATED ACCU RECORDS. Land use is classified
+from the stated activity list; a TROPICAL-LATITUDE flag is set from the CEA
+centroid. The latitude flag is geographic, not a climate classification, and
+out-of-scope projects are never pooled into a headline.** Implemented in
+`scripts/build_accu_corpus.py`; every record carries `in_loam_scope` and a
+`scope_distance` list naming each axis it fails on (red team B-5).
+
+* `cropland` if any activity is cropping-specific (stubble retention, tillage
+  change); `grazing_pasture` if every activity is grazing- or
+  pasture-specific (or could be either, e.g. nutrients, alongside a grazing
+  activity and no cropping one); `unresolved` otherwise — chiefly projects
+  whose only activity is "applying nutrients", which can be cropland or
+  pasture.
+* `tropical_latitude` if the CEA centroid lies north of 23.44 S. **This is not
+  an IPCC climate class**: D-028/D-033 established that one needs MAP:PET,
+  which we do not have for these sites, and no proxy is substituted here.
+  "Temperate" in LoAM's scope lock is therefore only *not contradicted* by
+  latitude for the in-scope set, not confirmed.
+
+Result: **9 of 54 in scope** (cropland, south of the tropic), 38
+grazing/pasture, 7 unresolved; 2 of the out-of-scope also fail on latitude.
+
+*If wrong:* an `unresolved` nutrients-only project that is in fact cropland is
+excluded from the in-scope set it belongs to — conservative for any in-scope
+headline, since it shrinks the set rather than contaminating it. A cropland
+project in a tropical-climate zone south of 23.44 S (or a temperate one north
+of it) is misflagged on latitude; the flag is labelled geographic everywhere
+so nobody reads it as a climate result.
+
+---
+
+**D-066 — WP1b: CAR1459 IS AUDITED ON ITS RP5 SOC-ONLY CREDITS OVER RP5's
+OWN ENROLLED AREA — the one claim-area pair the source document scope-matches
+itself. Its applied uncertainty deduction (11.27%) is now `stated`. Two access
+walls logged; the VM0042 v3.0 consultation is closed.**
+
+**CAR1459, retrieved** from the Reserve's public document list and registry
+tab (2026-11-10): Monitoring Report RP5 v5.8, RP4 v4.5, Monitoring Plan v5.4,
+RP5 Verification Report, issuance-by-vintage table. Facts now in
+`projects.yaml`, each with a locator:
+* cumulative credits **2,113,861 tCO2e** (2,033,891 reversible/SOC + 80,639
+  non-reversible), 294,905 to buffer (RP5 Table 16 / Sec 1);
+* five reporting periods with area — **100,372 → 2,463,691 acres**, a 24.5x
+  growth, every period's start date reaching back to 2018 (Table 16);
+* **RP5 SOC-only credits 1,065,452.3 tCO2e over 2,463,690.6 acres** (Table 7)
+  → Delta = **0.291 Mg C/ha** net;
+* **UNC_t = 11.27% (RP5), 14.17% (RP4)** (Table 13 / Table 12), independently
+  recalculated by the verifier (Ver. Report Sec 5.2.4). Under CAR SEP's rule
+  (D-057) that is a relative SE of about **10.96%**, pooling sampling, model
+  input and model prediction error (MP v5.4 Table 1.2);
+* per the RP5 Verification Report Sec 5.2.3, quantification through RP5 rests
+  on **initial** SOC measurements (earliest October 2019) plus DayCent-CR; the
+  5-yearly re-measurement "true-up" was **deferred** under Reserve variance
+  determination 2025-VAR-2-DET-CAR1459. Recorded as the verifier states it;
+  it is the Reserve's own documented process, not a finding against the
+  developer;
+* the project's IPCC climate zones include tropical and boreal as well as
+  temperate (MP v5.4 Table 6.10); the area share in each is not given;
+* realised sample count: **still not disclosed** (rules only, MP v5.4 Sec 5.2).
+
+**Why RP5, not the cumulative total.** Cumulative credits mix N2O/CH4 credits
+and five periods over an area that grew 24.5-fold; dividing them by any one
+area is a scope error. RP5's Table 7 gives SOC-only credits and the area they
+were computed over, in the same table. Implemented as a new, preferred input
+route in `loam.inverted_audit` (`soc_credits_reporting_period`, which carries
+its own area); revenue uses the same RP5 SOC credits, so break-even price is
+scope-matched and, excluding RP5's non-SOC credits, conservative.
+
+**Gate message corrected.** Before WP1 the gate told ACCU projects their
+claimed rate was "missing, withheld or not_disclosed" when `credits_issued`
+was stated; the true reason was the missing area. It now names what is
+disclosed and what it blocks. Interval provenance no longer labels an
+`inferred` interval "project-disclosed" (VCS 4022's 5 years is inferred from
+VM0042, per the corpus).
+
+**Two access walls, NOT disclosure gaps (two attempts each).**
+* `registry.verra.org` has moved platform: the root now serves an S&P Global
+  "Platts" single-page app with Okta sign-in (`/verra`), the old
+  `/uiapi/resource/resourceSummary/search` POST returns the same 2,598-byte
+  shell, and the 441 kB app bundle names no API route (micro-frontend chunks
+  load at runtime). Verra's own transition page (last updated 2026-07-26)
+  confirms the new registry. The public view is still described as public.
+* CarbonPlan OffsetsDB API (`offsets-db-api.carbonplan.org`), tried as an
+  enumeration-only fallback: `DEPLOYMENT_NOT_FOUND` on two different routes.
+* Web search found no machine-readable list of VM0042 project IDs. Verra
+  states "around 200 projects" under earlier VM0042 versions (late 2025). **No
+  Verra project beyond VCS 4022 entered the corpus**; a hand-download procedure
+  for the PI is in `docs/registry_population.md`.
+
+**VM0042 v3.0 consultation: CLOSED.** Verra's revision page (Development ID
+M0264) gives the window as **11 February - 31 March 2026**, status field
+"5. Independent Expert Review". A WP4 comment on v3 therefore cannot be filed
+as a consultation submission now; it can only go to Verra's methodology team
+as unsolicited input, and the draft must say so.
+
+*If wrong:* if RP5's Table 7 area is not the area its SOC credits were
+computed over (the report says it is: "the area, A_s,t, of the field
+boundaries in stratum s as of this reporting period"), Delta is mis-scaled.
+If the true-up deferral was later reversed, the `remeasurement_status` field
+is stale; it is dated.
+
+---
+
+---
+
+**D-067 — WP2: THE AUDIT IS REPORTED IN THREE CATEGORIES — INSIDE REACH,
+WITHIN THE UNCERTAINTY BAND, OUTSIDE REACH — DEFINED ON THE BREAK-EVEN NOISE
+SCALE AT A PLAUSIBLE CAMPAIGN, UNDER BOTH CORNERS OF THE VARIANCE TABLE'S OWN
+ENVELOPE. Out-of-scope projects are reported in their own groups and never
+pooled.** Implemented as `loam.inverted_audit.classify_reach`, run by
+`scripts/run_population_audit.py`; results in `data/audit/population_audit.csv`
+and `docs/phase5_population_results.md`.
+
+**The statistic.** `break_even_noise_scale` (already reported since D-062): the
+factor by which every noise component could grow before a campaign at
+CAR1459's disclosed density (1 point per 8 acres — the design doc Sec 5(a)
+"densest disclosed campaign" anchor), on the project's own area, at the
+cost-optimal design and C, stops sufficing. Computed twice: with the generous
+corner (the Sec 2.4 headline rule) and with the HIGH corner (`value_high`
+where a row prints one; tabled value otherwise). New `envelope=` argument to
+`assemble_components`; the generous default is unchanged and test-pinned.
+
+* **outside reach**: < 1 under the generous corner.
+* **inside reach**: >= 1 under the high corner.
+* **within the uncertainty band**: everything between.
+
+**Why this and not a price threshold.** Break-even price is reported for every
+project, but a price category would need a carbon-price band, and no price
+source is held for the voluntary registries; picking one would be a choice of
+ours. The noise-scale category needs no outside number: its anchor is a
+disclosed real campaign and its band is the table's own envelope.
+
+**What the band is NOT.** The table's envelope is narrow (between-plot
+3.136-3.732%, temporal 2.708-3.778%; analytical and relocation carry no
+bounds), because the evidence base is narrow (G8). It does not include G9 —
+support — which is unquantified in either direction. So each project also
+carries `between_plot_headroom_unpaired`: the factor by which sigma_B could
+exceed its research-plot value before the claim leaves reach, 0 when the
+other components alone already put it out of reach. **"Inside reach" is
+always conditional on G9 not exceeding that headroom.**
+
+**Grouping.** In scope (D-065 plus the two hand-curated in-scope projects);
+out of scope by land use (grazing/pasture; unresolved). The tropical-latitude
+flag is carried per project. Distributions are min/quartiles/max, never a
+mean or a proportion with a sampling interpretation: the population is a
+complete count of what is auditable, not a sample (red team C-5).
+
+*If wrong:* (a) a different plausible-campaign anchor moves every category —
+the anchor is a disclosed real density, but for small projects a denser grid
+is physically possible, so "outside reach" there means "denser than the
+densest disclosed campaign", which the results doc says in those words.
+(b) The integer ceiling in n_req makes s* a step function; a project sitting
+at n_req = n_plausible (one does: ERF175414, 206 vs 206) reads as
+`outside_reach` by a hair. Its s* values are printed so no reader takes it as
+robust.
+
+---
+
+**D-068 — FINDING: THE "IMPLIED DEDUCTION AT THE AUDIT'S OPTIMUM" IS BOUNDED
+BY `100 k / (z_alpha + z_beta)` FOR EVERY PROJECT, WHATEVER ITS VARIANCE OR
+ITS CLAIM. It carries almost no project-specific information. The informative
+quantity is applied / implied, which is the ratio MDD/Delta under the
+project's OWN published precision, and it is now reported as
+`own_deduction`.**
+
+**Why.** D-059 defines the implied deduction as `k * (S/sqrt(n)) / Delta * 100`
+evaluated at the cost-optimal design. But that design's n is n_req, defined by
+VM0042 Eq. (2) so that `S/sqrt(n) <= Delta / (t_alpha + t_beta)`. Substituting,
+the implied deduction is `<= 100 k / (t_alpha + t_beta) < 100 k / (z_alpha +
+z_beta)` = 30.85 k: **13.29% for every VM0042 project, 31.71% for every CAR
+project, 7.80% for every ACCU project**, approached from below as n grows
+(small-n projects sit lower because the t multiplier is larger and n is
+rounded up). Population run: ACCU 5.0-7.8%, VCS 4022 13.18%, CAR1459 31.71%.
+**Confirmed independently**: the WP3 re-implementation, written without
+reading this code, derived the same bound and the same ratio range
+(0.645-0.9997 of the bound).
+
+**Consequence for D-059's headline.** "Implied 13.2% vs applied 31.35%" was
+read as "right order of magnitude, consistent with model uncertainty". The
+13.2% is not a property of VCS 4022 — it would be 13.2% for any VM0042
+project with n of a few hundred. What the comparison actually carries is the
+ratio: **applied / implied = 2.38 for VCS 4022, i.e. its own published
+deduction implies a relative SE large enough that its claimed change is 0.42x
+its own 90%-power MDD (0.70x at 50% power). For CAR1459 the ratio is 0.355:
+its claim is 2.81x its own 90%-power MDD.** These use only the registry's own
+k and the project's own published deduction — none of our variance
+components — and are now computed by `own_deduction_detectability`.
+
+**Two conditions travel with the VCS 4022 figure, and neither is resolved
+here.** (1) It assumes k = 0.4307 applies to VCS 4022's v2.0 crediting —
+verified in v2.2 only on `main` (D-057); PR #21 (unmerged, 2026-08-13) reports
+the APPROVED v2.0 uses the same rule. (2) It assumes the 31.35% is the SOC
+deduction; PR #21 reports the validation report calls it "the final
+uncertainty deduction", undisaggregated. **Both are PI decision A.** This
+entry derives the identity independently of PR #21 (algebra from D-057's k
+and Eq. 2) and reaches PR #21's own 0.70 at 50% power; it adopts none of PR
+#21's text.
+
+*If wrong:* the bound is algebra and cannot be wrong given Eq. (2) and the
+definition. The own-deduction ratios inherit every uncertainty in what the
+published deduction pools (model and sampling for both CAR SEP and VM0042
+QA1) — so they are statements about the project's own stated precision, not
+about its sampling alone.
+
+---
+
+**D-069 — WP3: THE AUDIT IS REPRODUCED EXACTLY BY AN INDEPENDENT
+RE-IMPLEMENTATION, AND ITS QUALITATIVE RESULT SURVIVES EVERY CHALLENGED CHOICE.
+The paired/unpaired choice (D-060) is the most consequential: forcing paired
+moves VCS 4022's and CAR1459's n_req by 2.3x (the PI's 2x reporting threshold)
+without changing either project's category.** Written up in
+`docs/phase5_robustness.md`.
+
+**(i) Independent re-implementation.** `scripts/independent_audit_reimpl.py`,
+written by a separate agent from a formula specification without reading the
+engine, its tests or its outputs (scipy t-quantiles; integer bracketing on
+`g(n) = n - RHS(n)`, self-checked against a brute-force scan).
+`scripts/compare_independent_reimpl.py`: **0 disagreements** in n_req, C*, S,
+Cost*, headline design or implied deduction across 56 projects x 2 designs x 3
+variants (default; relocation /sqrt2; assay $60), including one exact
+paired/unpaired tie broken the same way. One contamination disclosed by the
+agent itself: it saw a changelog line giving VCS 4022's 13.2%/unpaired before
+running. It also derived D-068's bound unprompted. *What this does not
+establish:* the shared inputs and conventions are shared by construction.
+
+**(ii) Sensitivity** (`scripts/sensitivity_audit.py`, `data/audit/sensitivity.csv`;
+10 variants). In-scope categories range 6-8 inside / 0-1 band / 3-5 outside
+across every variant (baseline 8/0/3); VCS 4022 and CAR1459 stay inside reach
+in all ten. **More than 2x from baseline: VCS 4022 n_req 161 -> 374 and
+CAR1459 n_req 4,451 -> 10,430 under a forced paired design; CAR1459 C* 2 -> 5
+at an $80 assay; the grazing median break-even price x2.06 at an $80 assay.**
+No in-scope count, median price, or the two named projects' categories move by
+2x. Relocation scale (D-061) alone changes no headline quantity because 55/56
+headline designs are unpaired; it matters only with a forced paired design.
+Central inputs change no in-scope category. Absolute cost scale is linear and
+not run. These are sensitivities to decisions already made (D-060, D-061, C-1),
+reported rather than acted on; none is re-decided here.
+
+*If wrong:* the sensitivity grid varies one axis at a time (plus the design
+doc's own two-axis convention); interactions beyond those are not explored.
+
+---
+
+**D-070 — G9 NARROWED, NOT CLOSED. The direction of the research-plot →
+commercial-support change in between-location STOCK variance can be bounded:
+it is LARGER at commercial support. The direction for the variance of stock
+CHANGE cannot. A scenario bracket using the literature's own endpoints shows
+the audit's stock-variance exposure is capped by the paired design, which
+does not use sigma_B: in scope, 6 inside reach / 5 outside at worst, against
+8 / 3 at baseline.** Literature: `docs/g9_support_literature.md` (31 sources,
+each with access level and locator; most publisher hosts walled, four read in
+full). Bracket: `python scripts/sensitivity_audit.py --g9`,
+`data/audit/sensitivity_g9.csv`. Write-up: `docs/phase5_robustness.md` §(iii).
+
+**Stock, direction bounded (moderate evidence).** Two mechanisms push the same
+way.
+- *Support:* the 3.1% input is a variance between 0.02 ha plot means, which
+  averages out short-range variation. Commercial locations are cores or small
+  composites. More than half of SOC variance sits at 5-60 m or within 1 ha
+  plots (Robertson et al. 1997, AB; de Blecourt et al. 2017, FT).
+- *Extent:* variance cannot fall as extent grows (dispersion-variance
+  additivity, stated from the mathematics, textbook not accessed). The CV of
+  SOC stock rises from 5 to 35% across scales in Belgian agriculture (Goidts et
+  al. 2009, AB).
+
+Magnitude:
+- Single 0-30 cm cores within 1-2 ha cropland sites give CVs of **5, 10 and
+  14%** (Schrumpf et al. 2011, FT, Table 2), i.e. **~1.5-5x the 3.1% as an SD**.
+  This is probably a lower bound for fields of tens to hundreds of hectares.
+- Across fields or regions, ~5-10x, low confidence.
+- No study compares research plots and commercial points on the same ground.
+
+**Change, direction NOT bounded.** Commercial cropland over ~1 year: the
+between-field SD of change is >7x smaller than of level (Polussa et al. 2026,
+AB). A national forest network over ~10 years: change SD at or above stock SD,
+with regression to the mean (Buchkowski et al. 2026, FT). The two disagree in
+sign. A stock CV applied to a change calculation can be wrong either way (Lark
+2009, AB, says so explicitly).
+
+**What the bracket shows.** sigma_B multiplied by 1.5, 5 and 10 (the endpoints
+above), with the design re-chosen per project:
+
+| | in scope (inside / band / outside) | grazing | VCS 4022 | CAR1459 |
+|---|---|---|---|---|
+| baseline | 8 / 0 / 3 | 30 / 2 / 6 | inside, n 161 | inside, n 4,451 |
+| x1.5 | 6 / 2 / 3 | 29 / 1 / 8 | inside, n 200 | inside, n 5,546 |
+| x5 | 6 / 0 / 5 | 26 / 0 / 12 | inside, n 374 (paired) | inside, n 10,430 (paired) |
+| x10 | 6 / 0 / 5 | 26 / 0 / 12 | identical to x5 | identical to x5 |
+
+From about x2.1 (where 2 sigma_B^2 = sigma_R^2) the paired design is cheaper,
+and it does not contain sigma_B, so **x5 and x10 equal the forced-paired column
+of D-069 exactly**. The stock side of G9 therefore cannot push the audit below
+that floor: 6 of 11 in scope inside reach, VCS 4022 and CAR1459 inside reach
+with break-even prices of $0.005 and $0.34.
+
+**What the floor itself rests on:** the variance of CHANGE at a revisited
+location. That is relocation (`VC-REL-001`, Poeplau 2022's single-profile
+resampling error, itself measured at field sites), within-plot, analytical and
+temporal. These are exactly the quantities whose support-scaling the
+literature cannot bound. **So G9 is narrowed to the change-variance terms of
+the paired design. It is not closed.**
+
+**No distribution is assumed.** The multipliers are the literature's stated
+endpoints, run as scenarios. No probability is attached to them, and none of
+them is promoted to an input. The PI asked to be stopped before any variance
+component is given a distribution. This does not do that, and a joint
+propagation would.
+
+*If wrong:* the stock-direction verdict rests on cross-study comparisons and
+abstracts. A direct research-plot vs commercial-point comparison at one site
+could overturn it; that study is specified in the literature file §2.2/§3. The
+floor argument is exact given the formulas: paired S(C) has no sigma_B term.
+
 ---
 
 ## Open evidence gaps
@@ -3212,7 +3609,7 @@ from and a place (G9) to record what it finds.
 | **G6** | The two LUCAS rows are unverified against the primary report. | Locked out of use by rule R6. | open — needs LUCAS PDF |
 | **G7** | No source yet isolates cover-crop or reduced-till effects on *variance* (as opposed to mean). | Practice-specific variance inflation is unparameterized. | open |
 | **G8** | Every temporal row comes from ONE region: four sites, all silt loam, all semi-arid Mediterranean, all Pacific Northwest dryland. | Component 4 is derived but not generalised. The provider says so themselves (D-042). | open — **narrowed in direction**: KBS LTER (humid temperate row-crop) is *more* variable, not less, so PNW dryland is the low end and using it understates rather than overstates (D-047). Blocked from becoming a row by a written-permission licence, confirmed to travel with the EDI mirror. |
-| **G9** | Every between-plot input the Phase 5 inverted audit can use is measured on research-plot support (order 0.01-0.2 ha — `VC-BPS-007`'s "3.6 x 53 m plots"). Every corpus project quantifies at commercial-field or whole-project support (hundreds to hundreds of thousands of ha). | Red team A-1: the audit's `sigma_B` may be a different quantity, not a noisier measurement of the same one, at commercial support. `support_mismatch_ratio` is reported on every audit result (~25 million for VCS 4022) rather than hidden, but the effect of the mismatch on the true value of `sigma_B` at commercial support is unknown in either direction. | open — new 2026-09-16 (D-063). No upscaling study exists; none is assumed. |
+| **G9** | Every between-plot input the Phase 5 inverted audit can use is measured on research-plot support (order 0.01-0.2 ha — `VC-BPS-007`'s "3.6 x 53 m plots"). Every corpus project quantifies at commercial-field or whole-project support (hundreds to hundreds of thousands of ha). | Red team A-1: the audit's `sigma_B` may be a different quantity, not a noisier measurement of the same one, at commercial support. `support_mismatch_ratio` is reported on every audit result (~25 million for VCS 4022) rather than hidden, but the effect of the mismatch on the true value of `sigma_B` at commercial support is unknown in either direction. | open — new 2026-09-16 (D-063). **NARROWED 2026-11-10 (D-070):** for STOCK sigma_B the direction is bounded — larger at commercial support, ~1.5–5× as an SD within a field (Schrumpf 2011, full text), ~5–10× across fields (low confidence); and the audit's exposure to it is capped by the paired design, which does not use sigma_B (in scope 6 inside / 5 outside at worst, vs 8 / 3). For the variance of CHANGE the direction is NOT bounded — the two available datasets disagree in sign. G9 now lives in the paired design's change-variance terms. No upscaling relationship assumed; no distribution assumed. |
 
 ---
 
@@ -3236,3 +3633,6 @@ from and a place (G9) to record what it finds.
 | 2026-08-12 | (PI decision implemented; no new D-NNN) | **DELIVERABLE 3 RETIRED — the spatially explicit MDC surface is withdrawn and the invariance result is restated as a positive claim.** `docs/invariance_finding.md`: *we searched for spatial structure in monitoring noise across climate, texture and soil chemistry, each time against a stated detection limit, and found none; a single set of variance components serves temperate cropland; **MDC varies with DESIGN and INTERVAL, not with PLACE**.* Four nulls, each with its limit: climate shifts **0.300/0.152** against CI widths **3.97/3.52** in opposite directions (~±2 pt limit); texture spreads **2.611/3.690** against widest-bin CIs **11.016/10.464** (~10 pt limit); joint model **R² = 0.0722** under the repaired estimator (D-058), *lower* than the 0.093 first reported; inorganic carbon null at a **~6.4–7.6%** analytical-error limit against Potash's stated 1–10% (D-055). Temporal behaves the same (D-045). **Argued as a stronger product than a map:** "use these numbers anywhere in temperate cropland" is distributable, checkable by anyone with their own data, and cannot manufacture structure from covariates the way an interpolated surface fitted to non-predictive covariates can. **New repo-wide standard adopted: a null is only informative against a stated detection limit** — every null in this project must carry the magnitude it could have detected; three existing instances named as the template. **What would overturn it, stated concretely:** the carbonate channel is the cheapest to close and needs *lab duplicates, not a field campaign* — a few hundred split samples spanning 0 to >2% inorganic carbon would reach the untested lower two-thirds of Potash's range. **Consequence: Phase 5 is the headline, and invariance is what makes it tractable** — if σ varied by location, auditing 999 ACCU projects would need a per-project variance estimate nobody can supply. `docs/phase0_summary.md` Finding 3 rewritten, `docs/phase1_design.md` and `scripts/derive_g1_napeshm.py` annotated where they still promised the surface. No row written, no row promoted. |
 | 2026-08-08 | D-031, D-032, D-033; **D-028 still open** | Open-decision guard: decisions and the constants they govern are now machine-readable (`src/loam/decisions.py`), the build prints `<-- PROPOSED, NOT DECIDED`, and two tests refuse to pass while an open decision governs a live constant — **the suite is red on merge, by design** (D-032). Replacing the private climate envelope with IPCC 2006 climate regions was attempted and is **blocked**: MAP:PET and frost-day counts are not derivable from NAPESHM, and no proxy is substituted (D-033). Poeplau ↔ NAPESHM corroboration logged, with a figure correction (D-031). No variance-table values changed. |
 | 2026-09-16 | D-059 … D-063; G9 (open) | **PHASE 5 BUILT — the design doc's own Sec 10 gate is satisfied.** `src/loam/student_t.py` (pure-Python Student's t, verified against published tables and against the red team's own C-3 demonstration table, exactly), `src/loam/inverted_audit.py`, `scripts/run_inverted_audit.py`, 72 new tests (full suite 248, green). **Headline restructured around the implied-vs-applied uncertainty deduction** (red team B-1): first run against VCS 4022 gives an implied **13.2%** against its disclosed applied **31.35%** — right order of magnitude, and the gap is consistent with Objection 1 (ours is sampling-only; theirs folds in QA1 model uncertainty). **Bisection replaces iteration** (red team C-3), pinned as a permanent regression test. **Sec 10 D-a resolved**: `VC-BPS-007` (the one genuine 0-30 cm between-plot row) and D-043's indirect ~8% within-plot estimate adopted as primary inputs, each with a no-new-assumption fallback implemented alongside. **D-b CHECKED, NOT ADOPTED: the design doc's own claim that paired revisits are always cheaper does not survive under this resolution of D-a** — between-plot CV (~3.1%, Wuest) ends up smaller than relocation CV (~9.4%, D-061's difference-scale resolution), so unpaired can be cheaper, and the first real run picks it. **Headline design is now chosen per project by comparing `Cost*`**, generalising Sec 2.3's own infimum-over-admissible-designs logic to this axis rather than fixing it by fiat (D-060). **D-e resolved in code** (`DIFFERENCE_SCALE`), not a schema column, and `VC-REL-001` is used undivided — a correction to the design doc's own Sec 2.2 illustration, flagged rather than silently applied (D-061). **Every other required red-team change implemented**: the low-envelope rule stated everywhere as a corner bound, not a CI (C-2); a `not_auditable` gate (A-3, 1 of 7 corpus projects clears it); break-even price, break-even noise scale, and stratification efficiency all reported (A-2, B-2); ESM-only headline with fixed-depth as a footnote (A-5); a QA1 upper-bound flag (Objection 1) (D-062). **Support/scale mismatch (A-1) is computed and reported, never gated on** — ~25 million-fold for VCS 4022 — and tracked as new open gap **G9** rather than resolved by assumption (D-063). **A real performance bug found and fixed along the way**: nested bisections (n_req inside cost_optimum inside run_audit's two designs) made the full corpus take over two minutes before iteration depths were cut to the minimum that still resolves an integer n; now 2.8 seconds, no numbers changed. See `docs/phase5_inverted_audit_results.md` for the full first-run numbers and their caveats. |
+| 2026-11-10 | D-064, D-065, D-066 | **WP1 — the population that clears the gate grows from 1 to 56 distinct projects (54 credit-issued ACCU, which include the corpus four, plus CAR1459 and VCS 4022).** ACCU register re-pulled (Last-Modified 2026-10-20): **no numeric area field exists, but the CEA shapefile is published for exactly the 54 credit-issued projects and the boundary KML for all 999** — area is derivable, never published; both earlier documents were half-right (D-064). Census reproduces 999; 54 issued, 462,162 ACCUs. Geodesic CEA areas 36.7-3,877 ha, cross-checked two ways and against the KML. Cumulative Delta = ACCUs/3.667/area, interval cancels (my session-start "timing error" note was wrong). Scope flags: 9/54 cropland south of the tropic (D-065). **CAR1459 now auditable on RP5 SOC credits over RP5 area (2,463,691 acres, 24.5x RP1); applied UNC 11.27% stated; true-up re-measurement deferred by Reserve variance** (D-066). Verra registry migrated to an S&P Platts SPA (wall, 2 attempts); OffsetsDB down (wall, 2 attempts). VM0042 v3.0 consultation closed 2026-03-31. Engine: scope-matched reporting-period route, accurate gate reasons. 266 tests. |
+| 2026-11-10 | D-067, D-068 | **WP2 — the audit run over all 56 projects that clear the gate, reported in three categories and by group, never pooled.** In scope (11): **8 inside reach, 0 within the band, 3 outside**; grazing/pasture (38): 30 / 2 / 6; land use unresolved (7): 4 / 1 / 2. The category (break-even noise scale at CAR1459's disclosed density, under both corners of the table's own envelope) lines up with break-even price without being defined on it: inside $0.003-1.74, band $1.04-1.79, outside $1.83-182 per tCO2e (D-067). In-scope median break-even price $0.31; VCS 4022 unchanged at $0.003. **FINDING (D-068): the implied deduction at the audit's optimum is bounded by 100k/(z_a+z_b) for every project and carries ~no project information; applied/implied is MDD/Delta under the project's own stated precision.** Own Delta/MDD at 90% power: CAR1459 **2.81**, VCS 4022 **0.42** (0.70 at 50% power) — the VCS 4022 figure conditional on PI decision A. Independent re-implementation: 0 disagreements. Also fixed: 30 ACCU records had the register's 'n/a' approach recorded as stated. 273 tests. |
+| 2026-11-10 | D-069, D-070; G9 narrowed | **WP3 — robustness.** (i) Independent re-implementation, written from a specification without reading the engine: **0 of 336 optimisations differ**; it derived D-068's bound unprompted. (ii) Sensitivity over the paired/unpaired choice, relocation scale, assay:location cost ratio (0.33-5.33) and central inputs: in-scope categories 6-8 inside / 3-5 outside throughout, VCS 4022 and CAR1459 inside reach throughout; **forced paired moves both projects' n_req 2.3x** (reported against the PI's 2x threshold; D-060 not re-decided). (iii) **G9 narrowed (D-070):** stock sigma_B is larger at commercial support (~1.5-5x SD within field, Schrumpf 2011 full text; ~5-10x across fields, low confidence); change variance unbounded in direction. Scenario bracket sigma_B x1.5/x5/x10 bottoms out at the paired-design floor, which has no sigma_B term: in scope 6 inside / 5 outside at worst. No distribution assumed. 278 tests. |
