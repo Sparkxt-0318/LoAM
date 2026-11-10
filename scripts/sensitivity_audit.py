@@ -4,7 +4,8 @@
 team C-1), plus the central-estimate envelope (the standing rule's required
 sensitivity).
 
-    python scripts/sensitivity_audit.py   # ~6 min on 4 cores
+    python scripts/sensitivity_audit.py        # ~10 min on 4 cores
+    python scripts/sensitivity_audit.py --g9   # D-070: sigma_B x1.5 / x5 / x10
 
 Writes ``data/audit/sensitivity.csv`` (one row per variant x headline
 quantity) and prints a markdown table. Any headline quantity that moves by
@@ -45,10 +46,21 @@ VARIANTS = {
     "central_envelope": {"envelope": "central"},
 }
 
+#: D-070: the G9 bracket. sigma_B multiplied by the endpoints the WP3(iii)
+#: literature pass reports for commercial support (about 1.5-5x within a
+#: field, 5-10x across fields/regions, as an SD). Scenarios, not a
+#: distribution. Run with `--g9`.
+G9_VARIANTS = {
+    "baseline": {},
+    "sigma_B x1.5": {"between_plot_scale": 1.5},
+    "sigma_B x5": {"between_plot_scale": 5.0},
+    "sigma_B x10": {"between_plot_scale": 10.0},
+}
+
 
 def run_variant(name: str) -> tuple[str, dict]:
     rows_by_id = {r["row_id"]: r for r in build_table.load_rows()}
-    kwargs = VARIANTS[name]
+    kwargs = {**VARIANTS, **G9_VARIANTS}[name]
     out = {}
     for p in load_population():
         r = ia.run_audit(p, rows_by_id, **kwargs)
@@ -83,8 +95,12 @@ def headline(results: dict) -> dict[str, float | str]:
 
 
 def main() -> int:
+    global OUT
+    variants = VARIANTS
+    if "--g9" in sys.argv:
+        variants, OUT = G9_VARIANTS, OUT.replace("sensitivity.csv", "sensitivity_g9.csv")
     with Pool(min(4, os.cpu_count() or 1)) as pool:
-        done = dict(pool.map(run_variant, list(VARIANTS)))
+        done = dict(pool.map(run_variant, list(variants), chunksize=1))
     heads = {name: headline(res) for name, res in done.items()}
     base = heads["baseline"]
     rows = []

@@ -91,6 +91,7 @@ That is enforced, not requested: see D-032.
 | D-067 | decided | WP2 three-category reach: break-even noise scale at CAR1459 density under the generous AND the high corner of the table's own envelope; out-of-scope groups reported separately; σ_B headroom reported as the per-project G9 exposure |
 | D-068 | decided | **FINDING**: the implied deduction at the audit's own optimum is bounded by 100k/(z_α+z_β) for every project — it carries ~no project information; applied/implied ≡ MDD/Δ under the project's own stated precision is reported instead |
 | D-069 | decided | WP3 robustness: independent re-implementation agrees exactly (0/336); sensitivity grid over D-060, D-061, cost ratio and central inputs — categories hold; n_req moves 2.3× under forced paired; G9 literature verdict recorded |
+| D-070 | decided | **FINDING (G9, narrowed)**: literature bounds the DIRECTION for stock σ_B (larger at commercial support; ~1.5–5× SD within field, ~5–10× across fields, moderate/low confidence) but NOT for variance of change; scenario bracket σ_B ×1.5/×5/×10 bottoms out at the paired-design floor — in scope 6 inside / 5 outside; no distribution assumed |
 
 ---
 
@@ -3524,6 +3525,78 @@ doc's own two-axis convention); interactions beyond those are not explored.
 
 ---
 
+**D-070 — G9 NARROWED, NOT CLOSED. The direction of the research-plot →
+commercial-support change in between-location STOCK variance can be bounded:
+it is LARGER at commercial support. The direction for the variance of stock
+CHANGE cannot. A scenario bracket using the literature's own endpoints shows
+the audit's stock-variance exposure is capped by the paired design, which
+does not use sigma_B: in scope, 6 inside reach / 5 outside at worst, against
+8 / 3 at baseline.** Literature: `docs/g9_support_literature.md` (31 sources,
+each with access level and locator; most publisher hosts walled, four read in
+full). Bracket: `python scripts/sensitivity_audit.py --g9`,
+`data/audit/sensitivity_g9.csv`. Write-up: `docs/phase5_robustness.md` §(iii).
+
+**Stock, direction bounded (moderate evidence).** Two mechanisms push the same
+way.
+- *Support:* the 3.1% input is a variance between 0.02 ha plot means, which
+  averages out short-range variation. Commercial locations are cores or small
+  composites. More than half of SOC variance sits at 5-60 m or within 1 ha
+  plots (Robertson et al. 1997, AB; de Blecourt et al. 2017, FT).
+- *Extent:* variance cannot fall as extent grows (dispersion-variance
+  additivity, stated from the mathematics, textbook not accessed). The CV of
+  SOC stock rises from 5 to 35% across scales in Belgian agriculture (Goidts et
+  al. 2009, AB).
+
+Magnitude:
+- Single 0-30 cm cores within 1-2 ha cropland sites give CVs of **5, 10 and
+  14%** (Schrumpf et al. 2011, FT, Table 2), i.e. **~1.5-5x the 3.1% as an SD**.
+  This is probably a lower bound for fields of tens to hundreds of hectares.
+- Across fields or regions, ~5-10x, low confidence.
+- No study compares research plots and commercial points on the same ground.
+
+**Change, direction NOT bounded.** Commercial cropland over ~1 year: the
+between-field SD of change is >7x smaller than of level (Polussa et al. 2026,
+AB). A national forest network over ~10 years: change SD at or above stock SD,
+with regression to the mean (Buchkowski et al. 2026, FT). The two disagree in
+sign. A stock CV applied to a change calculation can be wrong either way (Lark
+2009, AB, says so explicitly).
+
+**What the bracket shows.** sigma_B multiplied by 1.5, 5 and 10 (the endpoints
+above), with the design re-chosen per project:
+
+| | in scope (inside / band / outside) | grazing | VCS 4022 | CAR1459 |
+|---|---|---|---|---|
+| baseline | 8 / 0 / 3 | 30 / 2 / 6 | inside, n 161 | inside, n 4,451 |
+| x1.5 | 6 / 2 / 3 | 29 / 1 / 8 | inside, n 200 | inside, n 5,546 |
+| x5 | 6 / 0 / 5 | 26 / 0 / 12 | inside, n 374 (paired) | inside, n 10,430 (paired) |
+| x10 | 6 / 0 / 5 | 26 / 0 / 12 | identical to x5 | identical to x5 |
+
+From about x2.1 (where 2 sigma_B^2 = sigma_R^2) the paired design is cheaper,
+and it does not contain sigma_B, so **x5 and x10 equal the forced-paired column
+of D-069 exactly**. The stock side of G9 therefore cannot push the audit below
+that floor: 6 of 11 in scope inside reach, VCS 4022 and CAR1459 inside reach
+with break-even prices of $0.005 and $0.34.
+
+**What the floor itself rests on:** the variance of CHANGE at a revisited
+location. That is relocation (`VC-REL-001`, Poeplau 2022's single-profile
+resampling error, itself measured at field sites), within-plot, analytical and
+temporal. These are exactly the quantities whose support-scaling the
+literature cannot bound. **So G9 is narrowed to the change-variance terms of
+the paired design. It is not closed.**
+
+**No distribution is assumed.** The multipliers are the literature's stated
+endpoints, run as scenarios. No probability is attached to them, and none of
+them is promoted to an input. The PI asked to be stopped before any variance
+component is given a distribution. This does not do that, and a joint
+propagation would.
+
+*If wrong:* the stock-direction verdict rests on cross-study comparisons and
+abstracts. A direct research-plot vs commercial-point comparison at one site
+could overturn it; that study is specified in the literature file §2.2/§3. The
+floor argument is exact given the formulas: paired S(C) has no sigma_B term.
+
+---
+
 ## Open evidence gaps
 
 | id | gap | consequence | status |
@@ -3536,7 +3609,7 @@ doc's own two-axis convention); interactions beyond those are not explored.
 | **G6** | The two LUCAS rows are unverified against the primary report. | Locked out of use by rule R6. | open — needs LUCAS PDF |
 | **G7** | No source yet isolates cover-crop or reduced-till effects on *variance* (as opposed to mean). | Practice-specific variance inflation is unparameterized. | open |
 | **G8** | Every temporal row comes from ONE region: four sites, all silt loam, all semi-arid Mediterranean, all Pacific Northwest dryland. | Component 4 is derived but not generalised. The provider says so themselves (D-042). | open — **narrowed in direction**: KBS LTER (humid temperate row-crop) is *more* variable, not less, so PNW dryland is the low end and using it understates rather than overstates (D-047). Blocked from becoming a row by a written-permission licence, confirmed to travel with the EDI mirror. |
-| **G9** | Every between-plot input the Phase 5 inverted audit can use is measured on research-plot support (order 0.01-0.2 ha — `VC-BPS-007`'s "3.6 x 53 m plots"). Every corpus project quantifies at commercial-field or whole-project support (hundreds to hundreds of thousands of ha). | Red team A-1: the audit's `sigma_B` may be a different quantity, not a noisier measurement of the same one, at commercial support. `support_mismatch_ratio` is reported on every audit result (~25 million for VCS 4022) rather than hidden, but the effect of the mismatch on the true value of `sigma_B` at commercial support is unknown in either direction. | open — new 2026-09-16 (D-063). No upscaling study exists; none is assumed. |
+| **G9** | Every between-plot input the Phase 5 inverted audit can use is measured on research-plot support (order 0.01-0.2 ha — `VC-BPS-007`'s "3.6 x 53 m plots"). Every corpus project quantifies at commercial-field or whole-project support (hundreds to hundreds of thousands of ha). | Red team A-1: the audit's `sigma_B` may be a different quantity, not a noisier measurement of the same one, at commercial support. `support_mismatch_ratio` is reported on every audit result (~25 million for VCS 4022) rather than hidden, but the effect of the mismatch on the true value of `sigma_B` at commercial support is unknown in either direction. | open — new 2026-09-16 (D-063). **NARROWED 2026-11-10 (D-070):** for STOCK sigma_B the direction is bounded — larger at commercial support, ~1.5–5× as an SD within a field (Schrumpf 2011, full text), ~5–10× across fields (low confidence); and the audit's exposure to it is capped by the paired design, which does not use sigma_B (in scope 6 inside / 5 outside at worst, vs 8 / 3). For the variance of CHANGE the direction is NOT bounded — the two available datasets disagree in sign. G9 now lives in the paired design's change-variance terms. No upscaling relationship assumed; no distribution assumed. |
 
 ---
 
@@ -3562,3 +3635,4 @@ doc's own two-axis convention); interactions beyond those are not explored.
 | 2026-09-16 | D-059 … D-063; G9 (open) | **PHASE 5 BUILT — the design doc's own Sec 10 gate is satisfied.** `src/loam/student_t.py` (pure-Python Student's t, verified against published tables and against the red team's own C-3 demonstration table, exactly), `src/loam/inverted_audit.py`, `scripts/run_inverted_audit.py`, 72 new tests (full suite 248, green). **Headline restructured around the implied-vs-applied uncertainty deduction** (red team B-1): first run against VCS 4022 gives an implied **13.2%** against its disclosed applied **31.35%** — right order of magnitude, and the gap is consistent with Objection 1 (ours is sampling-only; theirs folds in QA1 model uncertainty). **Bisection replaces iteration** (red team C-3), pinned as a permanent regression test. **Sec 10 D-a resolved**: `VC-BPS-007` (the one genuine 0-30 cm between-plot row) and D-043's indirect ~8% within-plot estimate adopted as primary inputs, each with a no-new-assumption fallback implemented alongside. **D-b CHECKED, NOT ADOPTED: the design doc's own claim that paired revisits are always cheaper does not survive under this resolution of D-a** — between-plot CV (~3.1%, Wuest) ends up smaller than relocation CV (~9.4%, D-061's difference-scale resolution), so unpaired can be cheaper, and the first real run picks it. **Headline design is now chosen per project by comparing `Cost*`**, generalising Sec 2.3's own infimum-over-admissible-designs logic to this axis rather than fixing it by fiat (D-060). **D-e resolved in code** (`DIFFERENCE_SCALE`), not a schema column, and `VC-REL-001` is used undivided — a correction to the design doc's own Sec 2.2 illustration, flagged rather than silently applied (D-061). **Every other required red-team change implemented**: the low-envelope rule stated everywhere as a corner bound, not a CI (C-2); a `not_auditable` gate (A-3, 1 of 7 corpus projects clears it); break-even price, break-even noise scale, and stratification efficiency all reported (A-2, B-2); ESM-only headline with fixed-depth as a footnote (A-5); a QA1 upper-bound flag (Objection 1) (D-062). **Support/scale mismatch (A-1) is computed and reported, never gated on** — ~25 million-fold for VCS 4022 — and tracked as new open gap **G9** rather than resolved by assumption (D-063). **A real performance bug found and fixed along the way**: nested bisections (n_req inside cost_optimum inside run_audit's two designs) made the full corpus take over two minutes before iteration depths were cut to the minimum that still resolves an integer n; now 2.8 seconds, no numbers changed. See `docs/phase5_inverted_audit_results.md` for the full first-run numbers and their caveats. |
 | 2026-11-10 | D-064, D-065, D-066 | **WP1 — the population that clears the gate grows from 1 to 56 distinct projects (54 credit-issued ACCU, which include the corpus four, plus CAR1459 and VCS 4022).** ACCU register re-pulled (Last-Modified 2026-10-20): **no numeric area field exists, but the CEA shapefile is published for exactly the 54 credit-issued projects and the boundary KML for all 999** — area is derivable, never published; both earlier documents were half-right (D-064). Census reproduces 999; 54 issued, 462,162 ACCUs. Geodesic CEA areas 36.7-3,877 ha, cross-checked two ways and against the KML. Cumulative Delta = ACCUs/3.667/area, interval cancels (my session-start "timing error" note was wrong). Scope flags: 9/54 cropland south of the tropic (D-065). **CAR1459 now auditable on RP5 SOC credits over RP5 area (2,463,691 acres, 24.5x RP1); applied UNC 11.27% stated; true-up re-measurement deferred by Reserve variance** (D-066). Verra registry migrated to an S&P Platts SPA (wall, 2 attempts); OffsetsDB down (wall, 2 attempts). VM0042 v3.0 consultation closed 2026-03-31. Engine: scope-matched reporting-period route, accurate gate reasons. 266 tests. |
 | 2026-11-10 | D-067, D-068 | **WP2 — the audit run over all 56 projects that clear the gate, reported in three categories and by group, never pooled.** In scope (11): **8 inside reach, 0 within the band, 3 outside**; grazing/pasture (38): 30 / 2 / 6; land use unresolved (7): 4 / 1 / 2. The category (break-even noise scale at CAR1459's disclosed density, under both corners of the table's own envelope) lines up with break-even price without being defined on it: inside $0.003-1.74, band $1.04-1.79, outside $1.83-182 per tCO2e (D-067). In-scope median break-even price $0.31; VCS 4022 unchanged at $0.003. **FINDING (D-068): the implied deduction at the audit's optimum is bounded by 100k/(z_a+z_b) for every project and carries ~no project information; applied/implied is MDD/Delta under the project's own stated precision.** Own Delta/MDD at 90% power: CAR1459 **2.81**, VCS 4022 **0.42** (0.70 at 50% power) — the VCS 4022 figure conditional on PI decision A. Independent re-implementation: 0 disagreements. Also fixed: 30 ACCU records had the register's 'n/a' approach recorded as stated. 273 tests. |
+| 2026-11-10 | D-069, D-070; G9 narrowed | **WP3 — robustness.** (i) Independent re-implementation, written from a specification without reading the engine: **0 of 336 optimisations differ**; it derived D-068's bound unprompted. (ii) Sensitivity over the paired/unpaired choice, relocation scale, assay:location cost ratio (0.33-5.33) and central inputs: in-scope categories 6-8 inside / 3-5 outside throughout, VCS 4022 and CAR1459 inside reach throughout; **forced paired moves both projects' n_req 2.3x** (reported against the PI's 2x threshold; D-060 not re-decided). (iii) **G9 narrowed (D-070):** stock sigma_B is larger at commercial support (~1.5-5x SD within field, Schrumpf 2011 full text; ~5-10x across fields, low confidence); change variance unbounded in direction. Scenario bracket sigma_B x1.5/x5/x10 bottoms out at the paired-design floor, which has no sigma_B term: in scope 6 inside / 5 outside at worst. No distribution assumed. 278 tests. |

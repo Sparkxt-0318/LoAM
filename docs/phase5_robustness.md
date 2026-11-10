@@ -97,6 +97,57 @@ variant.**
 6. **The own-deduction ratio** (applied ÷ implied) is insensitive to every variant (±0.4%). It
    does not use our variance inputs, beyond n's degrees of freedom.
 
-## (iii) G9 — how between-location variance changes with support
+## (iii) G9 — how between-location variance changes with support (D-070)
 
-[filled from the literature pass]
+Full literature report: [`g9_support_literature.md`](g9_support_literature.md). It has 31 sources,
+each with access level (full text / abstract / cited / title) and locator, an access-wall log,
+and unverified leads. Most publisher hosts were walled from this environment, so only four
+sources were read in full. The verdict is weighted accordingly.
+
+**Stock: the direction can be bounded — between-location σ_B is LARGER at commercial support
+than the 3.1% research-plot input.** Evidence is moderate. Theory and every source found agree,
+but no study compares the two on the same ground.
+- **Support.** The input is a variance between 0.02 ha plot means, which averages out
+  short-range structure. More than half of SOC variance sits at 5–60 m or within 1 ha
+  (Robertson et al. 1997, abstract; de Blécourt et al. 2017, full text).
+- **Extent.** Variance cannot fall as extent grows. The CV of SOC stock rises from 5% to 35%
+  across scales (Goidts et al. 2009, abstract).
+- **Magnitude.** Single 0–30 cm cores within 1–2 ha cropland sites give **5, 10 and 14%** CV
+  (Schrumpf et al. 2011, full text, Table 2). That is ~1.5–5× the input as an SD, and probably
+  a lower bound for larger fields. Across fields or regions the factor is ~5–10×, with low
+  confidence.
+
+**Change: the direction cannot be bounded.**
+- On 80 commercial fields over a year, between-field variability in *change* was >7× smaller
+  (as an SD) than in level (Polussa et al. 2026, abstract).
+- In a national forest network over 10 years, change variance was at or above stock variance,
+  with regression to the mean (Buchkowski et al. 2026, full text).
+- Status and change are different variables (Lark 2009, abstract).
+
+**What this does to the audit — a scenario bracket, no distribution assumed.** The literature's
+endpoints are applied as multipliers on σ_B, and the design is re-chosen per project
+(`python scripts/sensitivity_audit.py --g9`):
+
+| σ_B multiplier | in scope: inside / band / outside | grazing | VCS 4022 | CAR1459 |
+|---|---|---|---|---|
+| 1 (baseline) | **8 / 0 / 3** | 30 / 2 / 6 | inside, n 161, $0.003 | inside, n 4,451, $0.21 |
+| 1.5 | 6 / 2 / 3 | 29 / 1 / 8 | inside, n 200, $0.004 | inside, n 5,546, $0.26 |
+| 5 | **6 / 0 / 5** | 26 / 0 / 12 | inside, n 374 (paired), $0.005 | inside, n 10,430 (paired), $0.34 |
+| 10 | 6 / 0 / 5 | 26 / 0 / 12 | as ×5 | as ×5 |
+
+From σ_B ≈ 2.1× (where 2σ_B² = σ_R²), the paired design is cheaper, **and the paired formula
+contains no σ_B**. So ×5 and ×10 reproduce §(ii)'s forced-paired column exactly. The stock side
+of G9 cannot push the audit below that floor:
+- in scope, **6 of 11 inside reach and 5 outside**;
+- VCS 4022 and CAR1459 inside reach throughout.
+
+**What G9 now means.** The floor rests on the paired design's change-variance terms: relocation
+(`VC-REL-001`, itself a field resampling error from Poeplau et al. 2022), within-plot,
+analytical and temporal. Those are precisely the terms whose support-scaling the literature
+cannot bound. **G9 is narrowed from "unknown in either direction" to "bounded for stock;
+unbounded for change, which is what the paired floor depends on".** It is not closed.
+
+**The study that would close it** is specified in the literature file (§2.2, §3). It is a nested
+design (cores, cells, research plots, fields, farms) around one research site, with paired
+georeferenced remeasurement, ESM, the same lab, duplicate cores at 0–2 m offsets, and REML
+variance components of *change* at each level.

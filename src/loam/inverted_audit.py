@@ -1173,6 +1173,7 @@ def run_audit(
     cost_assay_usd: float = COST_ASSAY_USD,
     envelope: str = "generous",
     force_design: str | None = None,
+    between_plot_scale: float = 1.0,
 ) -> AuditResult:
     """The full per-project audit: gate, assemble, solve, cost, and compare
     against the registry's own applied deduction. See the module docstring
@@ -1197,6 +1198,12 @@ def run_audit(
         reference_stock_mg_c_ha=reference_stock_mg_c_ha,
         relocation_scale=relocation_scale, envelope=envelope,
     )
+    # D-070 (G9 bracket): multiply the research-plot sigma_B by a stated
+    # factor to ask what happens if commercial-support sigma_B is that much
+    # larger. A scenario, not a distribution: the factors are the endpoints
+    # the literature pass reports, and no probability is attached to them.
+    if between_plot_scale != 1.0:
+        components = replace(components, between_plot_cv_pct=components.between_plot_cv_pct * between_plot_scale)
     costs = dict(cost_location_usd=cost_location_usd, cost_assay_usd=cost_assay_usd)
 
     opt_paired = cost_optimum(components, delta, paired=True, c_max=c_max, alpha=alpha, power=power, **costs)
@@ -1288,6 +1295,10 @@ def run_audit(
         reference_stock_mg_c_ha=reference_stock_mg_c_ha, envelope="high",
         relocation_scale=relocation_scale,
     )
+    if between_plot_scale != 1.0:
+        components_high = replace(
+            components_high, between_plot_cv_pct=components_high.between_plot_cv_pct * between_plot_scale,
+        )
     scale_high = break_even_noise_scale(
         components_high, delta, paired=(headline_design == "paired"),
         cores_per_assay=opt_headline.cores_per_assay,

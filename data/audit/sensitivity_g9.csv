@@ -1,0 +1,105 @@
+variant,quantity,value,baseline,ratio_to_baseline,flag
+baseline,in_scope: n inside_reach,8,8,,
+baseline,in_scope: n within_uncertainty_band,0,0,,
+baseline,in_scope: n outside_reach,3,3,,
+baseline,grazing: n inside_reach,30,30,,
+baseline,grazing: n within_uncertainty_band,2,2,,
+baseline,grazing: n outside_reach,6,6,,
+baseline,in_scope: median break-even price,0.3129117259552042,0.3129117259552042,1.0,
+baseline,in_scope: max break-even price,181.55172413793105,181.55172413793105,1.0,
+baseline,in_scope: median noise scale (generous),1.7593921759577067,1.7593921759577067,1.0,
+baseline,grazing: median break-even price,0.14523875778953194,0.14523875778953194,1.0,
+baseline,VCS 4022: design,unpaired,unpaired,,
+baseline,VCS 4022: n_req,161,161,1.0,
+baseline,VCS 4022: C*,2,2,1.0,
+baseline,VCS 4022: Cost*,8050.0,8050.0,1.0,
+baseline,VCS 4022: break-even price,0.002962990500302786,0.002962990500302786,1.0,
+baseline,VCS 4022: noise scale,30.581814863799522,30.581814863799522,1.0,
+baseline,VCS 4022: category,inside_reach,inside_reach,,
+baseline,VCS 4022: applied/implied,2.3782033918722627,2.3782033918722627,1.0,
+baseline,CAR1459: design,unpaired,unpaired,,
+baseline,CAR1459: n_req,4451,4451,1.0,
+baseline,CAR1459: C*,2,2,1.0,
+baseline,CAR1459: Cost*,222550.0,222550.0,1.0,
+baseline,CAR1459: break-even price,0.20887842656118907,0.20887842656118907,1.0,
+baseline,CAR1459: noise scale,8.320074618925432,8.320074618925432,1.0,
+baseline,CAR1459: category,inside_reach,inside_reach,,
+baseline,CAR1459: applied/implied,0.35545819074935286,0.35545819074935286,1.0,
+sigma_B x1.5,in_scope: n inside_reach,6,8,,changed
+sigma_B x1.5,in_scope: n within_uncertainty_band,2,0,,changed
+sigma_B x1.5,in_scope: n outside_reach,3,3,,
+sigma_B x1.5,grazing: n inside_reach,29,30,,changed
+sigma_B x1.5,grazing: n within_uncertainty_band,1,2,,changed
+sigma_B x1.5,grazing: n outside_reach,8,6,,changed
+sigma_B x1.5,in_scope: median break-even price,0.3787878787878788,0.3129117259552042,1.2105,
+sigma_B x1.5,in_scope: max break-even price,226.20689655172413,181.55172413793105,1.246,
+sigma_B x1.5,in_scope: median noise scale (generous),1.5761003866658876,1.7593921759577067,0.8958,
+sigma_B x1.5,grazing: median break-even price,0.17117414670671444,0.14523875778953194,1.1786,
+sigma_B x1.5,VCS 4022: design,unpaired,unpaired,,
+sigma_B x1.5,VCS 4022: n_req,200,161,1.2422,
+sigma_B x1.5,VCS 4022: C*,2,2,1.0,
+sigma_B x1.5,VCS 4022: Cost*,10000.0,8050.0,1.2422,
+sigma_B x1.5,VCS 4022: break-even price,0.0036807335407488028,0.002962990500302786,1.2422,
+sigma_B x1.5,VCS 4022: noise scale,27.395830726241954,30.581814863799522,0.8958,
+sigma_B x1.5,VCS 4022: category,inside_reach,inside_reach,,
+sigma_B x1.5,VCS 4022: applied/implied,2.374500543153906,2.3782033918722627,0.9984,
+sigma_B x1.5,CAR1459: design,unpaired,unpaired,,
+sigma_B x1.5,CAR1459: n_req,5546,4451,1.246,
+sigma_B x1.5,CAR1459: C*,2,2,1.0,
+sigma_B x1.5,CAR1459: Cost*,277300.0,222550.0,1.246,
+sigma_B x1.5,CAR1459: break-even price,0.26026505363027513,0.20887842656118907,1.246,
+sigma_B x1.5,CAR1459: noise scale,7.453297225527665,8.320074618925432,0.8958,
+sigma_B x1.5,CAR1459: category,inside_reach,inside_reach,,
+sigma_B x1.5,CAR1459: applied/implied,0.35544374888105923,0.35545819074935286,1.0,
+sigma_B x5,in_scope: n inside_reach,6,8,,changed
+sigma_B x5,in_scope: n within_uncertainty_band,0,0,,
+sigma_B x5,in_scope: n outside_reach,5,3,,changed
+sigma_B x5,grazing: n inside_reach,26,30,,changed
+sigma_B x5,grazing: n within_uncertainty_band,0,2,,changed
+sigma_B x5,grazing: n outside_reach,12,6,,changed
+sigma_B x5,in_scope: median break-even price,0.47266139657444006,0.3129117259552042,1.5105,
+sigma_B x5,in_scope: max break-even price,297.62068965517244,181.55172413793105,1.6393,
+sigma_B x5,in_scope: median noise scale (generous),1.149192011734041,1.7593921759577067,0.6532,
+sigma_B x5,grazing: median break-even price,0.20597824771951898,0.14523875778953194,1.4182,
+sigma_B x5,VCS 4022: design,paired,unpaired,,changed
+sigma_B x5,VCS 4022: n_req,374,161,2.323,>2x
+sigma_B x5,VCS 4022: C*,1,2,0.5,
+sigma_B x5,VCS 4022: Cost*,13090.0,8050.0,1.6261,
+sigma_B x5,VCS 4022: break-even price,0.004818080204840183,0.002962990500302786,1.6261,
+sigma_B x5,VCS 4022: noise scale,19.97529477996953,30.581814863799522,0.6532,
+sigma_B x5,VCS 4022: category,inside_reach,inside_reach,,
+sigma_B x5,VCS 4022: applied/implied,2.3675643910555233,2.3782033918722627,0.9955,
+sigma_B x5,CAR1459: design,paired,unpaired,,changed
+sigma_B x5,CAR1459: n_req,10430,4451,2.3433,>2x
+sigma_B x5,CAR1459: C*,1,2,0.5,
+sigma_B x5,CAR1459: Cost*,365050.0,222550.0,1.6403,
+sigma_B x5,CAR1459: break-even price,0.34262444222045413,0.20887842656118907,1.6403,
+sigma_B x5,CAR1459: noise scale,5.4344695969156,8.320074618925432,0.6532,
+sigma_B x5,CAR1459: category,inside_reach,inside_reach,,
+sigma_B x5,CAR1459: applied/implied,0.355411785739842,0.35545819074935286,0.9999,
+sigma_B x10,in_scope: n inside_reach,6,8,,changed
+sigma_B x10,in_scope: n within_uncertainty_band,0,0,,
+sigma_B x10,in_scope: n outside_reach,5,3,,changed
+sigma_B x10,grazing: n inside_reach,26,30,,changed
+sigma_B x10,grazing: n within_uncertainty_band,0,2,,changed
+sigma_B x10,grazing: n outside_reach,12,6,,changed
+sigma_B x10,in_scope: median break-even price,0.47266139657444006,0.3129117259552042,1.5105,
+sigma_B x10,in_scope: max break-even price,297.62068965517244,181.55172413793105,1.6393,
+sigma_B x10,in_scope: median noise scale (generous),1.149192011734041,1.7593921759577067,0.6532,
+sigma_B x10,grazing: median break-even price,0.20597824771951898,0.14523875778953194,1.4182,
+sigma_B x10,VCS 4022: design,paired,unpaired,,changed
+sigma_B x10,VCS 4022: n_req,374,161,2.323,>2x
+sigma_B x10,VCS 4022: C*,1,2,0.5,
+sigma_B x10,VCS 4022: Cost*,13090.0,8050.0,1.6261,
+sigma_B x10,VCS 4022: break-even price,0.004818080204840183,0.002962990500302786,1.6261,
+sigma_B x10,VCS 4022: noise scale,19.97529477996953,30.581814863799522,0.6532,
+sigma_B x10,VCS 4022: category,inside_reach,inside_reach,,
+sigma_B x10,VCS 4022: applied/implied,2.3675643910555233,2.3782033918722627,0.9955,
+sigma_B x10,CAR1459: design,paired,unpaired,,changed
+sigma_B x10,CAR1459: n_req,10430,4451,2.3433,>2x
+sigma_B x10,CAR1459: C*,1,2,0.5,
+sigma_B x10,CAR1459: Cost*,365050.0,222550.0,1.6403,
+sigma_B x10,CAR1459: break-even price,0.34262444222045413,0.20887842656118907,1.6403,
+sigma_B x10,CAR1459: noise scale,5.4344695969156,8.320074618925432,0.6532,
+sigma_B x10,CAR1459: category,inside_reach,inside_reach,,
+sigma_B x10,CAR1459: applied/implied,0.355411785739842,0.35545819074935286,0.9999,

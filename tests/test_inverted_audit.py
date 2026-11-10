@@ -614,3 +614,16 @@ def test_relocation_sqrt2_makes_paired_relatively_cheaper(rows_by_id, projects_b
     alt = ia.run_audit(p, rows_by_id, relocation_scale="per_observation_sqrt2")
     assert alt.paired.optimum.cost_usd < base.paired.optimum.cost_usd
     assert alt.unpaired.optimum.cost_usd == base.unpaired.optimum.cost_usd
+
+
+def test_g9_bracket_floor_is_the_paired_design(rows_by_id, projects_by_id):
+    """D-070: the paired formula has no sigma_B term, so once sigma_B is large
+    enough that paired is cheaper, further increases change nothing - the
+    stock side of G9 is capped at the forced-paired result."""
+    p = projects_by_id["VCS 4022"]
+    big = ia.run_audit(p, rows_by_id, between_plot_scale=10.0)
+    huge = ia.run_audit(p, rows_by_id, between_plot_scale=100.0)
+    forced = ia.run_audit(p, rows_by_id, force_design="paired")
+    assert big.headline_design == huge.headline_design == "paired"
+    assert big.paired.optimum == huge.paired.optimum == forced.paired.optimum
+    assert ia.run_audit(p, rows_by_id, between_plot_scale=1.0).to_dict() == ia.run_audit(p, rows_by_id).to_dict()
