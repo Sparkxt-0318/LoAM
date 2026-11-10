@@ -114,8 +114,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF101952; Estimation or measurement approach or model = 'Measurement-only
@@ -221,10 +220,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF102074; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF102074; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -435,10 +434,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF104781; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF104781; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -539,10 +538,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF105067; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF105067; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -643,10 +642,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF108333; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF108333; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -748,8 +747,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF108478; Estimation or measurement approach or model = 'Measurement-only
@@ -855,8 +853,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF118394; Estimation or measurement approach or model = 'Measurement-only
@@ -962,8 +959,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF118395; Estimation or measurement approach or model = 'Measurement-only
@@ -1070,8 +1066,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF118397; Estimation or measurement approach or model = 'Measurement-only
@@ -1178,8 +1173,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF122082; Estimation or measurement approach or model = 'Measurement-only
@@ -1284,10 +1278,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF143770; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF143770; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -1388,10 +1382,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF149373; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF149373; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -1492,10 +1486,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF154609; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF154609; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -1596,8 +1590,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF158304; Estimation or measurement approach or model = 'Measurement-only
@@ -1703,10 +1696,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF158470; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF158470; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -1807,8 +1800,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF159142; Estimation or measurement approach or model = 'Measurement-only
@@ -1914,8 +1906,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF159517; Estimation or measurement approach or model = 'Measurement-only
@@ -2021,10 +2012,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF159853; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF159853; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -2125,10 +2116,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF160172; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF160172; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -2230,8 +2221,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF162497; Estimation or measurement approach or model = 'Measurement-only
@@ -2337,8 +2327,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF166949; Estimation or measurement approach or model = 'Measurement-only
@@ -2444,10 +2433,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF166967; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF166967; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -2548,8 +2537,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF166972; Estimation or measurement approach or model = 'Measurement-only
@@ -2656,10 +2644,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF167123; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF167123; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -2762,10 +2750,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF167124; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF167124; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -2867,10 +2855,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF168644; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF168644; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -2972,10 +2960,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF168650; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF168650; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -3076,10 +3064,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF169436; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF169436; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -3180,10 +3168,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF169439; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF169439; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -3284,10 +3272,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF169446; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF169446; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -3388,10 +3376,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF169476; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF169476; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -3491,10 +3479,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF170331; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF170331; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -3594,10 +3582,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF170334; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF170334; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -3697,10 +3685,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF170337; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF170337; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -3801,10 +3789,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF172195; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF172195; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -3905,10 +3893,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF172197; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF172197; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -4009,10 +3997,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF172203; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF172203; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -4113,10 +4101,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF172205; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF172205; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -4218,8 +4206,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF173466; Estimation or measurement approach or model = 'Measurement-only
@@ -4325,8 +4312,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF173553; Estimation or measurement approach or model = 'Measurement-only
@@ -4432,8 +4418,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF173776; Estimation or measurement approach or model = 'Measurement-only
@@ -4540,10 +4525,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF174333; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF174333; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -4644,8 +4629,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF175414; Estimation or measurement approach or model = 'Measurement-only
@@ -4750,10 +4734,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF175975; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF175975; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -4854,10 +4838,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF175981; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF175981; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -4959,8 +4943,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF176354; Estimation or measurement approach or model = 'Measurement-only
@@ -5067,8 +5050,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF176357; Estimation or measurement approach or model = 'Measurement-only
@@ -5174,8 +5156,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF176430; Estimation or measurement approach or model = 'Measurement-only
@@ -5281,8 +5262,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF176437; Estimation or measurement approach or model = 'Measurement-only
@@ -5388,8 +5368,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF176439; Estimation or measurement approach or model = 'Measurement-only
@@ -5495,10 +5474,10 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: n/a
-    status: stated
+    value: null
+    status: not_disclosed
     source: cer_register_csv
-    locator: register row Project ID == ERF179167; Estimation or measurement approach or model = 'n/a'
+    locator: register row Project ID == ERF179167; 'Estimation or measurement approach or model' is blank
   uncertainty_deduction_applied_pct:
     value: null
     status: not_disclosed
@@ -5706,8 +5685,7 @@ projects:
     note: 'LOWER bound on the credited rate: issuance follows the end of the reporting period, so the elapsed time
       used is an upper bound (D-064). Not used by the audit, which tests the cumulative net change ACCUs/3.667/area.'
   quantification_approach:
-    value: Measurement-only approach using direct soil sampling and laboratory analysis to estimate soil organic
-      carbon content (Schedule 1)
+    value: measure_and_remeasure
     status: stated
     source: cer_register_csv
     locator: register row Project ID == ERF184498; Estimation or measurement approach or model = 'Measurement-only

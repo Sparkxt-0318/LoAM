@@ -166,7 +166,9 @@ def main() -> int:
             "activities": r["Project activities"].strip(),
             "state": r["Project location"].strip(),
             "postcode": r["Project location (postcode)"].strip(),
-            "approach_field": r["Estimation or measurement approach or model"].strip() or None,
+            # the register writes "n/a" for a blank field; that is not a disclosure
+            "approach_field": (r["Estimation or measurement approach or model"].strip()
+                               if r["Estimation or measurement approach or model"].strip().lower() not in ("", "n/a") else None),
             "crediting_start": None, "crediting_end": None,
             "permanence_period": r["Nominated Permanence Period, if applicable"].strip(),
             "revoked": r["Project revoked"].strip(),

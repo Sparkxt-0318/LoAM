@@ -62,6 +62,20 @@ def land_use_signal(activities: str) -> str:
     return "unresolved"
 
 
+def approach_vocab(text: str) -> str:
+    """Map the register's free-text approach to the corpus vocabulary.
+    'Measurement-only ... direct soil sampling' is the measure-and-remeasure
+    case (VM0042 QA2's analogue): the audit's sampling-only n_req applies
+    without the QA1 upper-bound qualification. 'Hybrid ... model predictions'
+    is measure-and-model."""
+    t = text.lower()
+    if "measurement-only" in t or "measurement only" in t:
+        return "measure_and_remeasure"
+    if "model" in t:
+        return "measure_and_model"
+    raise ValueError(f"unrecognised approach text {text!r}; extend approach_vocab rather than guessing")
+
+
 def build() -> dict:
     with open(DERIVED, encoding="utf-8") as fh:
         derived = json.load(fh)
@@ -131,7 +145,7 @@ def build() -> dict:
                          "net change ACCUs/3.667/area."),
             },
             "quantification_approach": (
-                {"value": "measure_and_model" if "model" in (r["approach_field"] or "").lower() else r["approach_field"],
+                {"value": approach_vocab(r["approach_field"]),
                  "status": "stated", "source": "cer_register_csv",
                  "locator": f"{loc_csv}; Estimation or measurement approach or model = {r['approach_field']!r}"}
                 if r["approach_field"] else
