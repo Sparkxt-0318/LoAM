@@ -34,3 +34,9 @@ htmlcov/
 .vscode/
 .idea/
 *.swp
+
+# Registry raw downloads (WP1, D-064): third-party files, reproducible from
+# scripts/fetch_cer_register.py (sha256 per file in data/registry/cer_manifest.json)
+# or downloaded by hand per data/registry/raw/README.md. Never committed.
+data/registry/raw/*
+!data/registry/raw/README.md

@@ -72,6 +72,45 @@ registry_coverage:
       published. So for 999 of 999 Australian soil carbon projects, the Phase 5
       audit cannot be attempted from public documents at all.
 
+  # Re-pulled 2026-11-10 (WP1a, D-064). Appended, not overwritten: the
+  # 2026-06-30 entry above is what D-056 was written against.
+  - registry: Australian ACCU Scheme (Clean Energy Regulator)
+    as_at: "2026-10-20 (HTTP Last-Modified of the CSV)"
+    accessed: 2026-11-10
+    source: cer_register_csv
+    sha256: 3481c436fe3ff032a548e30569c7c8fd190a4044c86639611efdbc764bd983b7
+    census_definition: >-
+      Method contains both 'Soil' and 'Measurement' - i.e. the 2018 and 2021
+      measurement-based soil determinations. Reproduces the 999 exactly. The
+      2014 'Sequestering Carbon in Soils in Grazing Systems' determination (30
+      projects, 0 issued) is reported separately and never folded in.
+    n_projects_total: 3088
+    n_soil_carbon_projects: 999
+    n_soil_projects_2014_grazing_method: 30
+    n_soil_projects_revoked: 45
+    n_soil_projects_with_credits_issued: 54
+    accus_issued_to_soil_projects: 462162
+    largest_single_soil_project_accus: 94666
+    field_completeness_across_999_soil_projects:
+      estimation_or_measurement_approach_or_model: "26/999"
+      project_area_lot_plan_identifiers: "999/999 (cadastral identifiers, NOT a numeric area)"
+      project_mapping_file_url_kml: "999/999"
+      carbon_estimation_area_mapping_file_url: "54/999 (exactly the 54 credit-issued projects)"
+      model_start_dates: "0/999"
+      supplementary_project_information: "0/999"
+    numeric_area_field: none
+    area_derivable_from_geometry: >-
+      YES, for every project. The project boundary (KML) is published for
+      999/999 and the carbon estimation area (zipped shapefile) for all 54
+      credit-issued projects. Area is therefore DERIVABLE, never PUBLISHED as a
+      number. This resolves the contradiction between docs/registry_corpus.md
+      ("area ... the ACCU register does publish for 999 projects" - wrong as a
+      statement about fields) and docs/phase5_inverted_audit_results.md ("no
+      area field exists" - right about fields, wrong in implying area is
+      unobtainable). Per-project derived areas:
+      data/registry/projects_accu_issued.yaml.
+    sampling_design_fields_published: none
+
 # ---------------------------------------------------------------------------
 
 sources:
@@ -135,6 +174,41 @@ sources:
     pages: 13
     url: https://cer.gov.au/document/sampling-guidance-measurement-based-soil-carbon-methods
     accessed: 2026-08-12
+  cer_cea_files:
+    title: "Carbon Estimation Area mapping files (zipped shapefiles, GDA2020), one per credit-issued project"
+    url: "https://cer.gov.au/sites/default/files/projectFiles/<ProjectID>_CEA.zip"
+    accessed: 2026-11-10
+    note: "sha256 per file in data/registry/cer_manifest.json; areas derived by scripts/derive_accu_areas.py (D-064)"
+  car1459_emissions_tab:
+    title: "Climate Action Reserve registry, CAR1459 'Project Emissions/Reductions' tab (issuance by vintage)"
+    url: https://thereserve2.apx.com/mymodule/reg/TabProjectEmissions.asp?id1=1459&ad=Prpt&act=update&sBtn=&r=111&Type=PRO&tablename=cr&aProj=pub
+    accessed: 2026-11-10
+  car1459_mr_rp5:
+    title: "Project Monitoring Report 5 - CAR1459, v5.8 (reporting period ending 2024-12-20)"
+    pages: 12
+    url: https://thereserve2.apx.com/mymodule/ProjectDoc/Project_ViewFile.asp?FileID=114371
+    url_note: "the FileID URL also needs an IDKEY token issued with the car1459_docs listing page; cite the listing and the title"
+    listed_as: "CAR1459_Monitoring_Report_v5.8.pdf, uploaded 29 Jan 2026, in car1459_docs"
+    accessed: 2026-11-10
+  car1459_mr_rp4:
+    title: "Project Monitoring Report - CAR1459, RP4, v4.5 (reporting period ending 2023-12-31)"
+    url: https://thereserve2.apx.com/mymodule/ProjectDoc/Project_ViewFile.asp?FileID=94991
+    url_note: "the FileID URL also needs an IDKEY token issued with the car1459_docs listing page; cite the listing and the title"
+    listed_as: "CAR1459_RP4_Monitoring_Report_v4.5.pdf, uploaded 11 Apr 2025, in car1459_docs"
+    accessed: 2026-11-10
+  car1459_mp_v54:
+    title: "Project Monitoring Plan - CAR1459, v5.4"
+    url: https://thereserve2.apx.com/mymodule/ProjectDoc/Project_ViewFile.asp?FileID=114372
+    url_note: "the FileID URL also needs an IDKEY token issued with the car1459_docs listing page; cite the listing and the title"
+    listed_as: "CAR1459_Monitoring_Plan_v5.4.pdf, uploaded 29 Jan 2026, in car1459_docs"
+    accessed: 2026-11-10
+  car1459_ver_rp5:
+    title: "Verification Report, CAR1459 Indigo SEP RP5, V2 Final 20260212 (Aster Global)"
+    pages: 84
+    url: https://thereserve2.apx.com/mymodule/ProjectDoc/Project_ViewFile.asp?FileID=115770
+    url_note: "the FileID URL also needs an IDKEY token issued with the car1459_docs listing page; cite the listing and the title"
+    listed_as: "21074.54_CAR1459_Indigo_SEP_RP5_Ver Report V2_Final 20260212.pdf, uploaded 12 Feb 2026, in car1459_docs"
+    accessed: 2026-11-10
 
 # ---------------------------------------------------------------------------
 
@@ -168,7 +242,12 @@ projects:
       status: stated
       source: car1459_mp_rp1
       locator: "Section 1.2 / 3; figure as of the v3.1 document date, an aggregated project that grows"
-      note: "40,619 ha. 175 enrolled growers, 573 acres/grower average."
+      note: >-
+        40,619 ha. 175 enrolled growers, 573 acres/grower average. THIS IS THE
+        RP1 FIGURE (monitoring plan v3.1). By RP5 the project was 2,463,691
+        acres, 1,423 growers, 37,437 fields (car1459_mr_rp5 Table 6) - see
+        credits_by_reporting_period. Left at RP1 here so the field still matches
+        its locator; the audit uses soc_credits_reporting_period's own area.
     n_growers:
       value: 175
       status: stated
@@ -213,7 +292,7 @@ projects:
       value: null
       status: not_disclosed
       source: car1459_mp_rp1
-      locator: "searched sections 5.2 and 6.4; the plan gives the RULE (1 point per 8 acres) but no realised count"
+      locator: "searched sections 5.2 and 6.4; the plan gives the RULE (1 point per 8 acres) but no realised count. Re-checked 2026-11-10 in car1459_mp_v54 Sec 5.2 / Table 5.2 and car1459_mr_rp5: still rules only, no realised count"
       note: >-
         INFERRABLE but not stated: at 1 point per 8 acres over 100,371 acres,
         Design 1 implies of order 12,500 carbon sampling points. Left as
@@ -301,23 +380,81 @@ projects:
         measured variance.** Same construct, very different severity - the corpus
         must not treat them as interchangeable.
     uncertainty_deduction_applied_pct:
-      value: null
-      status: not_disclosed
-      source: car1459_mp_rp1
-      locator: "the plan gives the equation; the realised value is in the reporting-period monitoring reports, not held"
+      value: 11.27
+      status: stated
+      source: car1459_mr_rp5
+      locator: "Table 13, 'Uncertainty deduction (UNC_t) 11.27%', 5th reporting period; confirmed by car1459_ver_rp5 Sec 5.2.4"
+      note: >-
+        RETRIEVED 2026-11-10 (WP1b). Previously not_disclosed (the RP1 plan gave
+        only the equation). RP4: 14.17% (car1459_mr_rp4, Table 12). Under CAR SEP
+        v1.1 this multiplies z(70%) = 0.5244 by the 95% CI half-width (D-057), so
+        11.27% implies a relative SE of about 11.27 / (0.5244 x 1.96) = 10.96% of
+        the estimate. The SEP's uncertainty pools sample error, model-input
+        measurement error and model prediction error (car1459_mp_v54 Table 1.2)
+        - not sampling error alone.
     credits_issued:
-      value: null
-      status: not_disclosed
-      source: car1459_docs
-      locator: >-
-        the 64-document public list carries monitoring reports RP1-RP5 and
-        verification reports; the issuance total was not extracted in this pass
-      note: "Retrievable — CAR1459_Monitoring_Report_v5.8.pdf is public. Not fetched this session."
+      value: 2113861
+      units: tCO2e (CRTs, cumulative, all reporting periods, after reversals and adjustments)
+      status: stated
+      source: car1459_mr_rp5
+      locator: "Sec 1 and Table 16, 'the cumulative credits (after accounting for reversals and any other adjustments) is 2,113,861 tCO2e'"
+      note: >-
+        RETRIEVED 2026-11-10 (WP1b). Comprises 2,033,891 reversible (SOC) and
+        80,639 non-reversible (N2O/CH4) tCO2e; 294,905 contributed to the buffer
+        pool. Cross-checked against the registry's issuance-by-vintage table
+        (car1459_emissions_tab). Includes non-SOC credits, so NOT used as the
+        audit's claimed SOC change - see soc_credits_reporting_period.
+    credits_by_reporting_period:
+      value:
+        RP1: {area_acres: 100372, credits_issued_tco2e: 22225, buffer_tco2e: 3291, start: 2018-03-30, end: 2020-12-31}
+        RP2: {area_acres: 423740, credits_issued_tco2e: 111389, buffer_tco2e: 18678, start: 2018-05-08, end: 2021-12-31}
+        RP3: {area_acres: 1289361, credits_issued_tco2e: 163048, buffer_tco2e: 26875, start: 2018-04-18, end: 2022-12-31}
+        RP4: {area_acres: 1517893, credits_issued_tco2e: 630634, buffer_tco2e: 91574, start: 2018-06-12, end: 2023-12-31}
+        RP5: {area_acres: 2463691, credits_issued_tco2e: 1186565, buffer_tco2e: 154487, start: 2018-06-16, end: 2024-12-20}
+      status: stated
+      source: car1459_mr_rp5
+      locator: "Table 16, 'Project summary results for all reporting periods'"
+      note: "The enrolled area grew 24.5-fold between RP1 and RP5. Every RP's start date reaches back to 2018 because newly enrolled fields are credited from their own start."
+    soc_credits_reporting_period:
+      value: 1065452.3
+      units: tCO2e (SOC only, after the uncertainty deduction)
+      area_acres: 2463690.6
+      reporting_period: RP5
+      status: stated
+      source: car1459_mr_rp5
+      locator: "Table 7, column Delta-CO2 soils,t (= ERRev,s,t), Total row; area A_s,t Total row"
+      note: >-
+        THE CLAIMED SOC CHANGE THE AUDIT TESTS (WP2), chosen over the cumulative
+        total because its area is scope-matched: one reporting period's SOC
+        credits over that same period's enrolled area. Before the uncertainty
+        deduction it is 1,200,764.1 tCO2e (Table 10, grazing-corrected). Per
+        acre by stratum, the gross Delta-SOC ranges 0.16-0.70 tCO2e/acre (Table 8).
+    remeasurement_status:
+      value: >-
+        Credits through RP5 rest on initial SOC measurements (earliest October
+        2019) plus DayCent-CR modelling; the 5-yearly re-measurement 'true-up'
+        was deferred under a Reserve variance determination
+        (2025-VAR-2-DET-CAR1459) that judged the delay immaterial.
+      status: stated
+      source: car1459_ver_rp5
+      locator: "Sec 5.2.3 (report pp. 21-22): 'Quantification was based on the initial SOC measurements, with the earliest samples being taken in October 2019 ... a delay in applying a true-up ... will have an immaterial impact'"
+      note: >-
+        Recorded because it bears on what the audit means for this project:
+        the inverted audit asks what re-measurement campaign would detect the
+        claimed change, and as of RP5 no re-measurement had been applied. Stated
+        as the verification report states it; it is the Reserve's own process,
+        documented in public, not a finding against the developer.
+    climate_zones_in_project:
+      value: "warm/cool temperate dry and moist, boreal dry and moist, tropical moist, tropical dry"
+      status: stated
+      source: car1459_mp_v54
+      locator: "Table 6.10, 'Climate zones defined by IPCC (2019) appearing in the project'"
+      note: "The project spans tropical and boreal IPCC zones as well as temperate ones; the area share in each is not given. LoAM scope is temperate."
     claimed_soc_change_rate:
       value: null
       status: not_disclosed
-      source: car1459_mp_rp1
-      locator: "the monitoring plan states the method, not the realised result"
+      source: car1459_mr_rp5
+      locator: "the monitoring reports give per-period SOC credits and per-acre stratum averages, not an annual rate"
 
   # =========================================================================
   - project_id: CAR1513
@@ -567,7 +704,7 @@ projects:
     permanence_period_years: {value: 25, status: stated, source: cer_register_csv, locator: "Nominated Permanence Period"}
     credits_issued: {value: 94666, units: ACCUs, status: stated, source: cer_register_csv, locator: "ACCUs Total units issued — the largest soil-carbon issuance in the scheme"}
     quantification_approach: {value: null, status: not_disclosed, source: cer_register_csv, locator: "'Estimation or measurement approach or model' is BLANK for this project"}
-    area: {value: null, status: not_disclosed, source: cer_register_csv, locator: "the register gives lot/plan identifiers and a CEA mapping file, not an area"}
+    area: {value: 3877.48, units: hectares, status: inferred, source: cer_cea_files, locator: "https://cer.gov.au/sites/default/files/projectFiles/ERF108333_CEA.zip; geodesic area (GRS80) of the carbon estimation area, scripts/derive_accu_areas.py", note: "WP1a 2026-11-10 (D-064): was not_disclosed. The register has no numeric area field, but the CEA shapefile is published; this is our computation from it. Project-boundary (KML) area 5274.56 ha. Same value as data/registry/projects_accu_issued.yaml."}
     n_samples: {value: null, status: not_disclosed, source: cer_register_page, locator: "no such field exists in the register; project sampling plans are not published"}
     cores_per_composite: {value: null, status: not_disclosed, source: cer_register_page, locator: "no such field exists in the register"}
     sampling_density: {value: null, status: not_disclosed, source: cer_register_page, locator: "no such field exists in the register"}
@@ -589,6 +726,7 @@ projects:
     practices: {value: "altering stocking rate, duration or intensity of grazing", status: stated, source: cer_register_csv, locator: "Project activities"}
     crediting_period: {value: "2017-01-12 to 2042-01-11 (25 years)", status: stated, source: cer_register_csv, locator: "Crediting period start/end date"}
     credits_issued: {value: 85262, units: ACCUs, status: stated, source: cer_register_csv, locator: "ACCUs Total units issued"}
+    area: {value: 2615.56, units: hectares, status: inferred, source: cer_cea_files, locator: "https://cer.gov.au/sites/default/files/projectFiles/ERF105067_CEA.zip; geodesic area (GRS80) of the carbon estimation area, scripts/derive_accu_areas.py", note: "WP1a 2026-11-10 (D-064): was not_disclosed. The register has no numeric area field, but the CEA shapefile is published; this is our computation from it. Project-boundary (KML) area 3553.93 ha. Same value as data/registry/projects_accu_issued.yaml."}
     quantification_approach: {value: null, status: not_disclosed, source: cer_register_csv, locator: "'Estimation or measurement approach or model' is BLANK"}
     all_sampling_design_fields: {value: null, status: not_disclosed, source: cer_register_page, locator: "no sampling-design field exists in the register; sampling plans are not published"}
 
@@ -608,6 +746,7 @@ projects:
     practices: {value: "altering stocking rate/duration/intensity of grazing; applying nutrients to the land", status: stated, source: cer_register_csv, locator: "Project activities"}
     crediting_period: {value: "2016-11-04 to 2041-11-03 (25 years)", status: stated, source: cer_register_csv, locator: "Crediting period start/end date"}
     credits_issued: {value: 28859, units: ACCUs, status: stated, source: cer_register_csv, locator: "ACCUs Total units issued"}
+    area: {value: 578.26, units: hectares, status: inferred, source: cer_cea_files, locator: "https://cer.gov.au/sites/default/files/projectFiles/ERF104527_CEA.zip; geodesic area (GRS80) of the carbon estimation area, scripts/derive_accu_areas.py", note: "WP1a 2026-11-10 (D-064): was not_disclosed. The register has no numeric area field, but the CEA shapefile is published; this is our computation from it. Project-boundary (KML) area 757.69 ha. Same value as data/registry/projects_accu_issued.yaml."}
     quantification_approach:
       value: measure_and_model
       status: stated
@@ -625,13 +764,17 @@ projects:
     protocol: "Estimation of Soil Organic Carbon Sequestration using Measurement and Models, 2021"
     developer: AGRIPROVE SOLUTIONS CO NO.2
     in_loam_scope: false
-    scope_note: "OUT OF SCOPE on current evidence — activity not confirmed as cropland."
+    scope_note: >-
+      OUT OF SCOPE - grazing. Updated 2026-11-10: the register's Project
+      activities field reads 'Altering the stocking rate, duration or intensity
+      of grazing...' (was 'not confirmed as cropland').
     disclosure_tier: 4
     disclosure_note: >-
       Included as a representative of the largest single soil-carbon developer
       in the scheme. Same disclosure as every other ACCU project: none.
     geography: {value: Queensland, status: stated, source: cer_register_csv, locator: "Project location"}
     credits_issued: {value: 9253, units: ACCUs, status: stated, source: cer_register_csv, locator: "ACCUs Total units issued"}
+    area: {value: 355.08, units: hectares, status: inferred, source: cer_cea_files, locator: "https://cer.gov.au/sites/default/files/projectFiles/ERF176354_CEA.zip; geodesic area (GRS80) of the carbon estimation area, scripts/derive_accu_areas.py", note: "WP1a 2026-11-10 (D-064): was not_disclosed. The register has no numeric area field, but the CEA shapefile is published; this is our computation from it. Project-boundary (KML) area 521.3 ha. Same value as data/registry/projects_accu_issued.yaml."}
     all_sampling_design_fields: {value: null, status: not_disclosed, source: cer_register_page, locator: "no sampling-design field exists in the register"}
 
 # ---------------------------------------------------------------------------
@@ -811,3 +954,32 @@ blocked_or_deferred:
       0.4307 applies to VCS 4022's crediting. Note the access distinction: the
       verra.org METHODOLOGY library is directly retrievable; only the
       registry.verra.org PROJECT registry is SPA-blocked."
+  # ---- WP1, 2026-11-10 (D-066). New entries; the 2026-08-12 entries above are kept.
+  - target: Verra registry, VM0042 project enumeration (registry.verra.org, new platform)
+    attempts: 2
+    outcome: >-
+      Attempt 1: the root now redirects to /verra and serves an S&P Global
+      'Platts' single-page app with Okta sign-in (2,598-byte HTML shell); a
+      POST to the old /uiapi/resource/resourceSummary/search returns the same
+      shell. Attempt 2: the 441 kB app.js bundle names no API route (the app
+      loads micro-frontend chunks at runtime). Verra's transition page
+      (verra.org/verra-registry-transition/, last updated 2026-07-26)
+      confirms the registry moved platform.
+    consequence: >-
+      ACCESS WALL, not a disclosure gap. No Verra project beyond VCS 4022 is
+      in the corpus. Verra states about 200 projects are listed under earlier
+      VM0042 versions (late 2025).
+    next_step: "PI hand-export per docs/registry_population.md, into data/registry/raw/verra/"
+  - target: CarbonPlan OffsetsDB API (enumeration-only fallback for Verra project IDs)
+    attempts: 2
+    outcome: "offsets-db-api.carbonplan.org returns HTTP 404 'DEPLOYMENT_NOT_FOUND' on /projects/?protocol=vm0042 and on /projects/VCS4022"
+    consequence: "Fallback unavailable. Would only ever have supplied IDs to look up, never project parameters."
+    next_step: none
+  - target: VM0042 v3.0 public consultation (for a WP4 comment)
+    attempts: 1
+    outcome: >-
+      verra.org/methodologies/revision-to-vm0042-methodology-for-improved-agricultural-land-management/
+      (Development ID M0264): public consultation ran 2026-02-11 to 2026-03-31;
+      status field '5. Independent Expert Review'. CLOSED.
+    consequence: "Any v3 comment is unsolicited input to methodologies@verra.org, not a consultation submission."
+    next_step: none

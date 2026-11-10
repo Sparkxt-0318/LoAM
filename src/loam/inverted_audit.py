@@ -767,7 +767,25 @@ def _usable_value(project: dict, name: str) -> Any:
     return block.get("value")
 
 
+def _soc_period(project: dict) -> dict | None:
+    """``soc_credits_reporting_period`` when usable: SOC-only credits for ONE
+    reporting period, carrying that same period's enrolled area. Preferred over
+    every other route because claim and area are scope-matched by the source
+    document itself (WP1b, CAR1459 RP5) - no timing or pool assumption needed."""
+    block = _field(project, "soc_credits_reporting_period")
+    if block is None or block.get("status") not in USABLE_STATUSES or block.get("value") is None:
+        return None
+    if not block.get("area_acres") and not block.get("area_ha"):
+        return None
+    return block
+
+
 def project_area_ha(project: dict) -> float | None:
+    period = _soc_period(project)
+    if period is not None:
+        if period.get("area_ha"):
+            return float(period["area_ha"])
+        return float(period["area_acres"]) * HA_PER_ACRE
     block = _field(project, "area")
     value = _usable_value(project, "area")
     if value is None:
@@ -784,7 +802,10 @@ def project_interval_years(project: dict, *, default_years: float = 5.0) -> tupl
     disclose one, flagged as a fallback rather than a disclosure."""
     value = _usable_value(project, "remeasurement_interval_years")
     if value is not None:
-        return float(value), "project-disclosed remeasurement interval"
+        status = (_field(project, "remeasurement_interval_years") or {}).get("status")
+        if status == "stated":
+            return float(value), "project-stated remeasurement interval"
+        return float(value), f"remeasurement interval {status} (not project-stated) - see corpus locator"
     return default_years, f"FALLBACK: not disclosed, VM0042's own {default_years}-year requirement assumed (D-057)"
 
 
@@ -808,6 +829,15 @@ def derive_delta_mg_c_ha(project: dict, years: float) -> tuple[float | None, str
     conservative direction this audit needs (Sec 8 Objection 3). Stated here,
     not corrected for.
     """
+    period = _soc_period(project)
+    if period is not None:
+        area = project_area_ha(project)
+        return float(period["value"]) / TCO2E_TO_MG_C / area, (
+            "SOC-only credits for one reporting period / 3.667 / that period's own "
+            f"enrolled area ({period.get('reporting_period', 'one period')}) - scope-matched "
+            "by the source document; NET of the uncertainty deduction (conservative direction)"
+        )
+
     stated = _usable_value(project, "claimed_soc_change_rate")
     if stated is not None:
         return float(stated) * years, "stated claimed_soc_change_rate x years"
@@ -828,9 +858,10 @@ def derive_delta_mg_c_ha(project: dict, years: float) -> tuple[float | None, str
     if credits is not None and years > 0:
         tau = (float(credits) / TCO2E_TO_MG_C) / area / years
         return tau * years, (
-            "derived: (credits_issued tCO2e total / 3.667) / area / years x years - "
-            "NET of ledger deductions AND assumes credits were earned uniformly "
-            "over exactly `years` (unverified timing assumption)"
+            "derived: cumulative credits_issued / 3.667 / area - the NET credited "
+            "stock change from the baseline round to the latest one. `years` "
+            "cancels: no timing assumption enters Delta (D-064). NET of ledger "
+            "deductions (conservative direction)"
         )
     return None, "no claimed_soc_change_rate, claimed_abatement or credits_issued usable"
 
@@ -856,8 +887,27 @@ def gate(project: dict) -> list[str]:
     if project_area_ha(project) is None:
         reasons.append("no usable project area (area field not stated/inferred)")
     years, _ = project_interval_years(project)
-    delta, _ = derive_delta_mg_c_ha(project, years)
-    if delta is None:
+    delta, delta_why = derive_delta_mg_c_ha(project, years)
+    if delta is None and delta_why == "no usable project area":
+        # Two reasons are still reported (tests pin that a caller sees both
+        # what is missing AND what it blocks), but the second must be TRUE:
+        # before WP1 it said credits_issued was "missing" for ACCU projects
+        # whose credits_issued was stated. Name what is disclosed instead.
+        disclosed = [
+            f for f in ("claimed_soc_change_rate", "claimed_abatement", "credits_issued")
+            if _usable_value(project, f) is not None
+        ]
+        if disclosed:
+            reasons.append(
+                f"claimed rate cannot be formed: {', '.join(disclosed)} is disclosed but "
+                "cannot become a per-hectare Delta without an area"
+            )
+        else:
+            reasons.append(
+                "no usable claimed rate (claimed_soc_change_rate, claimed_abatement "
+                "and credits_issued are all missing, withheld or not_disclosed)"
+            )
+    elif delta is None:
         reasons.append(
             "no usable claimed rate (claimed_soc_change_rate, claimed_abatement "
             "and credits_issued are all missing, withheld or not_disclosed)"
@@ -1023,14 +1073,20 @@ def run_audit(
     # a DIFFERENT span than the claim being tested would be its own error).
     revenue, revenue_why = None, None
     rate = _usable_value(project, "claimed_abatement")
-    if rate is not None:
+    period = _soc_period(project)
+    if period is not None:
+        revenue, revenue_why = float(period["value"]), (
+            "SOC-only credits for the same reporting period as Delta (scope-matched); "
+            "excludes that period's non-SOC credits, so break-even is conservative"
+        )
+    elif rate is not None:
         revenue, revenue_why = float(rate) * years, "claimed_abatement (tCO2e/y) x years, scope-matched to Delta"
     else:
         credits = _usable_value(project, "credits_issued")
         if credits is not None:
             revenue, revenue_why = float(credits), (
-                "credits_issued total - NOT scope-matched to `years`; may span "
-                "a different period than the claim tested"
+                "cumulative credits_issued - the same cumulative total Delta is "
+                "built from, so scope-matched to Delta (D-064)"
             )
     break_even_price = (
         break_even_carbon_price_usd_per_tco2e(opt_headline.cost_usd, revenue) if revenue else None

@@ -37,9 +37,9 @@ sampling-design level — the inputs simply are not public.
 | project | registry | result |
 |---|---|---|
 | VCS 4022 (AgreenaCarbon) | Verra | **auditable** — see below |
-| CAR1459 (Indigo US-1) | Climate Action Reserve | not_auditable: area is disclosed (100,371 acres), but neither `credits_issued` nor `claimed_abatement`/a claimed rate is — see [`registry_corpus.md`](registry_corpus.md) |
+| CAR1459 (Indigo US-1) | Climate Action Reserve | not_auditable: area is disclosed (100,371 acres), but neither `credits_issued` nor `claimed_abatement`/a claimed rate is — see [`registry_corpus.md`](registry_corpus.md). **Superseded 2026-11-10 (D-066): RP5 SOC credits, RP5 area and an applied 11.27% deduction retrieved; now auditable.** |
 | CAR1513 (AgriCapture rice) | Climate Action Reserve | not_auditable: SOC pool not separable from a rice-methane ledger (red team A-3) |
-| ERF108333 / 105067 / 104527 / 176354 | Australian ACCU | not_auditable: no area field exists in the public register at all |
+| ERF108333 / 105067 / 104527 / 176354 | Australian ACCU | not_auditable: no area field exists in the public register at all — **superseded 2026-11-10 (D-064): there is no area *field*, but the CEA shapefile is published and area is now derived from it; all four clear the gate. See [`registry_population.md`](registry_population.md).** |
 
 **1 of 7.** This mirrors, at the audit's own input requirements (area +
 claimed rate + interval), the disclosure gap D-056 already found at the
