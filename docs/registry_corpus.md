@@ -287,6 +287,14 @@ the start rather than be discovered at the end.
    which the ACCU register does publish for 999 projects. It turns the gap from
    a blocker into the method. **This is the strongest idea to come out of this
    pass and it should be scoped next.**
+
+   > **CORRECTION 2026-11-10 (D-064).** The register does **not** publish area
+   > as a field — `Project Area(s)` holds cadastral lot/plan identifiers. It
+   > publishes the *boundary files* (a KML for all 999, a carbon-estimation-area
+   > shapefile for the 54 credit-issued projects), from which area is derivable
+   > and recorded as `inferred`. Nor does it publish a claimed rate or an
+   > interval: it publishes credits issued (in total and by financial year) and
+   > crediting dates. See [`registry_population.md`](registry_population.md).
 3. **Get the Verra corpus.** It is public, it is in scope, and it is one browser
    session away. Highest value per minute of anything on this list.
 
