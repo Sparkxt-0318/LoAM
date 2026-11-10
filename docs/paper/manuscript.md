@@ -169,12 +169,17 @@ At the audit's own cost-optimal design, n_req is defined so that SE ≤ Δ/(t_α
 | project | applied | own relative SE | claimed Δ / own MDD (90% power) | (50% power) |
 |---|---:|---:|---:|---:|
 | CAR1459 (RP5) | 11.27% | 0.110 | **2.81** | 4.65 |
-| VCS 4022 | 31.35% | 0.728 | **0.42**† | 0.70† |
+| VCS 4022 ‡ *pending expert review* | 31.35% | 0.728 | **0.42** ‡ | 0.70 ‡ |
 
-† Conditional on two points not settled from primary documents: whether k = 0.4307 governed VCS
-4022's v2.0 crediting, and whether the 31.35% is the SOC-pool deduction (§7). Both deductions
-pool sampling with model-prediction error, so these ratios describe each project's stated
-precision, not its sampling alone. CAR1459's RP5 verification report records that quantification
+‡ **Pending expert review, and dependent on PI decision A.** It is conditional on two points not
+yet settled from primary documents. First, whether k = 0.4307 governed VCS 4022's v2.0 crediting:
+it is verified for v2.2 only, and the approved v2.0 text is awaiting re-reading (D-072, open on the PR #21 port branch).
+Second, whether the 31.35% is the SOC-pool deduction: the validation report calls it a single
+"final uncertainty deduction" (PDF p. 147). Until both are settled and the reading has been
+reviewed, this row is not quoted anywhere outside this section.
+
+Both deductions pool sampling with model-prediction error, so these ratios describe each
+project's stated precision, not its sampling alone. CAR1459's RP5 verification report records that quantification
 to date rests on initial measurements plus modelling, with the re-measurement true-up deferred
 under a Reserve variance determination.
 
@@ -219,10 +224,27 @@ to the code, reproduces every n_req, design, cost and implied deduction exactly:
 optimisations differ. We varied the three choices a critic would challenge: the paired/unpaired
 design, the relocation scale and the assay:location cost ratio (0.33–5.33). We also ran
 central-estimate inputs. In-scope categories range from 6–8 inside reach and 3–5 outside, against
-8 and 3 at baseline. VCS 4022 and CAR1459 stay inside reach throughout. The most consequential
-choice is the design. Forcing a paired design raises VCS 4022's and CAR1459's required n by 2.3×
-and their break-even prices by 1.6×, and moves two in-scope projects outside reach. Break-even
-prices scale linearly with absolute cost [`docs/phase5_robustness.md`; D-069].
+8 and 3 at baseline, and VCS 4022 and CAR1459 stay inside reach throughout. Break-even prices
+scale linearly with absolute cost [`docs/phase5_robustness.md`; D-069]. One variant moves headline
+numbers by more than 2×, and is reported as a named sensitivity.
+
+**Sensitivity S1 — a forced paired design (D-060).** The headline takes, for each project, the
+cheaper of a paired design (revisiting the same locations) and an unpaired one (re-randomising).
+Under our inputs, 55 of 56 projects choose unpaired. S1 forces the paired design on every project:
+
+| | headline (cheaper design per project) | S1: paired forced | change |
+|---|---|---|---|
+| VCS 4022: required n (C\*) | 161 (2) | 374 (1) | **2.3×** |
+| VCS 4022: break-even price | $0.0030 | $0.0048 | 1.6× |
+| CAR1459: required n (C\*) | 4,451 (2) | 10,430 (1) | **2.3×** |
+| CAR1459: break-even price | $0.21 | $0.34 | 1.6× |
+| in scope: inside / band / outside | 8 / 0 / 3 | 6 / 0 / 5 | two projects move outside |
+| grazing: inside / band / outside | 30 / 2 / 6 | 26 / 0 / 12 | |
+
+**S1 raises the required sample size of both projects with a published deduction by 2.3×, and
+neither changes category.** It is the more expensive of the two admissible designs, so it is not
+the headline (D-060 stands). It matters for a second reason: it is also the floor that the
+support scenarios of §7 converge on, because the paired formula has no between-plot term.
 
 ## 6. Discussion
 
@@ -276,6 +298,14 @@ this branch. An unmerged line of this project reports the approved v2.0 carries 
 we flag it as unverified here. Separately, VCS 4022's 31.35% is described in its validation
 report as a single "final" deduction, not split by pool. The VCS 4022 row of §4.4 depends on both
 points. The audit figures in §5 do not depend on either.
+
+**Design choice: sensitivity S1, 2.3× (D-060).** Forcing a paired design on every project raises
+the required sample size of VCS 4022 and CAR1459 by **2.3×** (161 → 374; 4,451 → 10,430) and
+their break-even prices by 1.6×, and moves two in-scope projects from inside to outside reach
+(8 / 0 / 3 → 6 / 0 / 5). The headline uses the cheaper design per project, which is unpaired for
+55 of 56, because the audit's claim concerns the best admissible campaign. A reader who holds
+that projects revisit their locations should read the S1 column instead (§5). It is also where
+the support scenarios above bottom out.
 
 **One region, generous inputs.** Temporal and between-plot inputs come from Pacific Northwest
 dryland (G8). Within-plot variance at 0–30 cm is an indirect estimate (G2). The generous-corner

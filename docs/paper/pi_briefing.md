@@ -46,7 +46,12 @@ allows) [D-062].
 - Large claims are cheap to detect. The outside-reach projects are young, small ones with small
   credited changes.
 - On their own published deductions, CAR1459's claim is 2.8× its own detection floor. VCS 4022's
-  is 0.42×, conditional on decision A.
+  is 0.42×. That figure is **pending expert review** and dependent on decision A. By your
+  2026-11-10 rule it stays out of the abstract, the brief and the registry comments, and appears
+  only in the results section, labelled.
+- **Sensitivity S1 (named in the manuscript's results and limitations):** forcing a paired design
+  raises both published-deduction projects' required n by **2.3×**. Neither changes category.
+  D-060 stands.
 
 ---
 
@@ -95,11 +100,14 @@ team B-1, D-059).**
     between-plot error from the narrow 0–30 cm row (3.1%).
   - With the design doc's own original conventions, paired wins.
   - We do not fix the design; we take whichever is cheaper per project.
-  - The sensitivity grid [D-069] shows forcing paired raises VCS 4022's n from 161 to 374, and
-    CAR1459's from 4,451 to 10,430. That is 2.3×, over your 2× threshold, but neither changes
-    category, and break-even prices rise only 1.6×. In-scope projects become 6 inside and 5
-    outside, from 8 and 3.
-  - This is the most consequential choice in the grid. Know it.
+  - **Sensitivity S1** [D-069] forces paired on every project.
+    - VCS 4022's n rises from 161 to 374, and CAR1459's from 4,451 to 10,430. That is **2.3×**.
+    - Neither changes category, and break-even prices rise only 1.6×.
+    - In-scope projects become 6 inside and 5 outside, from 8 and 3.
+  - **You decided D-060 stands (2026-11-10).** S1 is reported as a named sensitivity in the
+    manuscript's results (§5, with a table) and limitations (§7), not as a footnote.
+  - This is the most consequential choice in the grid, and it is also where the G9 support
+    scenarios bottom out. Know it.
 
 **6. "Δ from credits ÷ area is not the SOC change" (red team A-3, C-6; D-064, D-066).**
 - *Answer:* correct. It is the net credited change, after every deduction, so it understates the
@@ -121,8 +129,15 @@ team B-1, D-059).**
   - The informative quantity is the *ratio*. Applied ÷ implied equals the project's own minimum
     detectable difference divided by its claim.
   - An independent re-implementation confirmed the bound.
-- *Two open conditions on VCS 4022's 0.42:* which VM0042 rule applied to its v2.0 crediting, and
-  whether 31.35% is the SOC-only figure. **Decision A.**
+- *VCS 4022's 0.42 is pending expert review.* Two conditions on it are still open:
+  - Which VM0042 rule applied to its v2.0 crediting. This is D-072, open on the PR #21 port
+    branch (Sparkxt-0318/LoAM#27), pending your download.
+  - Whether 31.35% is the SOC-only figure. The validation report (p. 147) calls it a single "final
+    uncertainty deduction".
+- *Where you may quote it:* only the manuscript's results section, labelled. Not the abstract,
+  the brief or the registry comments.
+- *Where it does go out, by design:* the VCS 4022 developer's right-of-reply note, and the Potash
+  letter, which asks him to review it.
 
 **9. "Your category counts are a failure rate" (red team C-5, D-067).**
 - *Answer:* there are three categories, not pass/fail. Out-of-scope projects (grazing, unresolved

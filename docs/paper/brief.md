@@ -43,10 +43,8 @@ For three small, young projects in our cropland focus, the credited change so fa
 campaign to detect it would need more samples per hectare than any project has ever disclosed.
 
 Two projects publish the discount they actually took. That number reveals how precise the
-project itself says its measurement was. For one project, the credited change is about three
-times the smallest change its own precision could detect. For the other, the credited change
-appears to be smaller than its own detection limit, but that reading depends on two technical
-points we have not yet been able to confirm from the original documents.
+project itself says its measurement was. For one of them, the credited change is about three
+times the smallest change its own precision could detect.
 
 ## What this does and does not mean
 
@@ -83,6 +81,7 @@ None of these would reveal farmers' private data or field locations.
 
 *Numbers in this brief come from `docs/phase5_population_results.md`, `docs/registry_population.md`
 and `data/registry/projects.yaml`. The "four times" is the ratio of CAR's 1.028 to ACCU's 0.253
-relative standard errors (D-057). The "about three times" is CAR1459's 2.81 (D-068). The "smaller
-than its own detection limit" is VCS 4022's 0.42, which depends on PI decision A; if that
-decision goes the other way, delete that sentence.*
+relative standard errors (D-057). The "about three times" is CAR1459's 2.81 (D-068). *
+
+*[Note for the PI; delete before circulation. Per your 2026-11-10 rule, the second project's
+own-deduction reading is pending expert review and is deliberately absent from this brief.]*
