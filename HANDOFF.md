@@ -621,3 +621,59 @@ and the C&C to v2.0. **Both were deleted unopened. Nothing from them is used.** 
    (8), Co No.2 (4), and one joint with Corporate Carbon Solutions.
 5. **"22 measurement-only projects" is across all 54.** Among AgriProve's 47 it is 19, with 1
    hybrid and 27 blank. The first right-of-reply draft had it wrong; corrected before commit.
+
+---
+
+## 2026-11-11 — PI rulings on the five open questions (D-076)
+
+**Nothing merged. Nothing sent.** Per your ruling, no merge happens before you have read
+`docs/paper/pi_briefing.md`.
+
+### Done
+
+- **PR #21 is closed** with a comment pointing to Sparkxt-0318/LoAM#27, where its work was ported
+  and re-verified.
+- **Right-of-reply holds** (`docs/paper/right_of_reply.md`).
+  - Every note, and the file itself, now opens with **"HOLD: not to be sent before mentor
+    review."**
+  - The Agreena note (VCS 4022) has a second hold, until the 0.42× reading passes expert review
+    under D-076. It keeps the 0.42× section and goes out with it.
+- **New Note 4 to Corporate Carbon Solutions Pty Ltd**, covering ERF104781 only (Grounds Keeping
+  Carbon Project). It gives that project's numbers and sources and the same three-week window.
+  - Figures: CEA 100.2 ha; 3,067 ACCUs over three issuances; net Δ 8.3 Mg C/ha; n 8 (C* 2); $400;
+    $0.13 per ACCU; inside reach.
+  - Under S1: n 15, $0.17, inside reach.
+  - It is grazing, so out of LoAM scope; supplementary table only.
+  - They are not copied on the AgriProve note.
+- **D-076 records your rulings:**
+  - the expert-review criterion;
+  - decision B covering the whole verra.org site;
+  - the holds;
+  - the v2.0/v2.2 caveat staying as written;
+  - no merge before the briefing is read.
+- **The criterion is now cited** in manuscript §4.4's footnote, the PI briefing and the Potash
+  letter's notes. The pending-review label stays everywhere it was.
+
+### Not done (waiting on you)
+
+- **Re-verifying the Verra-PDF claims** (C rows, `docs/pr21_reverification.md` on #27). This waits
+  for your Priority 1 downloads and the VCS 4022 Project Description.
+  - When they land: record sha256s, re-read each C row, then close or correct D-072, D-073 and
+    D-075.
+  - The PD settles whether 31.35% is the SOC-pool deduction.
+- **Expert review of the 0.42× reading.** Not started; the Potash letter is drafted but not sent.
+- **Mentor review** of the four right-of-reply notes.
+- **Rebasing #27** after #23–#26, which you merge only after reading the briefing.
+
+### Decisions still waiting on you
+
+1. Tell me when you have read pp. 50 and 147. Until then the v2.0/v2.2 caveat stays.
+2. Who the named expert reviewer is: Potash, or someone else.
+3. When a mentor has read the right-of-reply notes.
+4. When the Priority 1 files and the VCS 4022 PD are in `data/registry/raw/verra/`.
+
+### Contradicts a standing assumption
+
+None new this round. One reminder: ERF104781 is one of the four AgriProve projects with more than
+one issuance (three, FY2018/19 to FY2024/25), so it is not covered by the AgriProve note's "single
+issuance so far" description of the outside-reach projects. It is inside reach.

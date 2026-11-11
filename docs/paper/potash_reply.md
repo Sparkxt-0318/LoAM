@@ -129,6 +129,9 @@ With thanks,
   and the 0.42× reading.
 - The 0.42× is presented as pending expert review, with both conditions stated. Nothing in the
   letter presents it as a finding.
+- **What his reply would count for (D-076).** If he is the named reviewer, a written reply from
+  him on **both** (a) and (b), with any correction he raises applied and logged as a D-NNN,
+  meets the expert-review criterion. A reply on only one of them, or no reply, does not.
 - **The letter shares an unpublished, unreviewed figure with one outside reader, by design.**
   If you would rather he see the derivation before the number, move the sentence "So Δ/MDD
   ≈ 0.42 at 90% power" below the two conditions.

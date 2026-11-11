@@ -1,4 +1,7 @@
-# Right of reply — three notes (PI decision E)
+# Right of reply — four notes (PI decision E)
+
+**HOLD: not to be sent before mentor review.** *(PI, 2026-11-11: every note in this file is on
+hold until the PI says a mentor has read it.)*
 
 **Status: DRAFTS for the PI to send. Nothing has been sent.**
 
@@ -10,9 +13,13 @@ Decision E (2026-11-10):
 - The PI sends them.
 
 **Recipients:**
-1. AgriProve Solutions, proponent of 47 of the 54 credit-issued ACCU soil projects.
-2. Agreena ApS, developer of VCS 4022.
-3. Indigo Ag, developer of CAR1459.
+1. AgriProve Solutions, proponent of 47 of the 54 credit-issued ACCU soil projects. On hold:
+   mentor review.
+2. Agreena ApS, developer of VCS 4022. On hold: mentor review **and** expert review of the 0.42×
+   reading (D-076). It is then sent with that section included.
+3. Indigo Ag, developer of CAR1459. On hold: mentor review.
+4. Corporate Carbon Solutions Pty Ltd, co-proponent of ERF104781 only (PI, 2026-11-11). On hold:
+   mentor review.
 
 **Tone** (per `docs/registry_corpus.md`): the work is about what registries require to be
 published, not about any developer. No note calls a project adequate or inadequate. Each states
@@ -25,6 +32,8 @@ AFFILIATION]`, `[contact]`. Contact addresses were not looked up.
 ---
 
 ## Note 1 — AgriProve Solutions
+
+**HOLD: not to be sent before mentor review.**
 
 **Subject:** Soil-carbon detectability study — your projects' figures, for comment by [REPLY BY]
 
@@ -159,6 +168,15 @@ design.
 
 ## Note 2 — Agreena ApS (VCS 4022, AgreenaCarbon Project)
 
+**HOLD: not to be sent before mentor review.**
+
+**HOLD: not to be sent before the 0.42× reading has passed expert review.** Expert review is done
+only when a named reviewer with soil-carbon statistics expertise has replied in writing on
+**both** the k / 3.24 derivation and the 0.42× reading, and any correction they raise has been
+applied and logged as a D-NNN. Silence does not count (PI, 2026-11-11; D-076). Once review has
+passed, this note goes out **with** the section "A second calculation…" included, updated for any
+correction.
+
 **Subject:** Soil-carbon detectability study — VCS 4022 figures, for comment by [REPLY BY]
 
 Dear [contact],
@@ -223,6 +241,8 @@ With thanks,
 
 ## Note 3 — Indigo Ag (CAR1459, Indigo U.S. Project No. 1)
 
+**HOLD: not to be sent before mentor review.**
+
 **Subject:** Soil-carbon detectability study — CAR1459 figures, for comment by [REPLY BY]
 
 Dear [contact],
@@ -275,14 +295,79 @@ With thanks,
 
 ---
 
+## Note 4 — Corporate Carbon Solutions Pty Ltd (ERF104781 only)
+
+**HOLD: not to be sent before mentor review.**
+
+**Subject:** Soil-carbon detectability study — ERF104781 figures, for comment by [REPLY BY]
+
+Dear [contact],
+
+We are preparing a study of what the public soil-carbon credit record lets anyone check. Before
+anything is published, we are writing to every registered proponent whose project appears in it,
+with that project's own figures and our sources, so you can correct anything we have wrong.
+**This note covers one project only: ERF104781, Grounds Keeping Carbon Project**, where the ACCU
+register lists Corporate Carbon Solutions Pty Ltd as co-proponent.
+
+**What we did.** For every credit-issued project under the 2018 and 2021 measurement-based ACCU
+soil methods (54 projects), we compute the cheapest soil-sampling campaign that would have
+detected the project's cumulative credited change. We use the sample-size equation from Verra's
+VM0042 (§8.2.1, Eq. 2) and a variance table taken at its most generous. We have not seen the
+project's sampling plan; the register does not publish sampling plans. Nothing below is a
+statement about what the project's campaigns were, or about compliance.
+
+**Inputs for ERF104781.** All are from public sources; the area is our own calculation.
+- **ACCU Scheme project register (CSV),** Clean Energy Regulator, as at 20 October 2026:
+  - 3,067 ACCUs issued: 406 in FY2018/19, 1,498 in FY2019/20, 1,163 in FY2024/25;
+  - crediting period 28 October 2016 to 27 October 2041;
+  - location: Victoria, postcode 3818;
+  - activities: altering the stocking rate, duration or intensity of grazing; re-establishing or
+    rejuvenating a pasture; using legume species;
+  - the "Estimation or measurement approach or model" field is blank.
+- **Carbon estimation area (CEA).** `cer.gov.au/sites/default/files/projectFiles/ERF104781_CEA.zip`.
+  The register has no numeric area field, so **the area is our geodesic calculation from this
+  shapefile: 100.2 ha**. It lies entirely within the project boundary in `ERF104781.kml`, which
+  we compute at 124.5 ha.
+
+**What we computed:**
+- **Credited change.** Cumulative ACCUs ÷ 3.667 ÷ CEA area gives a net credited change of about
+  **8.3 Mg C/ha** from the baseline sampling round to the latest one.
+- **Detection cost.** Sampling about **8 locations**, at 2 cores per sample with re-randomised
+  locations, would detect that change. That costs about **$400** (US unit costs), a
+  **break-even price of $0.13 per ACCU**.
+- **Category: inside reach.** A campaign at the densest sampling density any project has
+  disclosed (one point per 8 acres, about 31 points on this area) would detect the change across
+  our variance table's whole range.
+- **If the same locations are revisited** (our sensitivity S1), the requirement is about 15
+  locations and $0.17 per ACCU. The project is still inside reach.
+- **Scope.** The project's stated activities are grazing and pasture, which is outside the
+  cropland focus of our main results. It appears only in the supplementary table, where the
+  manuscript reports grazing projects separately and never pools them with cropland.
+
+**Assumptions you may want to correct:**
+- **Credited area.** We treat the CEA as the area the credits were computed over.
+- **Credited change.** We treat cumulative ACCUs as the net credited change from the baseline
+  round to the latest one.
+
+**What we would value from you, by [REPLY BY]** (three weeks from this note):
+- corrections to any input or assumption above;
+- anything public we missed;
+- if you wish, a short statement we will print alongside the table, as written.
+
+**Nothing from this study is public yet. The supplementary table that lists ERF104781 will not
+be published before [REPLY BY].**
+
+With thanks,
+[PI NAME, AFFILIATION]
+
+---
+
 ### Notes for the PI (not for sending)
 
-- **Note 2 contains the 0.42× reading, labelled pending expert review.** Decision E asks for each
-  developer's own numbers, and this one is theirs. The note says plainly that a correction on
-  either condition would remove it. To keep it out until review, delete the section "A second
-  calculation, which we mark as pending expert review". The rest of the note stands without it.
-- **One AgriProve project, ERF104781, lists Corporate Carbon Solutions Pty Ltd as co-proponent.**
-  Consider copying them on Note 1.
+- **Note 2 keeps the 0.42× section, and the whole note is on hold** (PI, 2026-11-11). It goes out
+  only after the reading passes expert review under D-076, and then with the section included.
+- **Corporate Carbon Solutions is not copied on Note 1** (PI, 2026-11-11). They get their own
+  Note 4, covering ERF104781 only.
 - **Earlier drafts also had notes for AgriCapture (CAR1513) and the seven other ACCU
   proponents.** Decision E names three recipients, so those are dropped. CAR1513 appears in the
   manuscript only in the disclosure census.

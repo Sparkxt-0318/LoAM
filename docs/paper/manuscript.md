@@ -171,12 +171,13 @@ At the audit's own cost-optimal design, n_req is defined so that SE ≤ Δ/(t_α
 | CAR1459 (RP5) | 11.27% | 0.110 | **2.81** | 4.65 |
 | VCS 4022 ‡ *pending expert review* | 31.35% | 0.728 | **0.42** ‡ | 0.70 ‡ |
 
-‡ **Pending expert review, and dependent on PI decision A.** It is conditional on two points not
+‡ **Pending expert review (criterion: D-076), and dependent on PI decision A.** It is conditional on two points not
 yet settled from primary documents. First, whether k = 0.4307 governed VCS 4022's v2.0 crediting:
 it is verified for v2.2 only, and the approved v2.0 text is awaiting re-reading (D-072, open on the PR #21 port branch).
 Second, whether the 31.35% is the SOC-pool deduction: the validation report calls it a single
-"final uncertainty deduction" (PDF p. 147). Until both are settled and the reading has been
-reviewed, this row is not quoted anywhere outside this section.
+"final uncertainty deduction" (PDF p. 147). Until both are settled and the reading has passed
+review — a named reviewer's written reply on both the k / 3.24 derivation and this reading, with
+any correction applied — this row is not quoted anywhere outside this section.
 
 Both deductions pool sampling with model-prediction error, so these ratios describe each
 project's stated precision, not its sampling alone. CAR1459's RP5 verification report records that quantification

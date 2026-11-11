@@ -91,6 +91,7 @@ DECIDED_DECISIONS: tuple[str, ...] = (
     "D-057", "D-058", "D-059", "D-060", "D-061", "D-062", "D-063",
     "D-064", "D-065", "D-066", "D-067", "D-068",
     "D-069", "D-070",
+    "D-076",
 )
 
 ALL_DECISIONS: tuple[str, ...] = tuple(

@@ -92,6 +92,7 @@ That is enforced, not requested: see D-032.
 | D-068 | decided | **FINDING**: the implied deduction at the audit's own optimum is bounded by 100k/(z_α+z_β) for every project — it carries ~no project information; applied/implied ≡ MDD/Δ under the project's own stated precision is reported instead |
 | D-069 | decided | WP3 robustness: independent re-implementation agrees exactly (0/336); sensitivity grid over D-060, D-061, cost ratio and central inputs — categories hold; n_req moves 2.3× under forced paired; G9 literature verdict recorded |
 | D-070 | decided | **FINDING (G9, narrowed)**: literature bounds the DIRECTION for stock σ_B (larger at commercial support; ~1.5–5× SD within field, ~5–10× across fields, moderate/low confidence) but NOT for variance of change; scenario bracket σ_B ×1.5/×5/×10 bottoms out at the paired-design floor — in scope 6 inside / 5 outside; no distribution assumed |
+| D-076 | decided | PI decisions 2026-11-11: **expert-review criterion** for the VCS 4022 0.42× reading (named soil-carbon-statistics reviewer replies in writing on BOTH k/3.24 and 0.42×; corrections applied and logged; silence does not count); **decision B covers all of verra.org**; all right-of-reply notes on hold pending mentor review, Agreena's also pending expert review; v2.0/v2.2 caveat unchanged; no merge before the PI reads `pi_briefing.md` |
 
 ---
 
@@ -3597,6 +3598,49 @@ floor argument is exact given the formulas: paired S(C) has no sigma_B term.
 
 ---
 
+**D-076 — PI DECISIONS OF 2026-11-11, recorded so that later sessions apply
+them without being told again.** Not assumptions of ours; the PI's rulings on
+the five questions put at the end of the second round, plus two standing
+instructions.
+
+1. **WHEN THE 0.42× READING COUNTS AS EXPERT-REVIEWED.** Only when a **named
+   reviewer with soil-carbon statistics expertise** has replied **in writing**
+   on **both** (a) the k / 3.24 derivation (D-068: the implied deduction at the
+   audit's optimum is at most 100k/(z_alpha + z_beta)) **and** (b) the 0.42×
+   reading of VCS 4022's published 31.35%, **and** every correction the reviewer
+   raises has been applied and logged as a D-NNN. **Silence does not count.**
+   Until then:
+   - the "pending expert review" label stays wherever the figure appears;
+   - the figure stays out of the abstract, the brief and the registry comments
+     (PI rule of 2026-11-10).
+   The Potash letter (`docs/paper/potash_reply.md`) is one route to such a
+   review. Sending it does not meet the criterion; his written answer on both
+   points, with corrections logged, would.
+2. **DECISION B, EXTENDED TO THE WHOLE HOST.** No request of any kind to
+   `verra.org`, not only `/wp-content/uploads`. This follows the D-075 incident,
+   in which a robots-allowed landing page redirected into the disallowed path.
+   The PI downloads by hand, starting with Priority 1 of
+   `docs/verra_hand_download_list.md` and the VCS 4022 Project Description, and
+   will say when they are in place.
+3. **RIGHT OF REPLY: ALL NOTES ON HOLD** until the PI says a mentor has read them.
+   Each draft carries "HOLD: not to be sent before mentor review." The Agreena
+   note (VCS 4022) is held **additionally** until item 1 is met; it keeps the
+   0.42× section and goes out with it. Corporate Carbon Solutions Pty Ltd is not
+   copied on the AgriProve note; it gets its own note covering ERF104781 only,
+   with the same three-week window.
+4. **THE v2.0/v2.2 CAVEAT STAYS AS WRITTEN** in the manuscript's limitations until
+   the PI says they have read pp. 50 and 147 of the VCS 4022 validation report.
+   As of 2026-11-11 they have not.
+5. **NO MERGE** of any PR before the PI has read `docs/paper/pi_briefing.md`.
+   PR #21 is closed with a pointer to #27, and PR #16 is closed; nothing is
+   merged.
+
+*If wrong:* these are rulings, not inferences, so nothing here can be wrong in
+the usual sense. The risk is a later session not applying them, which is why
+they are logged here and repeated in HANDOFF.md.
+
+---
+
 ## Open evidence gaps
 
 | id | gap | consequence | status |
@@ -3636,3 +3680,4 @@ floor argument is exact given the formulas: paired S(C) has no sigma_B term.
 | 2026-11-10 | D-064, D-065, D-066 | **WP1 — the population that clears the gate grows from 1 to 56 distinct projects (54 credit-issued ACCU, which include the corpus four, plus CAR1459 and VCS 4022).** ACCU register re-pulled (Last-Modified 2026-10-20): **no numeric area field exists, but the CEA shapefile is published for exactly the 54 credit-issued projects and the boundary KML for all 999** — area is derivable, never published; both earlier documents were half-right (D-064). Census reproduces 999; 54 issued, 462,162 ACCUs. Geodesic CEA areas 36.7-3,877 ha, cross-checked two ways and against the KML. Cumulative Delta = ACCUs/3.667/area, interval cancels (my session-start "timing error" note was wrong). Scope flags: 9/54 cropland south of the tropic (D-065). **CAR1459 now auditable on RP5 SOC credits over RP5 area (2,463,691 acres, 24.5x RP1); applied UNC 11.27% stated; true-up re-measurement deferred by Reserve variance** (D-066). Verra registry migrated to an S&P Platts SPA (wall, 2 attempts); OffsetsDB down (wall, 2 attempts). VM0042 v3.0 consultation closed 2026-03-31. Engine: scope-matched reporting-period route, accurate gate reasons. 266 tests. |
 | 2026-11-10 | D-067, D-068 | **WP2 — the audit run over all 56 projects that clear the gate, reported in three categories and by group, never pooled.** In scope (11): **8 inside reach, 0 within the band, 3 outside**; grazing/pasture (38): 30 / 2 / 6; land use unresolved (7): 4 / 1 / 2. The category (break-even noise scale at CAR1459's disclosed density, under both corners of the table's own envelope) lines up with break-even price without being defined on it: inside $0.003-1.74, band $1.04-1.79, outside $1.83-182 per tCO2e (D-067). In-scope median break-even price $0.31; VCS 4022 unchanged at $0.003. **FINDING (D-068): the implied deduction at the audit's optimum is bounded by 100k/(z_a+z_b) for every project and carries ~no project information; applied/implied is MDD/Delta under the project's own stated precision.** Own Delta/MDD at 90% power: CAR1459 **2.81**, VCS 4022 **0.42** (0.70 at 50% power) — the VCS 4022 figure conditional on PI decision A. Independent re-implementation: 0 disagreements. Also fixed: 30 ACCU records had the register's 'n/a' approach recorded as stated. 273 tests. |
 | 2026-11-10 | D-069, D-070; G9 narrowed | **WP3 — robustness.** (i) Independent re-implementation, written from a specification without reading the engine: **0 of 336 optimisations differ**; it derived D-068's bound unprompted. (ii) Sensitivity over the paired/unpaired choice, relocation scale, assay:location cost ratio (0.33-5.33) and central inputs: in-scope categories 6-8 inside / 3-5 outside throughout, VCS 4022 and CAR1459 inside reach throughout; **forced paired moves both projects' n_req 2.3x** (reported against the PI's 2x threshold; D-060 not re-decided). (iii) **G9 narrowed (D-070):** stock sigma_B is larger at commercial support (~1.5-5x SD within field, Schrumpf 2011 full text; ~5-10x across fields, low confidence); change variance unbounded in direction. Scenario bracket sigma_B x1.5/x5/x10 bottoms out at the paired-design floor, which has no sigma_B term: in scope 6 inside / 5 outside at worst. No distribution assumed. 277 tests. |
+| 2026-11-11 | D-076 | **PI rulings recorded.** Expert review of the 0.42× reading is done only when a named soil-carbon-statistics reviewer has replied in writing on both the k/3.24 derivation and the 0.42× reading, with any correction applied and logged as a D-NNN; silence does not count. Decision B now covers all of `verra.org`. Every right-of-reply note on hold until mentor review; Agreena's also until expert review, then sent with the 0.42× section. Corporate Carbon Solutions gets a separate note for ERF104781 only. The v2.0/v2.2 caveat is unchanged (PI has not yet read pp. 50/147). No merge before the PI reads `pi_briefing.md`. PR #21 closed with a pointer to #27. |

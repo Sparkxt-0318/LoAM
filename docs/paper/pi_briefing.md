@@ -136,8 +136,18 @@ team B-1, D-059).**
     uncertainty deduction".
 - *Where you may quote it:* only the manuscript's results section, labelled. Not the abstract,
   the brief or the registry comments.
-- *Where it does go out, by design:* the VCS 4022 developer's right-of-reply note, and the Potash
-  letter, which asks him to review it.
+- *When it counts as reviewed (your ruling, D-076):*
+  - A **named** reviewer with soil-carbon statistics expertise has replied **in writing** on
+    **both** the k / 3.24 derivation and the 0.42× reading.
+  - Any correction they raise has been applied and logged as a D-NNN.
+  - **Silence does not count.**
+- *Where it goes out:*
+  - The Potash letter asks him to review it. That is one route to meeting D-076, not the
+    meeting of it.
+  - The VCS 4022 developer's right-of-reply note keeps it, but the **whole note is on hold**
+    until D-076 is met. It then goes out with that section.
+  - **Every right-of-reply note is also on hold until you say a mentor has read it.**
+- *Before any merge:* you read this briefing first (D-076).
 
 **9. "Your category counts are a failure rate" (red team C-5, D-067).**
 - *Answer:* there are three categories, not pass/fail. Out-of-scope projects (grazing, unresolved
