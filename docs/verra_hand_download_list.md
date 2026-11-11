@@ -14,6 +14,14 @@ read this session. The provenance column says which. No URL was guessed.
 **Disclosure:** rows 3 and 7 were obtained from a server redirect that also downloaded the PDF
 against decision B. The PDFs were deleted unopened; see D-075.
 
+**Decision B now covers the whole of `verra.org`** (PI, 2026-11-11, recorded as D-076 on the WP4
+branch). No request of any kind goes to that host from a session; every file below is downloaded
+by hand.
+
+**The PI's stated order:** Priority 1 (rows 1–4) and the VCS 4022 Project Description (row 16)
+first. Tell the session when they are in place; it then records sha256s and re-reads the C rows
+in `pr21_reverification.md`.
+
 **Folder:** `data/registry/raw/verra/methodology/` unless stated otherwise.
 
 ## Priority 1 — settles D-072 / D-073 (re-verifying PR #21)
