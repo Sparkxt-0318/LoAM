@@ -426,3 +426,254 @@ any reported figure.
 **Nothing else in the repo was touched beyond what Phase 5 needed**: no
 variance-table row written or promoted, no other decision reopened, `main`'s
 existing 248 tests all still pass unchanged.
+
+
+---
+
+## 2026-11-10 — PHASE 5 TO A SHOWABLE RESULT: WP1–WP4
+
+One session, PI brief of 2026-11-10. **Nothing merged. Nothing sent. All PRs draft, each based on
+`main`.** WP2–WP4 each contain the previous WP's commits because each needs the previous data.
+Merge in order and each diff shrinks to its own WP.
+
+| WP | branch | PR | decisions |
+|---|---|---|---|
+| 1 population | `claude/loam-phase5-inverted-audit-k914d8` | Sparkxt-0318/LoAM#23 | D-064, D-065, D-066 |
+| 2 distributions | `claude/loam-wp2-audit-distribution` | Sparkxt-0318/LoAM#24 | D-067, D-068 |
+| 3 robustness | `claude/loam-wp3-robustness` | Sparkxt-0318/LoAM#25 | D-069, D-070 |
+| 4 writing | `claude/loam-wp4-paper-drafts` | Sparkxt-0318/LoAM#26 | — |
+
+**Environment.** The Default cloud environment blocked every source host. A personal "LoAM"
+environment was created with the PI's approval: 20 allowed hosts covering CER, Verra, CAR,
+Indigo, terrapass and literature APIs. Future sessions should start on it.
+
+### Done
+
+- **WP1a, ACCU.**
+  - Register re-pulled (Last-Modified 2026-10-20). **No numeric area field exists; boundary files
+    do.** The KML is published for 999/999 projects and the CEA shapefile for exactly the 54
+    credit-issued ones.
+  - 54 geodesic CEA areas computed, cross-checked two ways and against the KML. Recorded as
+    `inferred`.
+  - Census reproduces 999. 54 issued (was 53); 462,162 ACCUs (was 439,348); still no
+    sampling-design field.
+  - 54 generated records in the corpus schema. 9 are in scope (D-065).
+  - Cumulative Δ = ACCUs/3.667/area; the interval cancels (D-064).
+- **WP1b, CAR1459.**
+  - RP1–RP5 credits, area and applied deduction retrieved: 11.27% in RP5, 14.17% in RP4.
+  - Audited on RP5 SOC-only credits over RP5's own area, 2,463,691 acres (24.5× RP1).
+  - The RP5 verification report records that the re-measurement true-up was deferred under a
+    Reserve variance (D-066).
+- **WP1c, Verra.** Walled: the registry moved to an S&P Platts single-page app, and the OffsetsDB
+  fallback is down, two attempts each. The hand-download procedure (one export, then per-project
+  documents) is in `docs/registry_population.md` §3. The VM0042 v3.0 consultation **closed
+  2026-03-31**.
+- **WP2.**
+  - 56 projects audited, in three categories, by group, never pooled.
+  - **In scope: 8 inside reach / 0 within the band / 3 outside.** Grazing 30/2/6; land use
+    unresolved 4/1/2.
+  - In-scope median break-even price $0.31; VCS 4022 still $0.003.
+  - **FINDING D-068:** the implied deduction at the audit's optimum is bounded by 100k/(z_α+z_β)
+    for every project. The informative quantity is the project's own deduction read as Δ/MDD:
+    CAR1459 2.81, VCS 4022 0.42 (conditional; decision A).
+- **WP3.**
+  - (i) Independent re-implementation: **0/336 disagreements**.
+  - (ii) Sensitivity: categories hold; forced paired moves two n_req by 2.3×.
+  - (iii) **G9 narrowed (D-070).** Stock σ_B is larger at commercial support (~1.5–5× SD within a
+    field; ~5–10× across fields). The scenario bracket bottoms out at the paired-design floor,
+    which has no σ_B term: in scope, 6 inside / 5 outside at worst. The variance of *change* is
+    not bounded in direction, so G9 now lives there.
+- **WP4.** Six drafts in `docs/paper/`. Two facts PR #21 had reported for VCS 4022 were verified
+  from the primary validation report: MDD/S/n "not relevant" (p. 50), and a single "final
+  uncertainty deduction" (p. 147).
+- **Tests:** 248 → 277, all passing.
+
+### Not done
+
+- **The Verra population.** Needs the PI's registry export. About 200 VM0042 projects; status is
+  access wall, not disclosure gap.
+- **Per-project Verra public comments.** Template only; no projects enumerated.
+- **The VM0042 v3.0 draft and the approved v2.0 text** were not read; both are blocked on
+  decision B.
+- **No figure was drawn** for the manuscript; tables only.
+
+### Decisions waiting on the PI
+
+- **A. PR #21** (open draft, 13 Aug; not mentioned in the previous HANDOFF).
+  - It reports that the approved VM0042 v2.0 uses k = 0.4307. That would resolve the v2.0/v2.2
+    caveat the manuscript's limitations currently lead with.
+  - It reports a VCS Methodology Requirements §2.4 eligibility bar (UNC > 26.18%).
+  - Its D-059–D-062 collide with main's numbering.
+  - Should its findings be brought onto main, re-verified and renumbered D-070+? *Recommend yes.*
+    D-068 already reproduces its 0.70 independently by algebra; what remains is the version and
+    pool-scope facts, and those need the primary documents.
+- **B. `verra.org/robots.txt` disallows `/wp-content/uploads`.**
+  - May single documents there be fetched: approved VM0042 v2.0, MR v4.4, the VM0042 v3.0 draft?
+  - Or will the PI download them by hand into `data/registry/raw/verra/`?
+- **C. PR #16 is stale** (design doc, base `claude/loam-vm0042-primary`); its content is on main
+  via #20. *Recommend close.*
+- **D. Sensitivity to an existing decision crossed the 2× threshold.**
+  - D-060's per-project design choice: forcing paired moves VCS 4022 n_req 161 → 374 and CAR1459
+    4,451 → 10,430. Neither changes category; break-even prices move 1.6×.
+  - Reported, not re-decided. Confirm D-060 stands.
+- **E. Right of reply.** Who receives notes depends on whether the supplementary table naming 54
+  ACCU project IDs is published. One proponent holds 47 of them.
+- **F. D-054** (lab error) stays open and non-blocking, unchanged.
+
+### Contradicts a standing assumption
+
+1. **"The ACCU register publishes area for 999 projects"** (`registry_corpus.md`, D-056): **false
+   as to fields.** It publishes boundary files from which area is derivable. Corrected in place
+   with a note.
+2. **"Implied 13.2% vs applied 31.35% is consistent, not a red flag"** (D-059): the 13.2% is fixed
+   by k and the power convention, and would be ~13% for any VM0042 project. The ratio is what
+   carries information, and it says VCS 4022's claim is 0.42× its own MDD, conditional on
+   decision A (D-068).
+3. **"CAR1459 is not auditable"** (first run): it is. Its credits and an applied deduction were
+   public all along, and are now retrieved.
+4. **"Verra's registry is an SPA access wall"** still holds, but on a new platform (S&P Platts,
+   Okta). The old `/uiapi` routes are gone, so any earlier scraping recipe is dead.
+5. **My own session-start status** called the credits route a timing error. It was not: the
+   interval cancels out of Δ (D-064).
+6. **"One developer's projects fall outside reach"** is a base-rate artefact. That proponent holds
+   47 of 54 projects; the category follows area and Δ. Stated wherever results appear.
+7. **"Paired revisits are generally better"** remains reversed for this table (D-060), and the
+   grid shows it is the most consequential of the three challenged choices.
+
+---
+
+## 2026-11-10 (second round) — PI decisions A–E implemented
+
+PI decisions received the same day: A (port PR #21), B (Verra PDFs by hand), C (close #16),
+D (D-060 stands; S1 named), E (three right-of-reply notes), plus a new rule (VCS 4022's 0.42×
+is "pending expert review"). **Nothing merged. Nothing sent.**
+
+**PR #16 is closed (decision C). Its content is already on `main`:** the design doc arrived via #20,
+with #20's corrections on top.
+
+### Done
+
+- **A: PR #21 ported to `main`** on a fresh branch, `claude/loam-pr21-port`, as draft
+  Sparkxt-0318/LoAM#27.
+  - Renumbered D-059…D-062 → **D-071…D-074**.
+  - Re-verification logged as **D-075 (open)**, with a per-claim table in
+    `docs/pr21_reverification.md`.
+  - Every validation-report claim was verified from the primary document. One locator was
+    corrected: PR #21's "CAR #01" items are **CAR ID 45, p. 131**.
+  - All arithmetic verified.
+  - Every claim resting on a Verra PDF is pending the PI's downloads, so **D-072 and D-073 enter
+    as open**.
+  - One internal inconsistency in PR #21 is flagged, not edited (MDD at "§9.3.1 Eq 88" vs
+    "§8.2.1.3 Eq (2)").
+- **B: the download list** is `docs/verra_hand_download_list.md` (on #27). It gives 15 PDFs plus
+  5 optional ones, each with exact URL, filename and folder, and 3 registry-only items.
+- **D: S1 named.** The forced-paired result is a named sensitivity in manuscript §5 (with a
+  table) and §7 (its own paragraph), with the 2.3× stated. The limitations still lead with G9
+  and the v2.0/v2.2 caveat, which is unchanged until the PI confirms having read pp. 50 and 147.
+- **Pending-review rule.** The 0.42× is removed from the brief; it was never in the abstract or
+  the registry comments. It is labelled "pending expert review; dependent on decision A" in
+  manuscript §4.4, the PI briefing and `docs/phase5_population_results.md`. The last change was
+  cherry-picked onto WP2/WP3/WP4.
+- **E: three notes** in `docs/paper/right_of_reply.md`, each with the developer's own numbers,
+  sources and a three-week window, and a commitment not to publish before it closes:
+  - AgriProve, with a 47-row attachment including S1 categories: 33/3/11 at headline, 28/0/19
+    under S1;
+  - Agreena (VCS 4022);
+  - Indigo (CAR1459).
+- **Potash letter.** `docs/paper/potash_reply.md` now asks him specifically to check the k / 3.24
+  bound (D-068) and the 0.42× reading.
+
+### ⚠ Incident (disclosed in D-075)
+
+While resolving download URLs, two `verra.org/documents/…` landing pages redirected into
+`/wp-content/uploads/`, and the client followed, downloading two PDFs against decision B: MR v4.0
+and the C&C to v2.0. **Both were deleted unopened. Nothing from them is used.** No request to
+`verra.org` was made after that. The safe reading of B is host-level, not path-level.
+
+### Not done
+
+- **The C-class re-verification of PR #21 claims.** It waits on the PI's downloads; on arrival,
+  record sha256s and close or correct D-072, D-073 and D-075.
+- **The Verra population and per-project public comments.** They wait on the registry export.
+- **The rebase of #27.** #27 and #23–#26 append to the same regions of `DECISIONS.md`,
+  `decisions.py` and `projects.yaml`. Expect "keep both" conflicts; rebase #27 after #23–#26
+  merge.
+
+### Decisions waiting on the PI
+
+1. **Lifting the v2.0/v2.2 caveat.** Confirm you have read pp. 50 and 147 of the VCS 4022
+   validation report. Until then the caveat stays as written.
+2. **Agreena note (2): keep or drop "A second calculation, which we mark as pending expert
+   review".** It contains the 0.42×.
+3. **Copy Corporate Carbon Solutions Pty Ltd on note 1?** It is co-proponent of ERF104781.
+4. **Close PR #21 (Sparkxt-0318/LoAM#21)?** It is superseded by #27 for review purposes.
+5. **When is expert review of the 0.42× done?** The Potash letter is drafted as one route to it.
+
+### Contradicts a standing assumption
+
+1. **PR #21's locator for the MDD and Tier 1 items is wrong:** CAR ID 45, not CAR #01. The
+   content is right.
+2. **PR #21 is not internally consistent** on where VM0042 v2.0 puts the MDD equation. Only the
+   approved v2.0 text can settle it.
+3. **"Robots.txt allows this page" does not mean "this request stays in the allowed path".** A
+   same-host redirect crossed into the disallowed path.
+4. **"One developer" is four registered entities.** AgriProve Solutions Pty Ltd (34), Co No.1
+   (8), Co No.2 (4), and one joint with Corporate Carbon Solutions.
+5. **"22 measurement-only projects" is across all 54.** Among AgriProve's 47 it is 19, with 1
+   hybrid and 27 blank. The first right-of-reply draft had it wrong; corrected before commit.
+
+---
+
+## 2026-11-11 — PI rulings on the five open questions (D-076)
+
+**Nothing merged. Nothing sent.** Per your ruling, no merge happens before you have read
+`docs/paper/pi_briefing.md`.
+
+### Done
+
+- **PR #21 is closed** with a comment pointing to Sparkxt-0318/LoAM#27, where its work was ported
+  and re-verified.
+- **Right-of-reply holds** (`docs/paper/right_of_reply.md`).
+  - Every note, and the file itself, now opens with **"HOLD: not to be sent before mentor
+    review."**
+  - The Agreena note (VCS 4022) has a second hold, until the 0.42× reading passes expert review
+    under D-076. It keeps the 0.42× section and goes out with it.
+- **New Note 4 to Corporate Carbon Solutions Pty Ltd**, covering ERF104781 only (Grounds Keeping
+  Carbon Project). It gives that project's numbers and sources and the same three-week window.
+  - Figures: CEA 100.2 ha; 3,067 ACCUs over three issuances; net Δ 8.3 Mg C/ha; n 8 (C* 2); $400;
+    $0.13 per ACCU; inside reach.
+  - Under S1: n 15, $0.17, inside reach.
+  - It is grazing, so out of LoAM scope; supplementary table only.
+  - They are not copied on the AgriProve note.
+- **D-076 records your rulings:**
+  - the expert-review criterion;
+  - decision B covering the whole verra.org site;
+  - the holds;
+  - the v2.0/v2.2 caveat staying as written;
+  - no merge before the briefing is read.
+- **The criterion is now cited** in manuscript §4.4's footnote, the PI briefing and the Potash
+  letter's notes. The pending-review label stays everywhere it was.
+
+### Not done (waiting on you)
+
+- **Re-verifying the Verra-PDF claims** (C rows, `docs/pr21_reverification.md` on #27). This waits
+  for your Priority 1 downloads and the VCS 4022 Project Description.
+  - When they land: record sha256s, re-read each C row, then close or correct D-072, D-073 and
+    D-075.
+  - The PD settles whether 31.35% is the SOC-pool deduction.
+- **Expert review of the 0.42× reading.** Not started; the Potash letter is drafted but not sent.
+- **Mentor review** of the four right-of-reply notes.
+- **Rebasing #27** after #23–#26, which you merge only after reading the briefing.
+
+### Decisions still waiting on you
+
+1. Tell me when you have read pp. 50 and 147. Until then the v2.0/v2.2 caveat stays.
+2. Who the named expert reviewer is: Potash, or someone else.
+3. When a mentor has read the right-of-reply notes.
+4. When the Priority 1 files and the VCS 4022 PD are in `data/registry/raw/verra/`.
+
+### Contradicts a standing assumption
+
+None new this round. One reminder: ERF104781 is one of the four AgriProve projects with more than
+one issuance (three, FY2018/19 to FY2024/25), so it is not covered by the AgriProve note's "single
+issuance so far" description of the outside-reach projects. It is inside reach.

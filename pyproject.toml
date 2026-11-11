@@ -26,6 +26,13 @@ derive = [
     "scipy>=1.11",
     "statsmodels>=0.14",
 ]
+# Only needed to re-derive ACCU carbon-estimation-area geometry (WP1a, D-064):
+# scripts/derive_accu_areas.py. Not in `dev` for the same reason as `derive`.
+registry = [
+    "pyshp>=2.3",
+    "pyproj>=3.6",
+    "shapely>=2.0",
+]
 
 [project.scripts]
 loam-build-table = "loam.build_table:main"
