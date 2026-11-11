@@ -85,6 +85,11 @@ That is enforced, not requested: see D-032.
 | D-061 | decided | Sec 10 D-d/D-e resolved: `stock` basis throughout; difference-scale declared per component in code (`DIFFERENCE_SCALE`), not a schema column |
 | D-062 | decided | low-envelope rule stated as a corner bound, not a CI (red team C-2); `not_auditable` gate (A-3); break-even price/noise-scale/stratification efficiency reported (A-2, B-2); ESM-only headline, fixed-depth as footnote (A-5); QA1 upper-bound flag (Objection 1) |
 | D-063 | decided | support/scale-mismatch ratio reported, never gated on (red team A-1); tracked as new open gap **G9**; D-054 stays open and non-blocking |
+| D-071 | decided | ⚠️ **RETRACTED IN PART by D-072** — read from a superseded draft. `UNC = MDD ÷ Δ` and the case-N3 reading are void — *ported from PR #21 2026-11-10 (D-075)* |
+| **D-072** | **open** | **CORRECTION**: approved VM0042 uses one rule, `k = 0.4307`, in every version; `s²` identical across versions; VCS 4022's claim is **0.70× its own MDD**, not 3.19× — ⏳ **ported 2026-11-10, OPEN until re-verified from the primary Verra PDFs (D-075)** |
+| **D-073** | **open** | **THE THRESHOLD IS VERRA'S**: MR §2.4 has no cap but an eligibility bar at `UNC > 26.18%`; `k = 0.4307` is VCS program-wide; VCS 4022's implied 90% half-width is **119.7%** of its estimate. Sweep blocked at n = 1 — ⏳ **ported 2026-11-10, OPEN until re-verified from the primary Verra PDFs (D-075)** |
+| D-074 | decided | **RETRIEVAL LOG + THREE-WAY DISTINCTION**: disclosure gap ≠ access wall ≠ environment limitation. Authorised browser failed on *our* egress, not Verra's. `verra.org/robots.txt` disallows `/wp-content/uploads` — disclosed, standing rule adopted — *ported from PR #21 2026-11-10 (D-075)* |
+| **D-075** | **open** | PR #21 ported onto `main` and renumbered (its D-059…D-062 → D-071…D-074); every claim re-checked: validation-report claims VERIFIED from primary (one locator corrected), arithmetic VERIFIED, every claim resting on a Verra-hosted PDF PENDING the PI's hand download (decision B); open until those rows close |
 
 ---
 
@@ -3200,6 +3205,227 @@ from and a place (G9) to record what it finds.
 
 ---
 
+> **PORTED 2026-11-10 (D-075).** The entry below and the status/log rows for
+> D-071…D-074 come from unmerged PR #21 (branch `claude/loam-phase5-first-result`,
+> 13 Aug 2026), written before `main` took the numbers D-059…D-063 for
+> different decisions. Renumbered on port: **D-059 → D-071, D-060 → D-072,
+> D-061 → D-073, D-062 → D-074**; the text is otherwise verbatim. D-072 and D-073
+> enter `main` as **open**, not decided, because their primary evidence (Verra
+> PDFs) has not yet been re-read here. Claim-by-claim status: D-075 and
+> `docs/pr21_reverification.md`. **Nothing below may be cited as verified on
+> `main` except where D-075 marks it so.**
+
+**D-071 — VM0042's UNCERTAINTY DEDUCTION IS `MDD / claimed change`, AND VCS 4022
+IS READ AS CASE N3.** Two things, because the second is what makes the first
+usable on a real project. Full write-up: `docs/vcs4022_inversion.md`.
+
+**THE IDENTITY (this is the result).** VM0042 v2.0 §8.6.4 Equation 83, under case
+N3 where the threshold `A` is 0%, reduces to the relative half-width of the 95%
+confidence interval; Equation 84 makes that half-width `t₀.₉₇₅ · SE(Δ)`. VM0042's
+*own* minimum-detectable-difference equation — §9.3.1 Eq. 88,
+`MDD ≥ (S/√n)(t_α + t_β)` — reduces to exactly the same quantity at 50% power,
+where `t_β = 0`. Therefore
+
+> **UNC = MDD / Δ**, identically.
+
+**The uncertainty deduction a registry already accepts is the ratio of a
+project's minimum detectable difference to the change it claims.** It follows
+from two equations in the same document; it needs no assumption and no LoAM
+input. Read back onto VCS 4022's published 31.35%: the claimed SOC change is
+**3.19× its own MDD at 50% power, 2.23× at 80%**.
+
+*Why this reshapes Phase 5 again.* D-057 found that VM0042's Eq. (2) **is** the
+inverted audit but is optional, and that the input we must supply is `S` — which
+no project publishes. D-071 finds the other end of the same rope: **where a
+case-N3 project publishes a deduction, the detectability ratio is already
+published too**, and `S` is not needed at all. That converts the inverted audit
+from "LoAM asserts your design was inadequate" into "the registry's own arithmetic
+says your claim sits 2–3× above your detection floor" — a far harder finding to
+dismiss, because nobody has to accept our variance table to accept it.
+
+**THE CASE DETERMINATION (this is the inference, and it is load-bearing).**
+Neither the PD nor the validation report names a pathway or a case. Case
+selection turns on one thing: which Quantification Approach was used for **direct
+N₂O**. v2.0 §8.2.8 makes the test mechanical (QA1 → Eq. 11, modelled; QA3 →
+Eq. 12, defaults), and the validation report's own CAR #01 item V records IPCC
+2019 Tier 1 defaults for `EF_Ndirect` — QA3, hence **case N3, A = 0%**.
+**Counterfactual stated because it is large:** reading this as case N1 (A = 15%)
+would put the implied relative SE at **23.65%** instead of **15.99%**, a 48%
+error. Pathway A over B is inferred from the deduction being applied
+multiplicatively as a percentage (Eqs. 36/37), which is A's form; B yields a
+retained fraction. **If the PI reads the case differently, one field flips and
+every derived figure in the VCS 4022 record moves with it.**
+
+**CORRECTION TO D-057.** D-057 read the v2.0 redline as carrying "a 15%-threshold
+rule in one layer and a two-pathway rule in another", i.e. as tracked-changes
+noise. **That was wrong.** The 15% threshold *is* Pathway A's threshold `A` for
+case N1; both pathways and both cases sit in one coherent v2.0 §8.6.4. The rule
+is one rule. What D-057 got right and this confirms: **0.4307 is a v2.2 figure
+and is absent from v2.0**, so a v2.0 project's deduction must never be described
+in those terms — and the difference is structural (two pathways × two cases vs
+one formula), not a changed constant. v2.0 now has its own
+`protocol_requirements` entry rather than living as a caveat on v2.2's.
+
+**WHAT INVERTS, AND WHAT DOES NOT.** The inversion is exact: with `A = 0`,
+31.35% *is* the relative 95% half-width, giving an implied relative standard
+error of **15.99% at large df**, 15.33% at df = 29, 13.86% at df = 9. The only
+inferred input is `df`, and the sensitivity is one-sided and bounded — fewer
+samples give a *smaller* implied SE, so 16% is a ceiling.
+
+**The forward direction is NOT computable, and that is the honest finding.** It
+needs `n` (not disclosed — the PD gives 3–5 PAIs per stratum but defers the
+stratum count to verification), `ρ` (Eq. 53 needs `Cov(y_t, y_{t−1})`; no value
+published), the RothC prediction variance (**withheld** — "Table 3.9" in the
+non-public MVR), and the uncertainty workbook itself (**withheld** —
+`uncert_deduct_proj.zip`, named twice, public neither time). And a fifth problem
+that is not about disclosure: **the estimand does not match.** Case N3 pools
+model and sampling error — the project participant says so directly — while
+LoAM's envelope covers only sampling; and LoAM's between-plot rows measure
+*replicate plots within one site* (3.4–11.9%) where VCS 4022's sample unit is a
+*field within a stratum across ten countries*. Running the low end of the
+envelope through Eq. 83 would produce a number about a different population.
+**No such number was produced.**
+
+**A SECOND CORRECTION, TO D-057's SEVERITY TABLE.** VM0042 Eqs. 36/37 apply the
+deduction as `(1 − UNC × share)`, each stream scaled by its fraction of gross
+ERRs. VCS 4022's own ex-ante table therefore shows an **effective deduction of
+18.48% on gross ERRs, not 31.35%** (gross 13,331,506.72 − 2,464,107.81 =
+10,867,398.91, internally exact). The two reconcile at a reductions:removals
+split of ≈71:29, which is not publicly verifiable — recorded as *a consistency
+check that passes, not independent confirmation*. **Consequence: a published
+deduction percentage is an uncertainty STATISTIC, not the fraction of credits
+withheld.** The D-057 table (ACCU 0.253 · VM0042 0.431 · CAR SEP 1.028) compares
+`k` multipliers on a standard error; the *credited* consequence additionally
+depends on a share factor none of the three registries publishes. The fourfold
+severity spread stands; "fourfold different haircut" needs that qualifier.
+
+**AND THE FINDING.** VM0042 v2.0's monitored-parameter tables make the sample-size
+calculation optional in as many words — "*Calculation of the number of required
+samples to detect a minimum difference is **optional** for projects*" — and VCS
+4022 took the option. The record is unusually complete because the validator
+forced the question: CAR #01 item VII found "*MDD, n, n−1, t_x,u, parameters are
+missing from data and parameters to be monitored*"; the PD added the rows; the
+validation body then assessed **all five** — MDD, S, n, n−1 and t — as "*not
+relevant and therefore not further assessed*". **A 479,834 ha project claiming
+543,370 tCO₂e/year over 20 years, validated, with its minimum detectable
+difference formally recorded as not relevant — while, by the identity above,
+computing MDD/Δ every year under another name.** The PD's own commitment is
+prospective and conditional ("*will be performed… where prudent*") and cites a
+section that does not exist in v2.0.
+
+**What breaks if wrong.** The identity is algebra and does not break. The case
+determination is an inference from one validator finding, and it carries the
+whole VCS 4022 record — it is marked `inferred` in the corpus with the
+counterfactual attached, not folded into a `stated` field. The Pathway A reading
+is weaker still: it rests on the *form* in which the deduction was applied, and
+no document names a pathway. If VCS 4022 in fact used Pathway B, Eq. 83 does not
+apply and the inversion is void for this project — though the identity itself,
+which is a property of the methodology, is unaffected.
+
+---
+
+**D-075 — PR #21 PORTED ONTO `main` AND RE-VERIFIED CLAIM BY CLAIM, AS FAR
+AS THE PI'S DECISIONS ALLOW. OPEN until the Verra-hosted documents are read.**
+PI decision A (2026-11-10): bring PR #21 onto `main` on a fresh branch,
+re-verify each claim against primary documents, renumber, log the result here.
+PI decision B (same day): **nothing under `verra.org/wp-content/uploads` is to
+be fetched by us**; the PI downloads those documents by hand. The download list
+is `docs/verra_hand_download_list.md`. Per-claim table: `docs/pr21_reverification.md`.
+
+**What was ported.** PR #21's four documents (`docs/vcs4022_inversion.md`,
+`docs/vcs_eligibility_bar.md`, `docs/vm0042_s2_verification.md`,
+`docs/phase5_n3_sweep_scope.md`) and its `data/registry/projects.yaml` (which
+applies cleanly: `main` had not touched the file since PR #21 branched), with
+every D-059…D-062 reference renumbered to D-071…D-074. The renumbering was a
+single regex pass; reference counts are identical before and after (22 / 20 /
+11 / 3). No other text was changed in those files except the banners and
+annotations listed below.
+
+**Re-verification result, in three classes.**
+
+1. **VERIFIED from the primary VCS 4022 validation report** (terrapass.com
+   mirror, sha256 `7dfc0bf0…`, held; NOT under `verra.org/wp-content/uploads`):
+   - the 31.35% and its CAR #60 history, 23.97% and 14.53% (p. 147, and CAR#60
+     named p. 58);
+   - "the final uncertainty deduction", single, not split by pool (p. 147);
+   - MDD, S, n, n-1 and t_x,U assessed "not relevant and therefore not further
+     assessed" (p. 50);
+   - "MDD, n, n-1, tx,u, parameters are missing from data and parameters to me
+     monitored" (sic) — **locator corrected: CAR ID 45 item VII, p. 131, not
+     "CAR #01"**;
+   - item V on the same page: no justification given for the IPCC (2019) Tier 1
+     values, EF_Ndirect among them — **same correction, CAR ID 45, not CAR #01**;
+   - pooled model-prediction and soil-sampling variance (p. 110), and the
+     withheld MVR "Table 3.9" (p. 110) — locator refined: the response sits
+     under the CAR whose attachments are labelled "CAR ID 21.x"; the nearest
+     preceding CAR header reads CAR ID 20 (p. 106);
+   - the uncertainty workbook named twice as an attachment and public neither
+     time — `CL ID 8.4_..._uncert_deduction_proj.zip` (p. 84) and `CAR ID
+     21.4_..._uncert_deduct_proj.zip` (p. 111) — exactly as PR #21 says;
+   - the ex-ante table (p. 43): baseline 12,676,641.20; project -742,116.10;
+     leakage 87,250.58; uncertainty deduction 2,464,107.81; net 10,867,398.91;
+   - "3-5 PAIs" per stratum and the MDD analysis "will be performed ... where
+     prudent" (p. 140). The same paragraph cites "**Equation (3)** of Section
+     8.2.1.3 of VM0042 v2.0", which bears on PR #21's equation numbering (class 2).
+2. **VERIFIED as arithmetic** (no document needed): 31.35 / 0.4307 = 72.79%;
+   x 1.6449 = 119.7%; the bar `1.6449 SE > Delta` <=> sigma_rel > 60.79% <=> UNC >
+   26.18%; Delta/MDD at the bar = 0.839; 0.70 at 50% power and 0.49 at 80%; gross
+   ERRs 13,331,506.72 and 2,464,107.81 / 13,331,506.72 = 18.48%; Verra's worked
+   example 32.9 / 1.6449 x 0.4307 = 8.6 (the inputs are MR's, class 2). D-068 on
+   the WP2 branch reached 0.70 independently by the same algebra.
+3. **PENDING the PI's hand download** — every claim whose evidence is a
+   Verra-hosted PDF:
+   - approved VM0042 v2.0 Sec 8.6.4 Eq. (65) with t ~ 0.4307 (pp. 74-76);
+   - no "Pathway A" / "Case N1/N3" in any approved version;
+   - s^2 identical across v2.0 and v2.2;
+   - optionality at Sec 8.2.1.3 item 10 and MDD at Eq. (2) — vs the PD's "Eq. (3)";
+   - Eqs. 36/37's share factor; the Sec 8.2.8 N2O test;
+   - 0.4307 present in v2.1, v2.2, the v2.0 Corrections & Clarifications and
+     the v3.0 draft;
+   - MR v4.4 Sec 2.4's formula, worked example, eligibility bar (verbatim), no
+     cap, and 10% materiality floor;
+   - MR v4.0 containing neither the constant nor the bar.
+   **D-072 and D-073 rest on these and are therefore open.**
+4. **Not re-verifiable** (environment-specific, historical): the August browser
+   egress failure. Re-checked and still true: `verra.org/robots.txt` disallows
+   `/wp-content/uploads`; `registry.verra.org/robots.txt` returns the 2,598-byte
+   app shell, i.e. still no parseable robots file.
+
+**An internal inconsistency found in PR #21, not resolved here.** Its
+`projects.yaml` VM0042 v2.0 `protocol_requirements` block still locates the MDD
+equation at "Section 9.3.1, Equations 88 and 89", while its own D-072 (was
+D-060) says MDD is at "Sec 8.2.1.3 Equation (2), not the nonexistent Sec 9.3.1
+Eq. 88". One of the two is stale. The approved v2.0 settles it; flagged in
+place with a ⚠ annotation, not edited.
+
+**What `main` may now say, and what it may not.** It may cite the class 1 and
+class 2 items as verified. It may NOT cite as verified: that the approved v2.0
+uses k = 0.4307; that VCS 4022's 31.35% is "a 0.43-SE deduction"; the MR Sec
+2.4 eligibility bar; or VCS 4022's 119.7% / 0.70x / 0.42x figures as anything
+but conditional. Per the PI's instruction, **the manuscript's v2.0/v2.2
+limitation stays as written** until the PI confirms having read pp. 50 and
+147 personally.
+
+**INCIDENT, disclosed (2026-11-10).** While building the PI's download list, two
+requests were made to Verra *landing pages* (`verra.org/documents/vcs-methodology-requirements/`
+and `verra.org/documents/corrections-and-clarifications-to-vm0042-v2-0/`), which
+robots.txt does not disallow. **The server redirected both to PDFs under
+`/wp-content/uploads/`, and the client followed the redirect**, so two files were
+downloaded contrary to decision B: VCS Methodology Requirements v4.0 (1,737,399
+bytes) and the Corrections & Clarifications to VM0042 v2.0 (969,550 bytes). **Both
+were deleted unopened; nothing in them was read or is used anywhere.** The only
+thing retained is the redirect target URL of each, which appears in the download
+list as the exact address for the PI. No further request to `verra.org` was made
+after this. Lesson: a landing page on the same host can redirect into a disallowed
+path, so a host-level stop, not a path-level one, is the safe reading of decision B.
+
+*If wrong:* if the hand-downloaded PDFs do not say what PR #21 reports, D-072
+and D-073 are re-opened as corrections, and the WP2 own-deduction row for VCS
+4022 (D-068) loses its k. The class 1 locator correction (CAR ID 45) stands
+regardless.
+
+---
+
 ## Open evidence gaps
 
 | id | gap | consequence | status |
@@ -3236,3 +3462,8 @@ from and a place (G9) to record what it finds.
 | 2026-08-12 | (PI decision implemented; no new D-NNN) | **DELIVERABLE 3 RETIRED — the spatially explicit MDC surface is withdrawn and the invariance result is restated as a positive claim.** `docs/invariance_finding.md`: *we searched for spatial structure in monitoring noise across climate, texture and soil chemistry, each time against a stated detection limit, and found none; a single set of variance components serves temperate cropland; **MDC varies with DESIGN and INTERVAL, not with PLACE**.* Four nulls, each with its limit: climate shifts **0.300/0.152** against CI widths **3.97/3.52** in opposite directions (~±2 pt limit); texture spreads **2.611/3.690** against widest-bin CIs **11.016/10.464** (~10 pt limit); joint model **R² = 0.0722** under the repaired estimator (D-058), *lower* than the 0.093 first reported; inorganic carbon null at a **~6.4–7.6%** analytical-error limit against Potash's stated 1–10% (D-055). Temporal behaves the same (D-045). **Argued as a stronger product than a map:** "use these numbers anywhere in temperate cropland" is distributable, checkable by anyone with their own data, and cannot manufacture structure from covariates the way an interpolated surface fitted to non-predictive covariates can. **New repo-wide standard adopted: a null is only informative against a stated detection limit** — every null in this project must carry the magnitude it could have detected; three existing instances named as the template. **What would overturn it, stated concretely:** the carbonate channel is the cheapest to close and needs *lab duplicates, not a field campaign* — a few hundred split samples spanning 0 to >2% inorganic carbon would reach the untested lower two-thirds of Potash's range. **Consequence: Phase 5 is the headline, and invariance is what makes it tractable** — if σ varied by location, auditing 999 ACCU projects would need a per-project variance estimate nobody can supply. `docs/phase0_summary.md` Finding 3 rewritten, `docs/phase1_design.md` and `scripts/derive_g1_napeshm.py` annotated where they still promised the surface. No row written, no row promoted. |
 | 2026-08-08 | D-031, D-032, D-033; **D-028 still open** | Open-decision guard: decisions and the constants they govern are now machine-readable (`src/loam/decisions.py`), the build prints `<-- PROPOSED, NOT DECIDED`, and two tests refuse to pass while an open decision governs a live constant — **the suite is red on merge, by design** (D-032). Replacing the private climate envelope with IPCC 2006 climate regions was attempted and is **blocked**: MAP:PET and frost-day counts are not derivable from NAPESHM, and no proxy is substituted (D-033). Poeplau ↔ NAPESHM corroboration logged, with a figure correction (D-031). No variance-table values changed. |
 | 2026-09-16 | D-059 … D-063; G9 (open) | **PHASE 5 BUILT — the design doc's own Sec 10 gate is satisfied.** `src/loam/student_t.py` (pure-Python Student's t, verified against published tables and against the red team's own C-3 demonstration table, exactly), `src/loam/inverted_audit.py`, `scripts/run_inverted_audit.py`, 72 new tests (full suite 248, green). **Headline restructured around the implied-vs-applied uncertainty deduction** (red team B-1): first run against VCS 4022 gives an implied **13.2%** against its disclosed applied **31.35%** — right order of magnitude, and the gap is consistent with Objection 1 (ours is sampling-only; theirs folds in QA1 model uncertainty). **Bisection replaces iteration** (red team C-3), pinned as a permanent regression test. **Sec 10 D-a resolved**: `VC-BPS-007` (the one genuine 0-30 cm between-plot row) and D-043's indirect ~8% within-plot estimate adopted as primary inputs, each with a no-new-assumption fallback implemented alongside. **D-b CHECKED, NOT ADOPTED: the design doc's own claim that paired revisits are always cheaper does not survive under this resolution of D-a** — between-plot CV (~3.1%, Wuest) ends up smaller than relocation CV (~9.4%, D-061's difference-scale resolution), so unpaired can be cheaper, and the first real run picks it. **Headline design is now chosen per project by comparing `Cost*`**, generalising Sec 2.3's own infimum-over-admissible-designs logic to this axis rather than fixing it by fiat (D-060). **D-e resolved in code** (`DIFFERENCE_SCALE`), not a schema column, and `VC-REL-001` is used undivided — a correction to the design doc's own Sec 2.2 illustration, flagged rather than silently applied (D-061). **Every other required red-team change implemented**: the low-envelope rule stated everywhere as a corner bound, not a CI (C-2); a `not_auditable` gate (A-3, 1 of 7 corpus projects clears it); break-even price, break-even noise scale, and stratification efficiency all reported (A-2, B-2); ESM-only headline with fixed-depth as a footnote (A-5); a QA1 upper-bound flag (Objection 1) (D-062). **Support/scale mismatch (A-1) is computed and reported, never gated on** — ~25 million-fold for VCS 4022 — and tracked as new open gap **G9** rather than resolved by assumption (D-063). **A real performance bug found and fixed along the way**: nested bisections (n_req inside cost_optimum inside run_audit's two designs) made the full corpus take over two minutes before iteration depths were cut to the minimum that still resolves an integer n; now 2.8 seconds, no numbers changed. See `docs/phase5_inverted_audit_results.md` for the full first-run numbers and their caveats. |
+| 2026-08-13 | D-071 | **FIRST PHASE 5 RESULT — and the identity that makes the method republish the registry's own arithmetic.** `docs/vcs4022_inversion.md`. **VM0042 v2.0 §8.6.4 Eq. 83 under case N3 (`A = 0`) reduces to `t₀.₉₇₅·SE(Δ)/Δ`; VM0042's own MDD equation (§9.3.1 Eq. 88) reduces to `t₀.₉₇₅·SE(Δ)` at 50% power. Hence `UNC = MDD / Δ`, identically.** The uncertainty deduction a registry has already accepted **is** the ratio of a project's minimum detectable difference to the change it claims. VCS 4022's published **31.35%** therefore states that its claimed SOC change is **3.19× its own MDD at 50% power, 2.23× at 80%** — no assumption, no LoAM input. Where D-057 found Eq. (2) *is* the inverted audit but needs `S`, which nobody publishes, D-071 finds the other end: **for case-N3 projects that publish a deduction, `S` is not needed at all.** **Case determination (inferred, load-bearing, D-071):** no document names a pathway or case; the test is which Quantification Approach was used for direct N₂O (v2.0 §8.2.8), and CAR #01 item V records IPCC 2019 Tier 1 defaults for `EF_Ndirect` → QA3 → **case N3, A = 0%**. Counterfactual stated: case N1 would give an implied SE of **23.65%** not **15.99%**, a 48% error. **Corrections to D-057, two.** (a) The v2.0 redline is **not** two conflicting layers — the 15% threshold *is* Pathway A's `A` for case N1, and both pathways sit in one coherent section; 0.4307 remains confirmed for v2.2 and absent from v2.0, and the difference is **structural** (two pathways × two cases vs one formula), so v2.0 now has its own `protocol_requirements` entry. (b) Eqs. 36/37 apply the deduction as `(1 − UNC × share)`, so VCS 4022's own ex-ante table gives an **effective 18.48% on gross ERRs, not 31.35%** — a published deduction is an uncertainty *statistic*, not the fraction of credits withheld, and the D-057 severity table needs that qualifier. **THE FORWARD AUDIT IS NOT COMPUTABLE FOR THIS PROJECT, and that is the finding:** `n` not disclosed (3–5 PAIs per stratum, stratum count deferred to verification), `ρ` not disclosed, RothC prediction variance **withheld** ("Table 3.9", non-public MVR), the uncertainty workbook **withheld** (`uncert_deduct_proj.zip`, named twice) — and the estimand does not match, since case N3 pools model with sampling error while LoAM's rows measure replicate plots within one site against VCS 4022's fields across ten countries. **No number was manufactured.** **AND THE FINDING:** v2.0 makes the sample-size calculation optional in as many words; CAR #01 item VII forced the MDD parameters into the PD's monitoring tables; the validation body then assessed **all five — MDD, S, n, n−1, t — as "not relevant and therefore not further assessed"**, on a 479,834 ha project claiming 543,370 tCO₂e/year. PR #12 closed unmerged (D-053 load-bearing for D-054/056/057/058). No variance-table row written or promoted. |
+| 2026-08-13 | **D-072 — D-071 RETRACTED IN PART** | **The `s²` check was run first, per PI direction, and it falsified its own premise.** `docs/vm0042_s2_verification.md`. **The narrow answer is yes:** `s²` is the same object in v2.0 and v2.2 — same definition and units, same §8.6 subsection tree heading-for-heading, and the equations that build it are identical symbol-for-symbol (v2.0 Eqs. 54/55 ≡ v2.2 Eqs. 63/64, same Cochran 1977 Eq. 13.39 and Som 1995 Eq. 25.10 citations; the equation maps differ by a uniform +9). Model prediction variance is pooled with sampling variance in both. **But there is no Eq. 84 to compare against, because there is no Eq. 83.** The **approved** VM0042 v2.0 §8.6.4 (pp. 74–76) is a single **Equation (65)**, `UNC = (√s²/Δ̄ × 100) × t_{α=0.666}`, with the constant given verbatim as "*approximately **0.4307** at large sample sizes*" — **the same rule and the same constant as v2.2 Eq. 74.** Verbatim searches for `Pathway A`, `Case N1`, `Case N3` return **zero** hits across approved v2.0, v2.1, v2.2, the v2.2 greenlined text, the Corrections & Clarifications to v2.0, and the v3.0 consultation draft; `0.4307` appears in **every** one of them. **Provenance identified, and it is not fabrication:** D-071's quotations are accurate transcriptions of the **December 2021 final-draft-for-public-comment**, which genuinely carries the two-pathway/two-case §8.6.4 (Eqs. 83–86, threshold `A`, `t₀.₉₇₅`, exceedance 55%/70%, the Australian 60% footnote). **Verra removed that construction before approving v2.0 in May 2023.** The prior record flagged exactly this risk in its own words — "*The APPROVED v2.0 has not been obtained; §8.6.4 is read from the [draft]*" — and listed obtaining it as blocked; **this closes that item in the direction that invalidates the result.** *A public-comment draft is not evidence of the rule in force, even when it is the only copy to hand.* **What is void:** the 4.54× version-severity ratio (there is no ratio — `k = 0.4307` in every version); `UNC = MDD/Δ` as an identity; the case-N3 determination (VM0042 has no cases, so §8.2.8's QA1/QA3 test, itself correctly transcribed, selects nothing); and the `MIN{100%, …}` cap "detector" — **approved VM0042 has no cap**, so the planned cap sweep has nothing to detect unless one is found in *VCS Methodology Requirements* §2.4, which §8.6.4 defers to and which is unretrieved. **What survives:** the general identity **`Δ/MDD = k/((t_α+t_β)·UNC)`** — only `k` was wrong; the Eqs. 36/37 share factor (18.48% effective on gross ERRs); the four withheld/undisclosed inputs and the estimand mismatch; and the optionality finding, relocated to **§8.2.1.3 item 10**, verbatim "*However, projects are not required to take this number of samples*", with MDD at **§8.2.1.3 Equation (2)**, not the nonexistent "§9.3.1 Eq. 88". **VCS 4022 inverts, and hardens:** implied relative SE **72.79%** not 15.99%; `Δ/MDD` = **0.70** at 50% power and **0.49** at 80% — the claimed change is **below its own minimum detectable difference**, where D-071 reported it comfortably above at 3.19×. The sweep scope already contained the contradiction: its §2 threshold table says `UNC > 21.97%` ⟹ below floor, and 31.35% clears that line, while §3a said 3.19× above. **Net effect on Phase 5: the sweep gets cheaper and wider** — one rule, one constant, no version/case/pathway determination per project, and the VM0042 screen is a single line at **UNC > 21.97%** (50% power) / **15.37%** (80%). **Two new gating items, both cheap:** re-pull the VCS 4022 PD to confirm 31.35% is the Eq. 65 deduction for SOC (not re-verified here), and retrieve *VCS Methodology Requirements* §2.4 for a cap. No variance-table row written or promoted. |
+| 2026-08-13 | D-073 | **THE SWEEP'S THRESHOLD IS VERRA'S OWN, AND THE SWEEP IS BLOCKED AT n = 1.** Both D-072 gating items worked, one closing and one not. **(1) MR §2.4 retrieved (v4.4, 4 Oct 2023, 88 pp.), and it carries more than the cap it was checked for.** *(a)* `k = 0.4307` is a **VCS program-wide** constant, not a VM0042 one: §2.4 defines `Discount factor = (Uncertainty / t_{α=10%}) × t_{α=66.6%}` with `1.6449` and `0.4307` verbatim and `Uncertainty` = the 90% CI half-width as a percentage of the mean, which reduces to `0.4307·σ_rel` — identical to VM0042 Eq. 65/74, and confirmed by Verra's own worked example (`32.9% / 1.6449 × 0.4307 = 8.6%`). **The inversion therefore generalises to every VCS methodology implementing §2.4, not just VM0042.** *(b)* **There is no cap** at program level either, so **the planned cap sweep is deleted, not deferred.** *(c)* **But there is an eligibility bar**, verbatim: "*Where the half-width of the two-sided 90 percent confidence interval exceeds **100 percent** of the reduction and removal estimate, **the project is not eligible for crediting**.*" That is `1.6449·SE > Δ` ⟺ `σ_rel > 60.79%` ⟺ **`UNC > 26.18%`** — **a single threshold set by Verra, with no power convention chosen by us**, which is strictly better than the 21.97% / 15.37% power-based lines and is what the sweep will run at. For orientation the bar sits at `Δ/MDD = 0.839`: **the VCS program explicitly permits crediting claims down to 84% of their own 50%-power minimum detectable difference.** Cross-checked against MR v4.0 (Sept 2019): it contains **neither** `0.4307` nor the bar, so both entered between 2019 and 2023. **(2) VCS 4022 against Verra's bar: implied 90% CI half-width = 119.7% of the ERR estimate, 19.7 points over.** *Interpretation stated, not asserted:* VM0042 v2.0 §8.6.4 points to "*the latest version of*" §2.4 but does not reproduce the bar, and the bar is a v4.4-era provision (Oct 2023) postdating VM0042 v2.0's approval (May 2023) and predating this project's validation (Dec 2024, VCS Standard v4.5) — so **either the bar binds through that pointer, or VM0042 does not implement a program requirement it explicitly cross-references. Both are findings; neither is an accusation**, and resolving which holds needs Verra's own reading, which we do not have. **(3) The 31.35% scope question was attempted and NOT confirmed.** The PD is not public outside the SPA registry; the validation report (publicly mirrored) calls the figure "*the final uncertainty deduction*" (CAR ID 60), singular and project-level, in Table 4-17 and §4.4.4 without disaggregation, while VM0042 §8.6.4 requires deductions "*estimated and applied separately for each ERR source*". **This splits the two findings by robustness, which is the useful part:** the §2.4 half-width comparison **does not depend** on the pool scope (both sides refer to the same ERR estimate) and is **robust**; the `Δ/MDD = 0.70` ratio **does** depend on it (MDD is defined on SOC stocks, §8.2.1.3 Eq. 2) and stays **conditional**. Lead with the eligibility comparison. **(4) THE SWEEP DID NOT RUN.** `registry.verra.org` returns a 2598-byte SPA shell (`text/html`, HTTP 200) on **every** route tried, GET and POST alike, including `/uiapi/resource/resourceSummary/search` and `/uiapi/asset/asset/search` with JSON bodies and browser headers — two further rounds (three HTTP calls) on top of D-056's. Targeted web search surfaced no other VM0042 project publishing a deduction. **Population reachable without a headless browser: n = 1. No distribution is reported and none was estimated.** Method, constant and threshold are all settled; only the sample is missing, and the headless-browser decision (sweep scope §8 item 5) is now the single blocker on the whole of Phase 5. No variance-table row written or promoted. |
+| 2026-08-13 | D-074 | **THE ELIGIBILITY BAR WRITTEN UP AS ITS OWN RESULT; SWEEP ATTEMPTED UNDER AUTHORISATION AND STOPPED BY OUR OWN ENVIRONMENT.** `docs/vcs_eligibility_bar.md` — a **program-level** result, deliberately not filed inside a VM0042 document: *VCS Methodology Requirements* §2.4 bars crediting where the 90% CI half-width exceeds 100% of the ERR estimate, which is `σ_rel > 60.79%`, i.e. **`UNC > 26.18%`**, sitting at **`Δ/MDD = 0.839`** — **the VCS program permits crediting of claims down to 84% of their own 50%-power minimum detectable difference.** Not our threshold, not our power convention, not our variance components: Verra's rule inverted through Verra's own constant, confirmed by Verra's own worked example (`32.9% / 1.6449 × 0.4307 = 8.6%`). **`k = 0.4307` is stated as its own claim — a VCS program-wide constant, not a VM0042 one** — so the addressable surface is every VCS project publishing a §2.4 deduction, bounded below by §2.4's own 10% materiality floor. **The robustness split is kept prominent**: the half-width comparison does **not** need 31.35% to be SOC-specific (both sides are the same ERR estimate) and is **robust**; `Δ/MDD = 0.70` **does** (MDD is on SOC stocks) and is labelled **conditional** everywhere it appears, `projects.yaml` included. VCS 4022's framing preserved verbatim and explicitly marked not-to-be-sharpened: 119.7% implied half-width, 19.7 points past the bar; **either** the bar binds through §8.6.4's "latest version of" pointer **or** VM0042 does not implement a requirement it cross-references; **both are findings, neither is an accusation.** **Version-boundary caution logged as a standing rule** after a second near-miss (VM0042 draft vs approved, then MR v4.0 vs v4.4 — v4.0 has neither the constant nor the bar): *a draft is never evidence of a rule in force, and a deferred-to program document must be retrieved at its own version, because the two revise on independent schedules.* Both near-misses were caught by retrieving a primary source a prior session had recorded as unobtained; neither was caught by internal review, since both readings were internally consistent and wrong. **SWEEP: authorised, attempted, not completed — and not because of Verra.** `robots.txt` checked first, with one result each way: `registry.verra.org` serves **no** robots.txt (SPA catch-all, no parseable directive, target paths **not** disallowed), but **`verra.org` disallows `/wp-content/uploads`, which is where every primary document in this project's evidence base came from** — disclosed rather than argued away, with the REP's crawling scope noted, document content unaffected, and a **standing rule adopted: no automated or bulk retrieval under that path; any future bulk fetch is a PI decision.** The authorised browser then failed on **our** egress: Chromium returned `net::ERR_CONNECTION_RESET` for **every** host including `example.com`, across two rounds (default + explicit proxy; then `--proxy-server`, QUIC off, background networking off, cert errors ignored), because the container's proxy accepts only `CONNECT` tunnels — while `curl` reaches the same hosts from the same shell. **THE THREE-WAY DISTINCTION, never to be merged: disclosure gap (ACCU — 999 projects, zero sampling fields, complete-population evidence about the registry) ≠ access wall (Verra — public but client-rendered, evidence about auditability) ≠ environment limitation (ours — evidence about nothing but us).** The surviving joint finding is recorded beside the ACCU census: **the two largest soil-carbon registries publish design and uncertainty data in forms that cannot be systematically audited — complete-population evidence for one, access-wall evidence for the other** — and neither statement depends on anything LoAM computes. Population reachable in this environment **n = 1**; no distribution reported and none estimated. Constraints honoured throughout: 4–6 s between navigations, no parallelism, no credentials held or attempted, abort-on-login-wall, two rounds per method then stop, cap not raised. No variance-table row written or promoted. |
+| 2026-11-10 | D-071…D-074 ported; **D-075 (open)** | **PR #21 brought onto `main`** on a fresh branch (PI decision A) and renumbered D-059…D-062 → D-071…D-074 (rows above are PR #21's own log rows, renumbered, original dates kept). Re-verification: every claim from the VCS 4022 validation report VERIFIED from primary, with one locator correction (item VII and item V are **CAR ID 45, p. 131**, not "CAR #01"); all arithmetic VERIFIED; every claim resting on a Verra-hosted PDF **PENDING** the PI's hand download (decision B: nothing under `verra.org/wp-content/uploads` fetched by us). D-072 and D-073 enter `main` as **open**. One internal inconsistency in PR #21 flagged (MDD at "Sec 9.3.1 Eq 88" vs "Sec 8.2.1.3 Eq (2)"). |
